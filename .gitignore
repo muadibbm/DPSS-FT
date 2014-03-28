@@ -1,0 +1,30 @@
+*.pydevproject
+.metadata
+.gradle
+Software Failure Tolerant CORBA Distributed Player Status System/bin/
+Software Failure Tolerant CORBA Distributed Player Status System/tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+Software Failure Tolerant CORBA Distributed Player Status System/.settings/
+.loadpath
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+# sbteclipse plugin 
+.target
+
+# TeXlipse plugin
+.texlipse
