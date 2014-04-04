@@ -4,7 +4,18 @@ import system.AbstractGameServer;
 
 public class GameServer extends AbstractGameServer
 {
-
+	private String aServerName;
+	
+	public GameServer(String pServerName)
+	{
+		aServerName = pServerName;
+	}
+	
+	public void stopServer()
+	{
+		
+	}
+	
 	@Override
 	public String createPlayerAccount(String pFirstName, String pLastName, int pAge, String pUsername, String pPassword, String pIPAddress) 
 	{
@@ -40,5 +51,4 @@ public class GameServer extends AbstractGameServer
 	{
 		return null;
 	}
-
 }

@@ -1,25 +1,20 @@
 package system;
 
-
 public abstract class UDP extends Thread
 {
-	private int aPort;
-	private String aServerName;
-	private AbstractGameServer aGameServer;
+	public int aPort;
 	
-	public UDP (int pPort, String pServerName) 
+	public UDP (int pPort) 
 	{
 		aPort = pPort;
-		aServerName = pServerName;
 	}
 	
-	public abstract boolean startGameServer();
+	public abstract boolean startGameServer(String pServerName);
 	public abstract boolean stopGameServer();
 	public abstract void handleCommunication();
 	@Override
 	public void run ()
 	{
-		startGameServer();
 		while (true)
 			handleCommunication();
 	}

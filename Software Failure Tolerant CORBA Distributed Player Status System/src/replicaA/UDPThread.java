@@ -1,25 +1,45 @@
 package replicaA;
 
+import system.AbstractGameServer;
 import system.UDP;
 
 public class UDPThread extends UDP
 {
-
-	public UDPThread(int pPort, String pServerName) 
+	private AbstractGameServer aGameServer;
+	
+	public UDPThread(int pPort) 
 	{
-		super(pPort, pServerName);
+		super(pPort);
 	}
 
 	@Override
-	public boolean startGameServer() 
+	public boolean startGameServer(String pServerName) 
 	{
-		return false;
+		try
+		{
+			aGameServer = new GameServer(pServerName);
+		}
+		catch(Exception e)
+		{
+			System.out.println(e.getMessage());
+			return false;
+		}
+		return true;
 	}
 
 	@Override
 	public boolean stopGameServer() 
 	{
-		return false;
+		try
+		{
+			((GameServer) aGameServer).stopServer();
+		}
+		catch(Exception e)
+		{
+			System.out.println(e.getMessage());
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -27,5 +47,4 @@ public class UDPThread extends UDP
 	{
 		
 	}
-
 }
