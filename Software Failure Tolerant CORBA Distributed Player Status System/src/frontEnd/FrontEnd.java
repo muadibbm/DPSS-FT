@@ -1,5 +1,6 @@
 package frontEnd;
 
-public class FrontEnd {
+public class FrontEnd 
+{
 
 }
