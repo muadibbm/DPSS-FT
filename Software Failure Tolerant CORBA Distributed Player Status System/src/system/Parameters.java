@@ -31,4 +31,17 @@ public class Parameters
 	}
 	
 	public static char UDP_PARSER = '.';
+	
+	public static String FE_NAME = "FE";
+	
+	public static String GeoLocationOfGameServerNA = "132";
+	public static String GeoLocationOfGameServerEU = "93";
+	public static String GeoLocationOfGameServerAS = "182";
+	
+	// For validating IPAddress using regular expressions
+	public static final String PATTERN_FOR_IPADDRESS_VALIDATION = 
+			        "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+			        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+			        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+			        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
 }

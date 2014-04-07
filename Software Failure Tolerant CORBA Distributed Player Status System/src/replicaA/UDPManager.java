@@ -12,7 +12,7 @@ class UDPManager
 	private static UDPThread aUDPThreadForGameServerEU;
 	private static UDPThread aUDPThreadForGameServerAS;
 	
-	public static void main(String[] args) 
+	protected UDPManager() 
 	{
 		// Create UDP Threads
 		aUDPThreadForGameServerNA = new UDPThread(Parameters.UDP_PORT_REPLICA_A_NA);
