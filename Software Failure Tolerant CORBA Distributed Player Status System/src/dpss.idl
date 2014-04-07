@@ -1,0 +1,19 @@
+module dpss 
+{
+	//exception IDL_ERROR {long errorCode; string message;};
+	interface interfaceIDL
+	{
+		// This method when invoked from a PlayerClient will create a player account with the given parameters
+		boolean createPlayerAccount(in string pFirstName, in string pLastName, in long pAge, in string pUsername, in string pPassword, in string pIPAddress);// raises (IDL_ERROR);
+		// This method when invoked from a PlayerClient will set a player online if conditions are met 
+		boolean playerSignIn(in string pUsername, in string pPassword, in string pIPAddress);// raises (IDL_ERROR);
+		// This method when invoked from a PlayerClient will set this player off-line if conditions are met 
+		boolean playerSignOut(in string pUsername, in string pIPAddress);// raises (IDL_ERROR);
+		// This method when invoked from a PlayerClient will transfer the player's account to the new IP-address
+		boolean transferAccount (in string pUsername, in string pPassword, in string pOldIPAddress, in string pNewIPAddress);// raises (IDL_ERROR);
+		// This method when invoked from a AdministratorClient will return the number of players online and off-line
+		boolean getPlayerStatus(in string pAdminUsername, in string pAdminPassword, in string pIPAddress);// raises (IDL_ERROR);
+		// This method when invloked from a AdministratorClient will suspend the account with the given username
+		boolean suspendAccount(in string pAdminUsername, in string pAdminPassword, in string pIPAddress, in string pUsernameToSuspend);// raises (IDL_ERROR);
+	};
+};
