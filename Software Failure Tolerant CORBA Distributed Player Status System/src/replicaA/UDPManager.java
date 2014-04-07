@@ -2,11 +2,11 @@ package replicaA;
 
 import system.Parameters;
 
-/*
+/**
  * This class consists of three UDP threads each running a game server
  * @author Mehrdad Dehdashti
  */
-public class UDPManager 
+class UDPManager 
 {
 	private static UDPThread aUDPThreadForGameServerNA;
 	private static UDPThread aUDPThreadForGameServerEU;

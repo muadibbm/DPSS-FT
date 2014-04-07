@@ -1,19 +1,27 @@
 package replicaA;
 
 import system.AbstractGameServer;
-import system.UDP;
+import system.AbstractUDP;
 
-public class UDPThread extends UDP
+/**
+ * This is the UDP thread that handles all the communication for the contained game server within
+ * @author Mehrdad Dehdashti
+ */
+class UDPThread extends AbstractUDP
 {
 	private AbstractGameServer aGameServer;
 	
-	public UDPThread(int pPort) 
+	protected UDPThread(int pPort) 
 	{
 		super(pPort);
 	}
 
-	@Override
-	public boolean startGameServer(String pServerName) 
+	/**
+	 * This method creates the game server object contained within the UDP thread
+	 * @param pServerName is the name of the server to be created
+	 * @return true if the server was successfully created
+	 */
+	protected boolean startGameServer(String pServerName) 
 	{
 		try
 		{
@@ -27,8 +35,11 @@ public class UDPThread extends UDP
 		return true;
 	}
 
-	@Override
-	public boolean stopGameServer() 
+	/*
+	 * stops the game server
+	 * @return true if the server was successfully stopped
+	 */
+	private boolean stopGameServer() 
 	{
 		try
 		{
@@ -43,8 +54,8 @@ public class UDPThread extends UDP
 	}
 
 	@Override
-	public void handleCommunication() 
+	protected void handleCommunication() 
 	{
-		
+		// TODO
 	}
 }

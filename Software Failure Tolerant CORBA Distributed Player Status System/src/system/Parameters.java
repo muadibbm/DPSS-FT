@@ -21,6 +21,8 @@ public class Parameters
 	public static int UDP_PORT_REPLICA_MANAGER_EU = 5100;
 	public static int UDP_PORT_REPLICA_MANAGER_AS = 5200;
 	
+	public static int UDP_PORT_FE = 6000;
+	
 	public static enum METHOD_CODE 
 	{
 	    CREATE_ACCOUNT, PLAYER_SIGN_IN, PLAYER_SIGN_OUT, TRANSFER_ACCOUNT,

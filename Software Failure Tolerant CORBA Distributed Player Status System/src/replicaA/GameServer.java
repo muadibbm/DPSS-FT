@@ -2,53 +2,57 @@ package replicaA;
 
 import system.AbstractGameServer;
 
-public class GameServer extends AbstractGameServer
+/**
+ * This class is the GameServer class for replicaA
+ * @author Mehrdad Dehdashti
+ */
+class GameServer extends AbstractGameServer
 {
 	private String aServerName;
 	
-	public GameServer(String pServerName)
+	protected GameServer(String pServerName)
 	{
 		aServerName = pServerName;
 	}
 	
-	public void stopServer()
+	protected void stopServer()
 	{
 		
 	}
 	
 	@Override
-	public String createPlayerAccount(String pFirstName, String pLastName, int pAge, String pUsername, String pPassword, String pIPAddress) 
+	protected boolean createPlayerAccount(String pFirstName, String pLastName, int pAge, String pUsername, String pPassword, String pIPAddress) 
 	{
-		return null;
+		return false;
 	}
 
 	@Override
-	public String playerSignIn(String pUsername, String pPassword, String pIPAddress) 
+	protected boolean playerSignIn(String pUsername, String pPassword, String pIPAddress) 
 	{
-		return null;
+		return false;
 	}
 
 	@Override
-	public String playerSignOut(String pUsername, String pIPAddress) 
+	protected boolean playerSignOut(String pUsername, String pIPAddress) 
 	{
-		return null;
+		return false;
 	}
 
 	@Override
-	public String transferAccount(String pUsername, String pPassword, String pOldIPAddress, String pNewIPAddress) 
+	protected boolean transferAccount(String pUsername, String pPassword, String pOldIPAddress, String pNewIPAddress) 
 	{
-		return null;
+		return false;
 	}
 
 	@Override
-	public String getPlayerStatus(String pAdminUsername, String pAdminPassword, String pIPAddress) 
+	protected boolean getPlayerStatus(String pAdminUsername, String pAdminPassword, String pIPAddress) 
 	{
-		return null;
+		return false;
 	}
 
 	@Override
-	public String suspendAccount(String pAdminUsername, String pAdminPassword, String pIPAddress, String pUsernameToSuspend) 
+	protected boolean suspendAccount(String pAdminUsername, String pAdminPassword, String pIPAddress, String pUsernameToSuspend) 
 	{
-		return null;
+		return false;
 	}
 }
