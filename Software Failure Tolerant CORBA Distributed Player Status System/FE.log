@@ -1,0 +1,10 @@
+Apr 08, 2014 7:03:22 PM system.Log createLog
+INFO: Log File FE Created
+Apr 08, 2014 7:03:22 PM frontEnd.FrontEnd <init>
+INFO: Queue initialized
+Apr 08, 2014 7:03:22 PM frontEnd.FrontEnd createORB
+INFO: FE ORB init completed with file FE.txt
+Apr 08, 2014 7:03:22 PM frontEnd.FrontEnd <init>
+INFO: ORB Running
+Apr 08, 2014 7:03:22 PM frontEnd.FrontEnd <init>
+INFO: UDP Running

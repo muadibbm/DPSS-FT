@@ -2,6 +2,7 @@ package frontEnd;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,7 +26,7 @@ import system.Parameters;
  * replica lead and vice-versa using a queue data structure
  * @author Mehrdad Dehdashti
  */
-public class FrontEnd extends interfaceIDLPOA
+public class FrontEnd extends interfaceIDLPOA implements Runnable
 {
 	private Logger aLog;
 	private Queue <List<Object>> aQueue;
@@ -43,12 +44,17 @@ public class FrontEnd extends interfaceIDLPOA
 		aUDPThread = new FrontEndUDPThread(Parameters.UDP_PORT_FE);
 		aUDPThread.start();
 		aLog.info("UDP Running");
-		handleFrontEndCommunication();
 	}
 	
 	private FrontEnd()
 	{
 		// Private constructor used for creating ORB interface
+	}
+	
+	@Override
+	public void run() 
+	{
+		handleFrontEndCommunication();
 	}
 	
 	/* Creates the ORB object for the front end and writes it to the file 

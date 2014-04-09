@@ -1,5 +1,10 @@
 package replicaA;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.logging.Logger;
+
 import system.AbstractGameServer;
 
 /**
@@ -9,10 +14,17 @@ import system.AbstractGameServer;
 class GameServer extends AbstractGameServer
 {
 	private String aServerName;
+	private Hashtable<String, List<Account>> aDatabase;
+	private Logger aLog;
 	
 	protected GameServer(String pServerName)
 	{
 		aServerName = pServerName;
+		aLog = system.Log.createLog(aServerName);
+		aDatabase = new Hashtable<String, List<Account>>();
+		for(char alphabet = 'A'; alphabet <= 'Z'; alphabet++)
+			aDatabase.put(String.valueOf(alphabet), new ArrayList <Account>());
+		aLog.info("Database initialized\n" + aDatabase.toString());
 	}
 	
 	protected void stopServer()

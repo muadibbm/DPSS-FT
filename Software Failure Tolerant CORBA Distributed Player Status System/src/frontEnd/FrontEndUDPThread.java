@@ -1,5 +1,8 @@
 package frontEnd;
 
+import java.net.DatagramSocket;
+import java.net.SocketException;
+
 import system.AbstractUDP;
 
 /**
@@ -8,12 +11,16 @@ import system.AbstractUDP;
  */
 class FrontEndUDPThread extends AbstractUDP
 {
-	private boolean bCrashed;
+	private DatagramSocket aDatagramSocket;
 	
 	protected FrontEndUDPThread(int pPort) 
 	{
 		super(pPort);
-		bCrashed = false;
+		try {
+			aDatagramSocket = new DatagramSocket();
+		} catch (SocketException e) {
+			setCrashed();
+		}
 	}
 
 	@Override
@@ -21,10 +28,4 @@ class FrontEndUDPThread extends AbstractUDP
 	{
 		
 	}
-	
-	protected boolean hasCrashed()
-	{
-		return bCrashed;
-	}
-
 }

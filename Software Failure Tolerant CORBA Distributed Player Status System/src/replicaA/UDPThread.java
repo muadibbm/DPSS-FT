@@ -1,5 +1,9 @@
 package replicaA;
 
+import java.net.DatagramSocket;
+import java.net.SocketException;
+import java.util.logging.Logger;
+
 import system.AbstractGameServer;
 import system.AbstractUDP;
 
@@ -10,10 +14,17 @@ import system.AbstractUDP;
 class UDPThread extends AbstractUDP
 {
 	private AbstractGameServer aGameServer;
+	private DatagramSocket aDatagramSocket;
+	private Logger aLog;
 	
-	protected UDPThread(int pPort) 
+	protected UDPThread(int pPort)
 	{
 		super(pPort);
+		try {
+			aDatagramSocket = new DatagramSocket();
+		} catch (SocketException e) {
+			setCrashed();
+		}
 	}
 
 	/**
@@ -56,6 +67,6 @@ class UDPThread extends AbstractUDP
 	@Override
 	protected void handleCommunication() 
 	{
-		// TODO
+		
 	}
 }
