@@ -2,10 +2,10 @@ package clients;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.logging.Logger;
 
 import org.omg.CORBA.ORB;
 
-import system.Parameters;
 import dpss.interfaceIDL;
 import dpss.interfaceIDLHelper;
 
@@ -13,12 +13,14 @@ import dpss.interfaceIDLHelper;
  * This is the PlayerClient class which operates the player
  * @author Mehrdad Dehdashti
  */
-public class PlayerClient extends Thread
+class PlayerClient extends Thread
 {
+	private Logger aLog;
 	private interfaceIDL aInterfaceIDL;
 	
-	public PlayerClient (String pName, String[] pArgs)
+	protected PlayerClient (String pName, String[] pArgs)
 	{
+		aLog = Log.createLog(pName);
 		try 
 		{
 			ORB orb = ORB.init(pArgs, null);
@@ -29,37 +31,47 @@ public class PlayerClient extends Thread
 			// Transform the reference string to CORBA object
 			org.omg.CORBA.Object reference_CORBA = orb.string_to_object(stringORB);
 			aInterfaceIDL = interfaceIDLHelper.narrow(reference_CORBA);
-			// TODO : log
+			aLog.info("ORB IOR read from file");
 		} catch (Exception e) {
-			// TODO : log error
+			aLog.info("Acquiring ORB failed");
 		}
 	}
 	
 	/** Client invocation of FE operation createPlayerAccount using CORBA */
-	public void createPlayerAccount(String pFirstName, String pLastName, int pAge, String pUsername, String pPassword, String pIPAddress)
+	protected void createPlayerAccount(String pFirstName, String pLastName, int pAge, String pUsername, String pPassword, String pIPAddress)
 	{
-		aInterfaceIDL.createPlayerAccount(pFirstName, pLastName, pAge, pUsername, pPassword, pIPAddress);
-		// TODO : if log else log
+		if(aInterfaceIDL.createPlayerAccount(pFirstName, pLastName, pAge, pUsername, pPassword, pIPAddress))
+			aLog.info("Player Account created :\nFirstName \"" +  pFirstName +  "\", LastName \"" +  pLastName + 
+					"\", Age \"" +  pAge +  "\", Username \"" +  pUsername +  "\", Password \"" + pPassword + "\", IP-address \"" + 
+					pIPAddress + "\", Player is currently Offline");
+		else
+			aLog.info("CreatePlayerAccount Failed");
 	}
 	
 	/** Client invocation of FE operation playerSignIn using CORBA */
-	public void playerSignIn(String pUsername, String pPassword, String pIPAddress)
+	protected void playerSignIn(String pUsername, String pPassword, String pIPAddress)
 	{
-		aInterfaceIDL.playerSignIn(pUsername, pPassword, pIPAddress);
-		// TODO : if log else log
+		if(aInterfaceIDL.playerSignIn(pUsername, pPassword, pIPAddress))
+			aLog.info("Player Sign in : Player " +  pUsername + " Is Now Online");
+		else
+			aLog.info("PlayerSignIn Failed");
 	}
 	
 	/** Client invocation of FE operation playerSignOut using CORBA  */
-	public void playerSignOut(String pUsername, String pIPAddress)
+	protected void playerSignOut(String pUsername, String pIPAddress)
 	{
-		aInterfaceIDL.playerSignOut(pUsername, pIPAddress);
-		// TODO : if log else log
+		if(aInterfaceIDL.playerSignOut(pUsername, pIPAddress))
+			aLog.info("Player Sign out : Player " +  pUsername + " Is Now Offline");
+		else
+			aLog.info("PlayerSignOut Failed");
 	}
 	
 	/** Client invocation of FE operation transferAccount using CORBA  */
-	public void transferAccount(String pUsername,  String pPassword, String pOldIPAddress, String pNewIPAddress)
+	protected void transferAccount(String pUsername,  String pPassword, String pOldIPAddress, String pNewIPAddress)
 	{
-		aInterfaceIDL.transferAccount(pUsername, pPassword, pOldIPAddress, pNewIPAddress);
-		// TODO : if log else log
+		if(aInterfaceIDL.transferAccount(pUsername, pPassword, pOldIPAddress, pNewIPAddress))
+			aLog.info("Player Account Transferred :\nUsername \"" +  pUsername +  "\", Password \"" + pPassword + "\", IP-address \"" + pNewIPAddress + "\"");
+		else
+			aLog.info("TransferAccount Failed");
 	}
 }

@@ -1,8 +1,8 @@
 package frontEnd;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,7 +19,6 @@ import org.omg.PortableServer.POAPackage.ServantAlreadyActive;
 import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 import dpss.interfaceIDLPOA;
-import system.Parameters;
 
 /**
  * This is the CORBA front end which handles all relay request from the clients to the 
@@ -30,14 +29,24 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 {
 	private Logger aLog;
 	private Queue <List<Object>> aQueue;
+	private boolean bMethodBeingProcessed; // Used to check if the leader has sent back the result
+	private boolean bConfirmation; // Used to check if the method invoked was a success or failure
 	private FrontEndORBThread aORBThread;
 	private FrontEndUDPThread aUDPThread;
 	
-	public FrontEnd(String[] pArgs)
+	// Main method which runs the front end
+	public static void main(String[] args) 
 	{
-		aLog = system.Log.createLog(Parameters.FE_NAME);
+		new Thread(new FrontEnd(args)).start();
+	}
+	
+	private FrontEnd(String[] pArgs)
+	{
+		aLog = Log.createLog(Parameters.FE_NAME);
 		aQueue = new LinkedList <List<Object>>();
 		aLog.info("Queue initialized");
+		bMethodBeingProcessed = false;
+		bConfirmation = false;
 		aORBThread = new FrontEndORBThread(createORB(pArgs));
 		aORBThread.start();
 		aLog.info("ORB Running");
@@ -48,7 +57,7 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 	
 	private FrontEnd()
 	{
-		// Private constructor used for creating ORB interface
+		// Constructor used for creating ORB interface
 	}
 	
 	@Override
@@ -98,20 +107,19 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 				IPAddress = ((String)tmpList.get(6));
 				if(IPAddress.length() >= 3 && IPAddress.substring(0,3).equals(Parameters.GeoLocationOfGameServerNA))
 				{
-					sendRequestToReplicaLeader(Parameters.UDP_PORT_REPLICA_LEAD_NA, tmpList);
+					sendRequestToReplicaLeader(Parameters.UDP_PORT_REPLICA_LEAD, tmpList);
 				}
 				else if(IPAddress.length() >= 2 && IPAddress.substring(0,2).equals(Parameters.GeoLocationOfGameServerEU))
 				{
-					sendRequestToReplicaLeader(Parameters.UDP_PORT_REPLICA_LEAD_EU, tmpList);
+					
 				}
 				else if(IPAddress.length() >= 3 && IPAddress.substring(0,3).equals(Parameters.GeoLocationOfGameServerAS))
 				{
-					sendRequestToReplicaLeader(Parameters.UDP_PORT_REPLICA_LEAD_AS, tmpList);
+					
 				}
 				else
 				{
 					aLog.info("Invalid GeoLocation");
-					//TODO : return false; how to return for the client ?
 				}
 			}
 			if(aUDPThread.hasCrashed())
