@@ -14,12 +14,23 @@ public class Parameters
 	
 	protected static enum METHOD_CODE 
 	{
-	    CREATE_ACCOUNT, PLAYER_SIGN_IN, PLAYER_SIGN_OUT, TRANSFER_ACCOUNT,
-	    GET_PLAYER_STATUS, SUSPEND_ACCOUNT,
-	    START_REPLICA, STOP_REPLICA;
+	    CREATE_ACCOUNT
+	    , PLAYER_SIGN_IN
+	    , PLAYER_SIGN_OUT
+	    , TRANSFER_ACCOUNT
+	    , GET_PLAYER_STATUS
+	    , SUSPEND_ACCOUNT
+	    , START_REPLICA
+	    , STOP_REPLICA;
 	}
 	
-	protected static char UDP_PARSER = '.';
+	protected static String UDP_PARSER = "/";
+	
+	protected static String FE_NAME = "FE";
+	protected static String RM_NAME = "RM";
+	protected static String RA_NAME = "RA";
+	protected static String RB_NAME = "RB";
+	protected static String LR_NAME = "LR";
 	
 	protected static String GeoLocationOfGameServerNA = "132";
 	protected static String GeoLocationOfGameServerEU = "93";
