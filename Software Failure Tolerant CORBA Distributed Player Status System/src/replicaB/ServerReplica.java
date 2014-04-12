@@ -26,6 +26,7 @@ public class ServerReplica {
 	 */
 	public static UserPlayer playerToTransfered;
 	
+	
 	static final int NA_IP_ADDRESS = 132;
 	static final int EU_IP_ADDRESS = 93;
 	static final int AS_IP_ADDRESS = 182;
@@ -33,6 +34,16 @@ public class ServerReplica {
 	static final int NA_port = 6666;
 	static final int EU_port = 6667;
 	static final int AS_port = 6668;
+	
+	public static int UDP_PORT_REPLICA_B_NA = 3000;
+	public static int UDP_PORT_REPLICA_B_EU = 3100;
+	public static int UDP_PORT_REPLICA_B_AS = 3200;
+	
+	static DatagramSocket aSocket = null;
+	static boolean waitForConnection = true;
+	String serverIPAddress;
+	int IPaddress = 0;
+	int serverPort;
 	
 	static java.util.Date date= new java.util.Date();
 	/**
@@ -50,6 +61,7 @@ public class ServerReplica {
 	 */
 	String acronym;
 	int serverListeningPort = 0;
+	String dataRecieved = null;
 	
 	static int totalRecords;
 	static Hashtable<Character, List <UserPlayer>> records = new Hashtable<>();
@@ -74,13 +86,6 @@ public class ServerReplica {
 			serverListeningPort = NA_IP_ADDRESS;
 		}
 	}
-	
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
-	
 	
 	
 	/**
@@ -639,6 +644,52 @@ public class ServerReplica {
 				
 			}
 		return recordNotFound;
+	}
+	
+	/**
+	 * Runs the server per geolocation called from the main UDP server
+	 * @param port
+	 * @param IP
+	 */
+	public void startUDPserver (int port, int IP) {
+		
+		serverListeningPort = port;
+		IPaddress = IP;
+		 try {
+				
+				aSocket = new DatagramSocket(serverListeningPort);
+				byte [] buffer = new byte [1500];
+				
+				//always listen for new messages on the specified port
+				while (waitForConnection) {							
+					
+					DatagramPacket request = new DatagramPacket(buffer, buffer.length);
+					aSocket.receive(request);
+
+					//get the data from the request and check
+					dataRecieved = new String(request.getData());
+					
+		
+					//depending on the received info call method for the server to act on the hashtable
+					/*
+					 * if (dataRecieved.contains(startServerMessage)) {
+						//run the 3 UDP servers
+						startServers();
+					}
+					else if (dataRecieved.contains(stopServerMessage)) {
+						//stop the 3 servers
+						stopServers();
+					}
+					else {
+						System.out.println("The UDP message was not read correctly! Please resend the message");
+					}
+					*/
+
+				}	
+				
+		 }
+			catch (Exception e) {e.printStackTrace();}
+
 	}
 
 }
