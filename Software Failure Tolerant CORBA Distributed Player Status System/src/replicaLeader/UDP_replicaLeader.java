@@ -7,7 +7,7 @@ import org.omg.CORBA.ORB;
 
 public class UDP_replicaLeader extends Thread
 {
-	private String m_DataReceived;
+	private String m_UDPDataGram_from_stripped;
 	
 	@Override
 	public void run()
@@ -58,7 +58,17 @@ public class UDP_replicaLeader extends Thread
   						{
   				    		case "FE":
   				    				System.out.println("Receiving data from FE.");
+  				    				
+  				    				// create LocalORBPRocessing Obj
+  				    				LocalOrbProcessing l_LocalOrbProcessing = new LocalOrbProcessing();
+  				    				
+  				    				if(m_UDPDataGram_from_stripped != "")
+  				    				{
+  				    					String l_invocationResponse = l_LocalOrbProcessing.performRMI(m_UDPDataGram_from_stripped);
+  				    					sendPacket(l_invocationResponse, Parameters.UDP_PORT_FE);
+  				    				}
   				    				// send data to the orb
+  				    				
   				    				// multicast data send to the Replica_A and Replica_B
   				    				break;
   				    
@@ -139,69 +149,15 @@ public class UDP_replicaLeader extends Thread
 		String l_segments[] = p_input.split(Parameters.UDP_PARSER);
 		if(l_segments != null)
 		{
+			m_UDPDataGram_from_stripped = p_input.substring(3, p_input.length());
+			System.out.println("UDP_replicaLeader.parseSenderName: m_UDPDataGram_from_stripped - " + m_UDPDataGram_from_stripped);
 			return l_segments[0];
 		}
 		System.out.println("UDP_replicaLeader.parseSenderName: failed to parse udp packet data");
 		return null;
 	}
 	
-	private static GameServerInterface checkIPAddress(String IPAddress)
-	{
-		GameServerInterface aGameServerRef = null;
-		String args[] = null;
 		
-		try
-		{
-			if("132".equals(IPAddress.substring(0,3)))
-			{
-				ORB orb = ORB.init(args, null);
-				
-				BufferedReader br = new BufferedReader(new FileReader("ior_NorthAmerica.txt"));
-				String ior = br.readLine();
-				br.close();
-		
-				org.omg.CORBA.Object o = orb.string_to_object(ior);
-				aGameServerRef = GameServerInterfaceHelper.narrow(o);			
-			}
-		
-			else if("92".equals(IPAddress.substring(0,2)))
-			{
-				ORB orb = ORB.init(args, null);
-				
-				BufferedReader br = new BufferedReader(new FileReader("ior_Europe.txt"));
-				String ior = br.readLine();
-				br.close();
-		
-				org.omg.CORBA.Object o = orb.string_to_object(ior);
-				aGameServerRef = GameServerInterfaceHelper.narrow(o);	
-			}
-		
-			else if("182".equals(IPAddress.substring(0,3)))
-			{
-				ORB orb = ORB.init(args, null);
-				
-				BufferedReader br = new BufferedReader(new FileReader("ior_Asia.txt"));
-				String ior = br.readLine();
-				br.close();
-		
-				org.omg.CORBA.Object o = orb.string_to_object(ior);
-				aGameServerRef = GameServerInterfaceHelper.narrow(o);	
-			}
-		
-			else
-			{
-				System.out.println("Error: IP Location Index not Valid/n");
-				aGameServerRef =  null;
-			}
-		}
-		catch(Exception e)
-		{
-			aGameServerRef = null;
-			e.printStackTrace();					
-		}
-		return aGameServerRef;
-	}
-	
 	public static void main(String[] args)  
 	{
 		UDP_replicaLeader m_UDP_replicaLeader = new UDP_replicaLeader();
