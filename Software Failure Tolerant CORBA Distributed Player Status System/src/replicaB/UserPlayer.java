@@ -7,11 +7,11 @@ class UserPlayer {
 	String lastName;
 	String userName;
 	String password;
-	short age;
+	int age;
 	boolean status;
 	
 	
-	protected UserPlayer(String FirstName, String LastName,short Age, String Username, String Password, String IPAddress){
+	protected UserPlayer(String FirstName, String LastName,int Age, String Username, String Password, String IPAddress){
 		
 		this.IP = IPAddress;
 		this.age = Age;
@@ -42,7 +42,7 @@ class UserPlayer {
 	 * Get Age
 	 * @return
 	 */
-	short getAge () {
+	int getAge () {
 		return age;
 	}
 	/**

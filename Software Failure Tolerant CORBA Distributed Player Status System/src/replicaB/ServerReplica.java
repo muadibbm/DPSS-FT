@@ -16,34 +16,26 @@ import java.util.List;
 
 
 
-public class ServerReplica {
+public class ServerReplica  extends Thread{
 
 	/**
 	 * Define constants for the servers the users can access
-	 * NA_IP_ADDRESS  ----- North America
-	 * EU_IP_ADDRESS  ----- Europe
-	 * AS_IP_ADDRESS  ----- Asia
 	 */
 	public static UserPlayer playerToTransfered;
 	
-	
-	static final int NA_IP_ADDRESS = 132;
-	static final int EU_IP_ADDRESS = 93;
-	static final int AS_IP_ADDRESS = 182;
-	
+	//ports used for the TRANSFER ACCOUNT method whit in the server group only
 	static final int NA_port = 6666;
 	static final int EU_port = 6667;
 	static final int AS_port = 6668;
 	
-	public static int UDP_PORT_REPLICA_B_NA = 3000;
-	public static int UDP_PORT_REPLICA_B_EU = 3100;
-	public static int UDP_PORT_REPLICA_B_AS = 3200;
 	
 	static DatagramSocket aSocket = null;
 	static boolean waitForConnection = true;
 	String serverIPAddress;
 	int IPaddress = 0;
 	int serverPort;
+	
+	String messageArray [];
 	
 	static java.util.Date date= new java.util.Date();
 	/**
@@ -74,16 +66,19 @@ public class ServerReplica {
 	
 	
 	public ServerReplica (int IP) {
-		if ( IP == AS_IP_ADDRESS ){
+		if ( IP == Parameters.AS_IP_ADDRESS ){
 			acronym = "AS";
-			serverListeningPort = AS_IP_ADDRESS;
-		}else if ( IP == EU_IP_ADDRESS ){
+			IPaddress = Parameters.AS_IP_ADDRESS;
+			serverListeningPort = Parameters.UDP_PORT_REPLICA_B_AS;
+		}else if ( IP == Parameters.EU_IP_ADDRESS ){
 			acronym = "EU";
-			serverListeningPort = EU_IP_ADDRESS;
+			serverListeningPort =Parameters.UDP_PORT_REPLICA_B_EU;
+			IPaddress = Parameters.EU_IP_ADDRESS;
 		}
-		else if ( IP == NA_IP_ADDRESS ){
+		else if ( IP == Parameters.NA_IP_ADDRESS ){
 			acronym = "NA";
-			serverListeningPort = NA_IP_ADDRESS;
+			serverListeningPort = Parameters.UDP_PORT_REPLICA_B_NA;
+			IPaddress = Parameters.NA_IP_ADDRESS;
 		}
 	}
 	
@@ -95,7 +90,7 @@ public class ServerReplica {
 	public synchronized void log (String str) {
 		PrintWriter out;
 		try {
-			out = new PrintWriter(new BufferedWriter(new FileWriter(acronym + "_server_log.txt",true)));
+			out = new PrintWriter(new BufferedWriter(new FileWriter(acronym + Parameters.SERVER_LOG_EXTENSION,true)));
 			Date date = new Date();
 			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
 			String formattedDate = sdf.format(date);
@@ -110,15 +105,15 @@ public class ServerReplica {
 	 * @param str first name, last name, age, user name, password, IP
 	 */
 	public boolean createPlayerAccount(String FirstName, String LastName,
-			short Age, String Username, String Password, String IPAddress) {
+			int Age, String Username, String Password, String IPAddress) {
 		boolean accountCreated = false;
 		UserPlayer temprec = new UserPlayer(FirstName, LastName, Age, Username, Password, IPAddress); 
 		//System.out.println(temprec.toString());
-		acronym = IPAddress;
+		acronym = getServerAcronim(extractIP(IPAddress));
 		//if there is no list created add new and put into the Hashtable
 		
 		char initial = Character.toUpperCase(Username.toCharArray()[0]);
-		System.out.println(initial);
+		System.out.println("Account with : " + initial + " : was added to the server.");
 		//add syncronize block here
 		try {
 			
@@ -152,6 +147,7 @@ public class ServerReplica {
 			e.printStackTrace();
 		}
 		
+		System.out.println ("Method call to create account, return value from the method : " + accountCreated);
 		return accountCreated;
 
 	}
@@ -353,14 +349,7 @@ public class ServerReplica {
 		String serverAcro = null;
 		String currentServerStat = null;
 		
-		if (Integer.parseInt(IPAddress)==AS_IP_ADDRESS){
-			serverAcro = "AS";
-		}else if (Integer.parseInt(IPAddress)==EU_IP_ADDRESS){
-			serverAcro = "EU";
-		}
-		else if (Integer.parseInt(IPAddress)==NA_IP_ADDRESS){
-			serverAcro = "NA";
-		}
+		serverAcro = getServerAcronim(Integer.parseInt(IPAddress));
 		
 		String letter = "ABCDEFJHIJKLMNOPQRSTUVWXYZ";
 		
@@ -408,11 +397,11 @@ public class ServerReplica {
 		int transferIP = Integer.parseInt(NewIPAddress);
 		int transferPort = 5000;
 		boolean transferTest = false;
-		if (transferIP == NA_IP_ADDRESS) 
+		if (transferIP == Parameters.NA_IP_ADDRESS) 
 			transferPort = NA_port;
-		else if ( transferIP == EU_IP_ADDRESS) 
+		else if ( transferIP == Parameters.EU_IP_ADDRESS) 
 			transferPort = EU_port;
-		else if ( transferIP == AS_IP_ADDRESS)
+		else if ( transferIP == Parameters.AS_IP_ADDRESS)
 			transferPort = AS_port;
 		else System.out.println("Can not get the port " + NewIPAddress);
 		
@@ -494,16 +483,16 @@ public class ServerReplica {
 		int serverPortConn1 = 0;
 		int serverPortConn2 = 0;
 		
-		if(accessIP == NA_IP_ADDRESS) {
+		if(accessIP == Parameters. NA_IP_ADDRESS) {
 			//serverPortInit = NA_port;
 			serverPortConn1 = EU_port;
 			serverPortConn2 = AS_port;
-		}else if (accessIP == EU_IP_ADDRESS)
+		}else if (accessIP == Parameters.EU_IP_ADDRESS)
 		{
 			//serverPortInit = EU_port;
 			serverPortConn1 = NA_port;
 			serverPortConn2 = AS_port;
-		}else if (accessIP == AS_IP_ADDRESS)
+		}else if (accessIP == Parameters.AS_IP_ADDRESS)
 		{
 			//serverPortInit = AS_port;
 			serverPortConn1 = NA_port;
@@ -536,12 +525,12 @@ public class ServerReplica {
 			DatagramPacket replay1 = new DatagramPacket(buffer1, buffer1.length);
 			aSocket1.receive(replay1);
 			
-			if (serverPort1==AS_IP_ADDRESS){
+			if (serverPort1==Parameters.AS_IP_ADDRESS){
 				serverAcro = "AS";
-			}else if (serverPort1==EU_IP_ADDRESS){
+			}else if (serverPort1==Parameters.EU_IP_ADDRESS){
 				serverAcro = "EU";
 			}
-			else if (serverPort1==NA_IP_ADDRESS){
+			else if (serverPort1==Parameters.NA_IP_ADDRESS){
 				serverAcro = "NA";
 			}
 			
@@ -566,18 +555,18 @@ public class ServerReplica {
 			aSocket2.receive(replay2);
 			//
 			
-			if (serverPort2==AS_IP_ADDRESS){
+			if (serverPort2==Parameters.AS_IP_ADDRESS){
 				serverAcro = "AS";
-			}else if (serverPort2==EU_IP_ADDRESS){
+			}else if (serverPort2==Parameters.EU_IP_ADDRESS){
 				serverAcro = "EU";
 			}
-			else if (serverPort2==NA_IP_ADDRESS){
+			else if (serverPort2==Parameters.NA_IP_ADDRESS){
 				serverAcro = "NA";
 			}
 			
 			//add the new account to the server
 			statusCodeFromReplay2 = new String(replay2.getData());
-			indexCode2 = statusCodeFromReplay2.indexOf(".");
+			indexCode2 = statusCodeFromReplay2.indexOf(Parameters.UDP_PARSER);
 			statusCode2 = Integer.parseInt(statusCodeFromReplay2.substring(0, indexCode2));
 			returnStatus2 = (statusCodeFromReplay2.substring(indexCode2+1, statusCodeFromReplay2.length())).trim();
 			returnStatus = returnStatus1 + returnStatus2;
@@ -646,20 +635,35 @@ public class ServerReplica {
 		return recordNotFound;
 	}
 	
+	@Override
+	public void run()
+	{
+		startUDPserver();
+	}
+	
 	/**
 	 * Runs the server per geolocation called from the main UDP server
 	 * @param port
 	 * @param IP
 	 */
-	public void startUDPserver (int port, int IP) {
+	private void startUDPserver () {
 		
-		serverListeningPort = port;
-		IPaddress = IP;
+		serverListeningPort = this.serverListeningPort;
+		IPaddress = this.IPaddress;
+		int parserPosition = 0;
+		int parserPositionNextOccurence = 0;
+		String requestServerInitials = null;
+		String requestMethodCode = null;
+		String tempDataUDPMessage = null;
+		
+		String tempFirstName, tempLastName, tempUsername, tempPassword, tempIP;
+		int tempAge = 0;
+		
 		 try {
 				
 				aSocket = new DatagramSocket(serverListeningPort);
-				byte [] buffer = new byte [1500];
-				
+				byte [] buffer = new byte [Parameters.UDP_BUFFER_SIZE];
+				System.out.println ("Replica " + IPaddress + " is up and running!");
 				//always listen for new messages on the specified port
 				while (waitForConnection) {							
 					
@@ -668,28 +672,110 @@ public class ServerReplica {
 
 					//get the data from the request and check
 					dataRecieved = new String(request.getData());
+					//System.out.println("Message to server : " + IPaddress + " : " + dataRecieved);
+					//put all data in an array : [0] - server sent the request, [1] - method code
+					messageArray = dataRecieved.split(Parameters.UDP_PARSER);
 					
-		
-					//depending on the received info call method for the server to act on the hashtable
-					/*
-					 * if (dataRecieved.contains(startServerMessage)) {
-						//run the 3 UDP servers
-						startServers();
+					
+
+					
+					//get who is initiating the request : RM, Leader, Replica1 or Replica2
+					UDPMethodCall(dataRecieved);
+					
+					
+					//if the message is coming from Leader or Replica Manager
+					if ( messageArray[0].equals(Parameters.LR_NAME)) {
+					
+					
+					
+					} else if ( messageArray[0].equals(Parameters.RM_NAME)) {
+						
+						
+						
 					}
-					else if (dataRecieved.contains(stopServerMessage)) {
-						//stop the 3 servers
-						stopServers();
-					}
-					else {
-						System.out.println("The UDP message was not read correctly! Please resend the message");
-					}
-					*/
+					
+					
+					//parserPosition = dataRecieved.indexOf(Parameters.UDP_PARSER);
+					System.out.println(dataRecieved.toString());
+					
+					
+					
+
 
 				}	
 				
 		 }
 			catch (Exception e) {e.printStackTrace();}
 
+	}
+	
+	public String  getServerAcronim (int serverIP) {
+		String acro = null;
+		if ( serverIP == Parameters.NA_IP_ADDRESS) {
+			acro = Parameters.NA_SERVER_ACRO;
+		} else if ( serverIP == Parameters.EU_IP_ADDRESS) {
+			acro = Parameters.EU_SERVER_ACRO;
+		} else if ( serverIP == Parameters.AS_IP_ADDRESS) {
+			acro = Parameters.AS_SERVER_ACRO;
+		}
+		
+		
+		return acro;
+	}
+	
+	public void UDPMethodCall (String UDPrequest) {
+		
+		String methodCall = null;
+		
+		messageArray = UDPrequest.split(Parameters.UDP_PARSER);
+		//Extract the method forwarded from the main UDP server
+		methodCall = messageArray[1];
+		
+		if (methodCall.contains(Parameters.METHOD_CODE.CREATE_ACCOUNT.toString())) {
+			
+			//call create account
+			createPlayerAccount(messageArray[2], messageArray[3], Integer.parseInt(messageArray[4]), messageArray[5], messageArray[6], messageArray[7]);
+		
+		} else if (methodCall.contains(Parameters.METHOD_CODE.PLAYER_SIGN_IN.toString())){
+			
+			//call player sign in
+			PlayerSignIn(messageArray[2], messageArray[3], messageArray[4]);
+			
+		} else if (methodCall.contains(Parameters.METHOD_CODE.PLAYER_SIGN_OUT.toString())){
+			
+			//call player sign out
+			PlayerSignOut(messageArray[2], messageArray[3]);
+			
+		} else if (methodCall.contains(Parameters.METHOD_CODE.SUSPEND_ACCOUNT.toString())){
+			
+			//call suspend account
+			suspendAccount(messageArray[2], messageArray[3], messageArray[4], messageArray[5]);
+			
+		} else if (methodCall.contains(Parameters.METHOD_CODE.TRANSFER_ACCOUNT.toString())){
+			
+			//call transfer account
+			transferAccount(messageArray[2], messageArray[3], messageArray[4], messageArray[5]);
+			
+		} else if (methodCall.contains(Parameters.METHOD_CODE.GET_PLAYER_STATUS.toString())){
+			
+			//call get player status
+			getPlayerStatus(messageArray[2], messageArray[3], messageArray[4]);
+			
+		}
+
+		
+	}
+	
+
+	public static int extractIP ( String inputIP ){
+		int accessIP=0;
+		try
+		{
+		int index = inputIP.indexOf(".");
+		accessIP = Integer.parseInt(inputIP.substring(0, index));
+		}
+		catch ( Exception e ) {e.printStackTrace();}
+		return accessIP;
 	}
 
 }
