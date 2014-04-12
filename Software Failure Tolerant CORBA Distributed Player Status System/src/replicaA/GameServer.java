@@ -27,6 +27,13 @@ class GameServer extends interfaceIDLPOA implements Runnable
 		aLog.info("Database initialized\n" + aDatabase.toString());
 	}
 	
+	/* Reads from file containing the most recent player accounts */
+	protected void updateDatabase()
+	{
+		
+	}
+	
+	/* Clears the database and frees any resources allocated for the game server */
 	protected void freeServerResources()
 	{
 		

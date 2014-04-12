@@ -155,7 +155,7 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 						pArguments.get(3) + Parameters.UDP_PARSER +
 						pArguments.get(4) + Parameters.UDP_PARSER +
 						pArguments.get(5) + Parameters.UDP_PARSER +
-						pArguments.get(6) + Parameters.UDP_PARSER;
+						pArguments.get(6);
 				message = data.getBytes();
 				requestToReplicaLeader = new DatagramPacket(message, data.length(), host, Parameters.UDP_PORT_REPLICA_LEAD);
 				sendSocket.send(requestToReplicaLeader);
