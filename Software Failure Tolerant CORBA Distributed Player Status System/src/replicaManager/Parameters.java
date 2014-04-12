@@ -15,5 +15,7 @@ public class Parameters
 	    START_REPLICA, STOP_REPLICA;
 	}
 	
-	protected static char UDP_PARSER = '.';
+	protected static int UDP_BUFFER_SIZE = 10000;
+	
+	protected static String UDP_PARSER = "/";
 }

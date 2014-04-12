@@ -60,4 +60,23 @@ class ReplicaAUDPThread extends Thread
 	{
 		// TODO : UDP listen to incoming requests from Leader and replica manager
 	}
+	
+	/*
+	 * if(IPAddress.length() >= 3 && IPAddress.substring(0,3).equals(Parameters.GeoLocationOfGameServerNA))
+				{
+					sendRequestToReplicaLeader(Parameters.UDP_PORT_REPLICA_LEAD, tmpList);
+				}
+				else if(IPAddress.length() >= 2 && IPAddress.substring(0,2).equals(Parameters.GeoLocationOfGameServerEU))
+				{
+					
+				}
+				else if(IPAddress.length() >= 3 && IPAddress.substring(0,3).equals(Parameters.GeoLocationOfGameServerAS))
+				{
+					
+				}
+				else
+				{
+					aLog.info("Invalid GeoLocation");
+				}
+	 */
 }
