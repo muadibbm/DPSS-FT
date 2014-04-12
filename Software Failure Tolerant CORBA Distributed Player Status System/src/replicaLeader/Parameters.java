@@ -27,7 +27,7 @@ public class Parameters
 	protected static String UDP_PARSER = "/";
 	
 	protected static String FE_NAME = "FE";
-	protected static String RM_NAME = "RM";
+	protected static String RM_NAME = "RM"; 
 	protected static String RA_NAME = "RA";
 	protected static String RB_NAME = "RB";
 	protected static String LR_NAME = "LR";
