@@ -1,0 +1,6 @@
+Apr 11, 2014 7:50:15 PM clients.Log createLog
+INFO: Log File Player Created
+Apr 11, 2014 7:50:15 PM clients.PlayerClient <init>
+INFO: ORB IOR read from file
+Apr 11, 2014 7:50:15 PM clients.PlayerClient createPlayerAccount
+INFO: CreatePlayerAccount Failed

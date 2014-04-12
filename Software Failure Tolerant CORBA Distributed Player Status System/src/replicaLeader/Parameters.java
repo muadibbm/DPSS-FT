@@ -26,6 +26,8 @@ public class Parameters
 	
 	protected static String UDP_PARSER = "/";
 	
+	protected static int UDP_BUFFER_SIZE = 10000;
+	
 	protected static String FE_NAME = "FE";
 	protected static String RM_NAME = "RM"; 
 	protected static String RA_NAME = "RA";
