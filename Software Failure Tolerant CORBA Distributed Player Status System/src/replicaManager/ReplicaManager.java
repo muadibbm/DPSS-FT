@@ -24,12 +24,16 @@ public class ReplicaManager
 	}
 	
 	public static void main (String [] args) {
+		//Initialize the system by sending 3 UDP messages to 3 server groups
+		startServerGroup(Parameters.UDP_PORT_REPLICA_LEAD);
+		startServerGroup(Parameters.UDP_PORT_REPLICA_A);
+		startServerGroup(Parameters.UDP_PORT_REPLICA_B);
 		
-		startServer(8888);
+		startServerListener(Parameters.UDP_PORT_REPLICA_MANAGER);
 		
 	}
 	
-	public static void startServer (int portNumber) {
+	public static void startServerListener (int portNumber) {
 		String requestServerInitials = null;
 		String requestMethodCode = null;
 	
@@ -60,10 +64,65 @@ public class ReplicaManager
 			catch (Exception e) {e.printStackTrace();} 
 		}
 		
-	
-	
-	public static void stopServer (int portNumber) {
+	public static void startServerGroup(int portNumber){
+		int UDPcommunicationPort = portNumber;
+		DatagramSocket aSocket = null;
+		String RMInitMessage = Parameters.RM_NAME + "/" + Parameters.METHOD_CODE.START_REPLICA.name();
+		boolean ackRecieved = false;
+		String dataFromReplay = null;
 		
+		try {
+			aSocket = new DatagramSocket();
+			byte [] m = RMInitMessage.getBytes();
+			InetAddress aHost = InetAddress.getByName("localhost");
+			DatagramPacket request = new DatagramPacket(m,RMInitMessage.length(), aHost, UDPcommunicationPort);
+			aSocket.send(request);
+			
+		}
+		catch (SocketException e){
+			System.out.println("Socket " + e.getMessage());
+		}
+		catch (IOException e) {
+			System.out.println("IO: " + e.getMessage());
+		}
+
+		finally {
+			if (aSocket != null) {
+				aSocket.close();
+			}
+			}
+	}
+	
+
+	
+	public static boolean stopServer (int portNumber) {
+		int stopServerPort = portNumber;
+		DatagramSocket aSocket = null;
+		String RMInitMessage = Parameters.RM_NAME + "/" + Parameters.METHOD_CODE.STOP_REPLICA.name();
+		boolean ackRecieved = false;
+		String dataFromReplay = null;
+		
+		try {
+			aSocket = new DatagramSocket();
+			byte [] m = RMInitMessage.getBytes();
+			InetAddress aHost = InetAddress.getByName("localhost");
+			DatagramPacket request = new DatagramPacket(m,RMInitMessage.length(), aHost, stopServerPort);
+			aSocket.send(request);
+			
+		}
+		catch (SocketException e){
+			System.out.println("Socket " + e.getMessage());
+		}
+		catch (IOException e) {
+			System.out.println("IO: " + e.getMessage());
+		}
+
+		finally {
+			if (aSocket != null) {
+				aSocket.close();
+			}
+			}
+		return ackRecieved;
 		
 	}
 }
