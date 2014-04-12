@@ -28,7 +28,7 @@ class UDP_replicaLeader_Multicast extends Thread
 			DatagramPacket request = new DatagramPacket(buffer, buffer.length);
 			
 			socket = new MulticastSocket(Parameters.UDP_PORT_REPLICA_LEAD_MULTICAST); // must bind receive side
-			socket.joinGroup(InetAddress.getByName(Parameters.UDP_ADDR_REPLICA_MANAGER_COMMUNICATION_MULTICAST));
+			socket.joinGroup(InetAddress.getByName(Parameters.UDP_ADDR_REPLICA_COMMUNICATION_MULTICAST));
 			
 			while(true) 
 			{

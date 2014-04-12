@@ -8,10 +8,65 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.logging.Logger;
 
 import org.omg.CORBA.ORB;
+
+/**
+ * This is the UDP thread that handles communication with the replica manager
+ * @author Mehrdad Dehdashti
+ */
+class ReplicaManagerUDPListener extends Thread
+{
+	private int aPort;
+	private boolean bCrashed;
+	private DatagramSocket aDatagramSocket;
+	private DatagramPacket requestFromReplicaManager;
+	private byte [] buffer;
+	private String [] messageArray;
+	private String data;
+	
+	protected ReplicaManagerUDPListener(int pPort) throws SocketException
+	{
+		aPort = pPort;
+		bCrashed = false;
+		aDatagramSocket = new DatagramSocket(aPort);
+		buffer = new byte [Parameters.UDP_BUFFER_SIZE];
+	}
+	
+	protected boolean hasCrashed()
+	{
+		return bCrashed;
+	}
+	
+	@Override
+	public void run ()
+	{
+		while(true)
+			handleCommunication();
+	}
+	
+	/* Handles communication with the replica manager */
+	public void handleCommunication()
+	{
+		try
+		{
+			requestFromReplicaManager = new DatagramPacket(buffer, buffer.length);
+			aDatagramSocket.receive(requestFromReplicaManager);
+			messageArray = (new String(requestFromReplicaManager.getData())).split(Parameters.UDP_PARSER);
+			if(messageArray[0].equals(Parameters.RM_NAME))
+			{
+				 
+			}
+		 
+		}
+		catch (IOException e)
+		{
+			aDatagramSocket.close();
+			bCrashed = true;
+		}
+	}
+}
 
 /**
  * This is the UDP thread that handles all the communication for the contained game server within
@@ -19,6 +74,7 @@ import org.omg.CORBA.ORB;
  */
 class ReplicaAUDPThread extends Thread
 {
+	private Logger aLog;
 	private interfaceIDL aInterfaceIDL;
 	private GameServer aNAGameServer;
 	private GameServer aEUGameServer;
@@ -26,7 +82,6 @@ class ReplicaAUDPThread extends Thread
 	private Thread aNAThread;
 	private Thread aEUThread;
 	private Thread aASThread;
-	private int aPort;
 	// For receiving from replica leader multicast
 	private MulticastSocket aMulticastSocket;
 	private DatagramPacket requestFromLeaderPacket;
@@ -37,7 +92,8 @@ class ReplicaAUDPThread extends Thread
 	private DatagramSocket aSendSocket;
 	private DatagramPacket replyToLeaderPacket;
 	private String data;
-	private Logger aLog;
+	// For receiving from replica manager UDP
+	private ReplicaManagerUDPListener replicaManagerListener;
 	
 	// Main method which runs the UDP thread for replica A
 	public static void main(String[] args) 
@@ -48,13 +104,13 @@ class ReplicaAUDPThread extends Thread
 	private ReplicaAUDPThread(int pPort, String[] pArgs)
 	{
 		aLog = Log.createLog("ReplicaA_UDP");
-		aPort = pPort;
 		buffer = new byte [Parameters.UDP_BUFFER_SIZE];
 		try {
-			aMulticastSocket = new MulticastSocket(); // TODO : destination port
-			// TODO aMulticastSocket.joinGroup(InetAddress.getByName(""));
+			aMulticastSocket = new MulticastSocket(Parameters.UDP_PORT_REPLICA_LEAD_MULTICAST);
+			aMulticastSocket.joinGroup(InetAddress.getByName(Parameters.UDP_ADDR_REPLICA_COMMUNICATION_MULTICAST));
 			localhost = InetAddress.getByName("localhost");
-			aSendSocket = new DatagramSocket(aPort);
+			aSendSocket = new DatagramSocket();
+			replicaManagerListener = new ReplicaManagerUDPListener(Parameters.UDP_PORT_REPLICA_A);
 		} catch (IOException e) {
 			aLog.info("UDP Socket creation failed");
 		}
@@ -165,29 +221,22 @@ class ReplicaAUDPThread extends Thread
 			requestFromLeaderPacket = new DatagramPacket(buffer, buffer.length);
 			aMulticastSocket.receive(requestFromLeaderPacket);
 			messageArray = (new String(requestFromLeaderPacket.getData())).split(Parameters.UDP_PARSER);
-			if(messageArray[0].equals(Parameters.LR_NAME)) // Message from replica leader
+			requestFromLeaderPacket.setLength(buffer.length);
+			if(messageArray[0].equals(Parameters.LR_NAME))
 			{
 				if(messageArray[1].equals(Parameters.METHOD_CODE.CREATE_ACCOUNT.name()))
 				{
 					setORBreference(messageArray[7]);
 					if(aInterfaceIDL.createPlayerAccount(messageArray[2], messageArray[3], Integer.parseInt(messageArray[4]),
 														 messageArray[5], messageArray[6], messageArray[7]))
-					{
-						data = Parameters.RA_NAME + Parameters.UDP_PARSER +
-								"1";
-						buffer = data.getBytes();
-						replyToLeaderPacket = new DatagramPacket(buffer, data.length(), localhost, Parameters.UDP_PORT_REPLICA_LEAD);
-						aSendSocket.send(replyToLeaderPacket);
-					}
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1";
 					else
-					{
-						// send fail
-					}
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "0";
 				}
-			}
-			else if(messageArray[0].equals(Parameters.RM_NAME)) // Message from replica manager
-			{
 				
+				buffer = data.getBytes();
+				replyToLeaderPacket = new DatagramPacket(buffer, data.length(), localhost, Parameters.UDP_PORT_REPLICA_LEAD);
+				aSendSocket.send(replyToLeaderPacket);
 			}
 		}
 		catch (IOException e)
@@ -196,7 +245,7 @@ class ReplicaAUDPThread extends Thread
 			aSendSocket.close();
 			aLog.info("UDP crashed, creating new UDP Socket");
 			try {
-				aSendSocket = new DatagramSocket(aPort);
+				aSendSocket = new DatagramSocket();
 			} catch (SocketException e1) {
 				aLog.info("UDP Socket creation failed");
 			}
