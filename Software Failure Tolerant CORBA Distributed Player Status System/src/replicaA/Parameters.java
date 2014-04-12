@@ -12,6 +12,10 @@ class Parameters
 	
 	protected static int UDP_PORT_REPLICA_LEAD = 4000;
 	
+	protected static int UDP_PORT_REPLICA_LEAD_MULTICAST = 4500;
+	
+	protected static String UDP_ADDR_REPLICA_COMMUNICATION_MULTICAST = "224.0.0.2";
+	
 	protected static int UDP_PORT_REPLICA_MANAGER = 5000;
 	
 	protected static int UDP_PORT_FE = 6000;
@@ -20,7 +24,7 @@ class Parameters
 	{
 	    CREATE_ACCOUNT, PLAYER_SIGN_IN, PLAYER_SIGN_OUT, TRANSFER_ACCOUNT,
 	    GET_PLAYER_STATUS, SUSPEND_ACCOUNT,
-	    START_REPLICA, STOP_REPLICA;
+	    RESTART_REPLICA;
 	}
 	
 	protected static int UDP_BUFFER_SIZE = 10000;

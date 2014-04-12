@@ -71,14 +71,11 @@ public class GameUDPServer extends Thread{
 				System.out.println("Method call for: " + requestMethodCode + " for server : " + requestServerInitials);
 				System.out.println("-----------------------------------------------------------");
 				
-				if (requestMethodCode.contains(Parameters.METHOD_CODE.START_REPLICA.toString())) {
-					//run the 3 UDP servers
-					startServers();
-					
-				}
-				else if (requestMethodCode.contains(Parameters.METHOD_CODE.STOP_REPLICA.toString())) {
+				if (requestMethodCode.contains(Parameters.METHOD_CODE.RESTART_REPLICA.toString())) {
 					//stop the 3 servers
 					stopServers();
+					//run the 3 UDP servers
+					startServers();
 				}
 				else {
 					

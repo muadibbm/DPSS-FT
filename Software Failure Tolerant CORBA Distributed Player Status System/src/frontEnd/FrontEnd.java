@@ -149,7 +149,7 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 			aLog.info("Sending request to replica leader for CREATE PLAYER ACCOUNT");
 			try {	
 				data = Parameters.FE_NAME + Parameters.UDP_PARSER +
-						methodCode.toString() + Parameters.UDP_PARSER +
+						methodCode.name() + Parameters.UDP_PARSER +
 						pArguments.get(1) + Parameters.UDP_PARSER +
 						pArguments.get(2) + Parameters.UDP_PARSER +
 						pArguments.get(3) + Parameters.UDP_PARSER +
@@ -170,7 +170,7 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 			aLog.info("Sending request to replica leader for PLAYER SIGN IN");
 			try {	
 				data = Parameters.FE_NAME + Parameters.UDP_PARSER +
-						methodCode.toString() + Parameters.UDP_PARSER +
+						methodCode.name() + Parameters.UDP_PARSER +
 						pArguments.get(1) + Parameters.UDP_PARSER +
 						pArguments.get(2) + Parameters.UDP_PARSER +
 						pArguments.get(3);
@@ -188,7 +188,7 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 			aLog.info("Sending request to replica leader for PLAYER SIGN OUT");
 			try {	
 				data = Parameters.FE_NAME + Parameters.UDP_PARSER +
-						methodCode.toString() + Parameters.UDP_PARSER +
+						methodCode.name() + Parameters.UDP_PARSER +
 						pArguments.get(1) + Parameters.UDP_PARSER +
 						pArguments.get(2);
 				message = data.getBytes();
@@ -205,7 +205,7 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 			aLog.info("Sending request to replica leader for TRANSFER ACCOUNT");
 			try {	
 				data = Parameters.FE_NAME + Parameters.UDP_PARSER +
-						methodCode.toString() + Parameters.UDP_PARSER +
+						methodCode.name() + Parameters.UDP_PARSER +
 						pArguments.get(1) + Parameters.UDP_PARSER +
 						pArguments.get(2) + Parameters.UDP_PARSER +
 						pArguments.get(3) + Parameters.UDP_PARSER +
@@ -224,7 +224,7 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 			aLog.info("Sending request to replica leader for GET PLAYER STATUS");
 			try {	
 				data = Parameters.FE_NAME + Parameters.UDP_PARSER +
-						methodCode.toString() + Parameters.UDP_PARSER +
+						methodCode.name() + Parameters.UDP_PARSER +
 						pArguments.get(1) + Parameters.UDP_PARSER +
 						pArguments.get(2) + Parameters.UDP_PARSER +
 						pArguments.get(3);
@@ -242,7 +242,7 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 			aLog.info("Sending request to replica leader for SUSPEND ACCOUNT");
 			try {	
 				data = Parameters.FE_NAME + Parameters.UDP_PARSER +
-						methodCode.toString() + Parameters.UDP_PARSER +
+						methodCode.name() + Parameters.UDP_PARSER +
 						pArguments.get(1) + Parameters.UDP_PARSER +
 						pArguments.get(2) + Parameters.UDP_PARSER +
 						pArguments.get(3) + Parameters.UDP_PARSER +

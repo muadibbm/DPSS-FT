@@ -1,5 +1,9 @@
 package replicaA;
 
+/**
+ * UDP Thread used for intercommunication between the game servers
+ * @author Mehrdad Dehdashti
+ */
 class UDPThread extends Thread
 {
 	private int aPort;

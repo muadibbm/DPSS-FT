@@ -20,8 +20,7 @@ public class Parameters
 	    , TRANSFER_ACCOUNT
 	    , GET_PLAYER_STATUS
 	    , SUSPEND_ACCOUNT
-	    , START_REPLICA
-	    , STOP_REPLICA;
+	    , RESTART_REPLICA;
 	}
 	
 	protected static String UDP_PARSER = "/";
