@@ -23,7 +23,7 @@ import org.omg.PortableServer.POAPackage.ObjectNotActive;
 import org.omg.PortableServer.POAPackage.ServantAlreadyActive;
 import org.omg.PortableServer.POAPackage.WrongPolicy;
 
-import dpss.interfaceIDLPOA;
+import replicaA.interfaceIDLPOA;
 
 /**
  * This is the CORBA front end which handles all relay request from the clients to the 
@@ -173,7 +173,7 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 						methodCode.toString() + Parameters.UDP_PARSER +
 						pArguments.get(1) + Parameters.UDP_PARSER +
 						pArguments.get(2) + Parameters.UDP_PARSER +
-						pArguments.get(3) + Parameters.UDP_PARSER;
+						pArguments.get(3);
 				message = data.getBytes();
 				requestToReplicaLeader = new DatagramPacket(message, data.length(), host, Parameters.UDP_PORT_REPLICA_LEAD);
 				sendSocket.send(requestToReplicaLeader);
@@ -190,7 +190,7 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 				data = Parameters.FE_NAME + Parameters.UDP_PARSER +
 						methodCode.toString() + Parameters.UDP_PARSER +
 						pArguments.get(1) + Parameters.UDP_PARSER +
-						pArguments.get(2) + Parameters.UDP_PARSER;
+						pArguments.get(2);
 				message = data.getBytes();
 				requestToReplicaLeader = new DatagramPacket(message, data.length(), host, Parameters.UDP_PORT_REPLICA_LEAD);
 				sendSocket.send(requestToReplicaLeader);
@@ -209,7 +209,7 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 						pArguments.get(1) + Parameters.UDP_PARSER +
 						pArguments.get(2) + Parameters.UDP_PARSER +
 						pArguments.get(3) + Parameters.UDP_PARSER +
-						pArguments.get(4) + Parameters.UDP_PARSER;
+						pArguments.get(4);
 				message = data.getBytes();
 				requestToReplicaLeader = new DatagramPacket(message, data.length(), host, Parameters.UDP_PORT_REPLICA_LEAD);
 				sendSocket.send(requestToReplicaLeader);
@@ -227,7 +227,7 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 						methodCode.toString() + Parameters.UDP_PARSER +
 						pArguments.get(1) + Parameters.UDP_PARSER +
 						pArguments.get(2) + Parameters.UDP_PARSER +
-						pArguments.get(3) + Parameters.UDP_PARSER;
+						pArguments.get(3);
 				message = data.getBytes();
 				requestToReplicaLeader = new DatagramPacket(message, data.length(), host, Parameters.UDP_PORT_REPLICA_LEAD);
 				sendSocket.send(requestToReplicaLeader);
@@ -246,7 +246,7 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 						pArguments.get(1) + Parameters.UDP_PARSER +
 						pArguments.get(2) + Parameters.UDP_PARSER +
 						pArguments.get(3) + Parameters.UDP_PARSER +
-						pArguments.get(4) + Parameters.UDP_PARSER;
+						pArguments.get(4);
 				message = data.getBytes();
 				requestToReplicaLeader = new DatagramPacket(message, data.length(), host, Parameters.UDP_PORT_REPLICA_LEAD);
 				sendSocket.send(requestToReplicaLeader);
@@ -323,7 +323,7 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 	}
 
 	@Override
-	public boolean getPlayerStatus(String pAdminUsername, String pAdminPassword, String pIPAddress) 
+	public String getPlayerStatus(String pAdminUsername, String pAdminPassword, String pIPAddress) 
 	{
 		List<Object> tmpList = new ArrayList<Object>();
 		tmpList.add(Parameters.METHOD_CODE.GET_PLAYER_STATUS); // index = 0
@@ -333,8 +333,9 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 		aQueue.add(tmpList);
 		tmpList = null;
 		while(bMethodBeingProcessed) { /* Wait for the leader to respond */ }
-		aLog.info("Confirmation returned to client for GET PLAYER STATUS");
-		return bConfirmation;
+		aLog.info("Number of Players returned to client for GET PLAYER STATUS");
+		// TODO
+		return "";
 	}
 
 	@Override

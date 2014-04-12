@@ -1,4 +1,4 @@
-package dpss;
+package replicaA;
 
 /**
  * Interface definition: interfaceIDL.
@@ -126,10 +126,10 @@ public abstract class interfaceIDLPOA extends org.omg.PortableServer.Servant
         String arg1_in = _is.read_string();
         String arg2_in = _is.read_string();
 
-        boolean _arg_result = getPlayerStatus(arg0_in, arg1_in, arg2_in);
+        String _arg_result = getPlayerStatus(arg0_in, arg1_in, arg2_in);
 
         _output = handler.createReply();
-        _output.write_boolean(_arg_result);
+        _output.write_string(_arg_result);
 
         return _output;
     }

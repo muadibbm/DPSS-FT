@@ -8,9 +8,18 @@ public class Parameters
 	
 	protected static int UDP_PORT_REPLICA_LEAD = 4000;
 	
+	protected static int UDP_PORT_REPLICA_LEAD_MULTICAST = 4500;
+	
+	protected static String UDP_ADDR_REPLICA_COMMUNICATION_MULTICAST = "224.0.0.2";
+	
 	protected static int UDP_PORT_REPLICA_MANAGER = 5000;
 	
+	protected static int UDP_PORT_REPLICA_MANAGER_MULTICAST = 5500;
+	
+	protected static String UDP_ADDR_REPLICA_MANAGER_COMMUNICATION_MULTICAST = "224.0.0.4";
+	
 	protected static int UDP_PORT_FE = 6000;
+	
 	
 	protected static enum METHOD_CODE 
 	{
