@@ -5,13 +5,11 @@ import java.net.DatagramSocket;
 
 public class GameUDPServer {
 	
-	static final int REPLICAB_PORT = 9999;
+	static final int REPLICAB_PORT = 3000;
 	
-	public static int UDP_PORT_REPLICA_MANAGER_NA = 5000;
-	public static int UDP_PORT_REPLICA_MANAGER_EU = 5100;
-	public static int UDP_PORT_REPLICA_MANAGER_AS = 5200;
+	public static int UDP_PORT_REPLICA_MANAGER = 5000;
 	
-	public static int UDP_PORT_REPLICA_B_NA = 3000;
+	public static int UDP_PORT_REPLICA_B_NA = 3001;
 	public static int UDP_PORT_REPLICA_B_EU = 3100;
 	public static int UDP_PORT_REPLICA_B_AS = 3200;
 	
@@ -46,12 +44,12 @@ public class GameUDPServer {
 	
 	
 	public static void main ( String  [] args){
-		
+		System.out.println("server is up");
 		
 	 try {
 			
 			aSocket = new DatagramSocket(REPLICAB_PORT);
-			byte [] buffer = new byte [1000];
+			byte [] buffer = new byte [1500];
 			
 			//always listen for new messages on the specified port
 			while (waitForConnection) {							
@@ -63,6 +61,8 @@ public class GameUDPServer {
 				dataRecieved = new String(request.getData());
 				dataRecieved.toLowerCase();
 	
+				System.out.println(dataRecieved);
+				
 				if (dataRecieved.contains(startServerMessage)) {
 					//run the 3 UDP servers
 					startServers();
