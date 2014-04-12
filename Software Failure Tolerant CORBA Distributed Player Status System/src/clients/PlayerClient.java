@@ -6,8 +6,8 @@ import java.util.logging.Logger;
 
 import org.omg.CORBA.ORB;
 
-import dpss.interfaceIDL;
-import dpss.interfaceIDLHelper;
+import replicaA.interfaceIDL;
+import replicaA.interfaceIDLHelper;
 
 /**
  * This is the PlayerClient class which operates the player

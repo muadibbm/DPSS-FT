@@ -1,4 +1,4 @@
-package dpss;
+package frontEnd;
 
 /**
  * Interface definition: interfaceIDL.
@@ -18,7 +18,7 @@ public class _interfaceIDLStub extends org.omg.CORBA.portable.ObjectImpl
      return _ids_list;
     }
 
-    private final static Class _opsClass = dpss.interfaceIDLOperations.class;
+    private final static Class _opsClass = frontEnd.interfaceIDLOperations.class;
 
     /**
      * Operation createPlayerAccount
@@ -62,7 +62,7 @@ public class _interfaceIDLStub extends org.omg.CORBA.portable.ObjectImpl
                 org.omg.CORBA.portable.ServantObject _so = _servant_preinvoke("createPlayerAccount",_opsClass);
                 if (_so == null)
                    continue;
-                dpss.interfaceIDLOperations _self = (dpss.interfaceIDLOperations) _so.servant;
+                frontEnd.interfaceIDLOperations _self = (frontEnd.interfaceIDLOperations) _so.servant;
                 try
                 {
                     return _self.createPlayerAccount( pFirstName,  pLastName,  pAge,  pUsername,  pPassword,  pIPAddress);
@@ -114,7 +114,7 @@ public class _interfaceIDLStub extends org.omg.CORBA.portable.ObjectImpl
                 org.omg.CORBA.portable.ServantObject _so = _servant_preinvoke("playerSignIn",_opsClass);
                 if (_so == null)
                    continue;
-                dpss.interfaceIDLOperations _self = (dpss.interfaceIDLOperations) _so.servant;
+                frontEnd.interfaceIDLOperations _self = (frontEnd.interfaceIDLOperations) _so.servant;
                 try
                 {
                     return _self.playerSignIn( pUsername,  pPassword,  pIPAddress);
@@ -165,7 +165,7 @@ public class _interfaceIDLStub extends org.omg.CORBA.portable.ObjectImpl
                 org.omg.CORBA.portable.ServantObject _so = _servant_preinvoke("playerSignOut",_opsClass);
                 if (_so == null)
                    continue;
-                dpss.interfaceIDLOperations _self = (dpss.interfaceIDLOperations) _so.servant;
+                frontEnd.interfaceIDLOperations _self = (frontEnd.interfaceIDLOperations) _so.servant;
                 try
                 {
                     return _self.playerSignOut( pUsername,  pIPAddress);
@@ -218,7 +218,7 @@ public class _interfaceIDLStub extends org.omg.CORBA.portable.ObjectImpl
                 org.omg.CORBA.portable.ServantObject _so = _servant_preinvoke("transferAccount",_opsClass);
                 if (_so == null)
                    continue;
-                dpss.interfaceIDLOperations _self = (dpss.interfaceIDLOperations) _so.servant;
+                frontEnd.interfaceIDLOperations _self = (frontEnd.interfaceIDLOperations) _so.servant;
                 try
                 {
                     return _self.transferAccount( pUsername,  pPassword,  pOldIPAddress,  pNewIPAddress);
@@ -234,7 +234,7 @@ public class _interfaceIDLStub extends org.omg.CORBA.portable.ObjectImpl
     /**
      * Operation getPlayerStatus
      */
-    public boolean getPlayerStatus(String pAdminUsername, String pAdminPassword, String pIPAddress)
+    public String getPlayerStatus(String pAdminUsername, String pAdminPassword, String pIPAddress)
     {
         while(true)
         {
@@ -248,7 +248,7 @@ public class _interfaceIDLStub extends org.omg.CORBA.portable.ObjectImpl
                     _output.write_string(pAdminPassword);
                     _output.write_string(pIPAddress);
                     _input = this._invoke(_output);
-                    boolean _arg_ret = _input.read_boolean();
+                    String _arg_ret = _input.read_string();
                     return _arg_ret;
                 }
                 catch(org.omg.CORBA.portable.RemarshalException _exception)
@@ -270,7 +270,7 @@ public class _interfaceIDLStub extends org.omg.CORBA.portable.ObjectImpl
                 org.omg.CORBA.portable.ServantObject _so = _servant_preinvoke("getPlayerStatus",_opsClass);
                 if (_so == null)
                    continue;
-                dpss.interfaceIDLOperations _self = (dpss.interfaceIDLOperations) _so.servant;
+                frontEnd.interfaceIDLOperations _self = (frontEnd.interfaceIDLOperations) _so.servant;
                 try
                 {
                     return _self.getPlayerStatus( pAdminUsername,  pAdminPassword,  pIPAddress);
@@ -323,7 +323,7 @@ public class _interfaceIDLStub extends org.omg.CORBA.portable.ObjectImpl
                 org.omg.CORBA.portable.ServantObject _so = _servant_preinvoke("suspendAccount",_opsClass);
                 if (_so == null)
                    continue;
-                dpss.interfaceIDLOperations _self = (dpss.interfaceIDLOperations) _so.servant;
+                frontEnd.interfaceIDLOperations _self = (frontEnd.interfaceIDLOperations) _so.servant;
                 try
                 {
                     return _self.suspendAccount( pAdminUsername,  pAdminPassword,  pIPAddress,  pUsernameToSuspend);
