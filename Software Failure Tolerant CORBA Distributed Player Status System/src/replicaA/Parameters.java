@@ -6,8 +6,9 @@ package replicaA;
 class Parameters 
 {
 	protected static int UDP_PORT_REPLICA_A = 2000;
-	
-	protected static int UDP_PORT_REPLICA_B = 3000;
+	protected static int UDP_PORT_REPLICA_A_NA = 2100;
+	protected static int UDP_PORT_REPLICA_A_EU = 2200;
+	protected static int UDP_PORT_REPLICA_A_AS = 2300;	
 	
 	protected static int UDP_PORT_REPLICA_LEAD = 4000;
 	
@@ -25,6 +26,13 @@ class Parameters
 	protected static int UDP_BUFFER_SIZE = 10000;
 	
 	protected static String UDP_PARSER = "/";
+	
+	protected static String LR_NAME = "LR";
+	protected static String RM_NAME = "RM";
+	protected static String RA_NAME = "RA";
+	protected static String RA_NA_NAME = "ReplicaA_NA";
+	protected static String RA_EU_NAME = "ReplicaA_EU";
+	protected static String RA_AS_NAME = "ReplicaA_AS";
 	
 	protected static String GeoLocationOfGameServerNA = "132";
 	protected static String GeoLocationOfGameServerEU = "93";

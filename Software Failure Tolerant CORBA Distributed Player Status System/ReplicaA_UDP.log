@@ -1,0 +1,16 @@
+Apr 12, 2014 1:47:45 PM replicaA.Log createLog
+INFO: Log File ReplicaA_UDP Created
+Apr 12, 2014 1:47:45 PM replicaA.ReplicaAUDPThread startServers
+INFO: NA Server Running
+Apr 12, 2014 1:47:45 PM replicaA.ReplicaAUDPThread startServers
+INFO: EU Server Running
+Apr 12, 2014 1:47:45 PM replicaA.ReplicaAUDPThread startServers
+INFO: AS Server Running
+Apr 12, 2014 1:47:45 PM replicaA.ReplicaAUDPThread getORBreference
+INFO: NA ORB IOR read from file
+Apr 12, 2014 1:47:45 PM replicaA.ReplicaAUDPThread getORBreference
+INFO: EU ORB IOR read from file
+Apr 12, 2014 1:47:45 PM replicaA.ReplicaAUDPThread getORBreference
+INFO: AS ORB IOR read from file
+Apr 12, 2014 1:47:45 PM replicaA.ReplicaAUDPThread <init>
+INFO: UDP Running

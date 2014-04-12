@@ -1,4 +1,4 @@
-package dpss;
+package replicaA;
 
 /**
  * Holder class for : interfaceIDL
@@ -11,7 +11,7 @@ final public class interfaceIDLHolder
     /**
      * Internal interfaceIDL value
      */
-    public dpss.interfaceIDL value;
+    public frontEnd.interfaceIDL value;
 
     /**
      * Default constructor
@@ -23,7 +23,7 @@ final public class interfaceIDLHolder
      * Constructor with value initialisation
      * @param initial the initial value
      */
-    public interfaceIDLHolder(dpss.interfaceIDL initial)
+    public interfaceIDLHolder(frontEnd.interfaceIDL initial)
     {
         value = initial;
     }

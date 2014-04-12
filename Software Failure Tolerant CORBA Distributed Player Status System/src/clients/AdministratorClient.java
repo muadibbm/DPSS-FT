@@ -6,8 +6,8 @@ import java.util.logging.Logger;
 
 import org.omg.CORBA.ORB;
 
-import dpss.interfaceIDL;
-import dpss.interfaceIDLHelper;
+import replicaA.interfaceIDL;
+import replicaA.interfaceIDLHelper;
 
 /**
  * This is the AdministratorClient class which operates the administrator
@@ -40,10 +40,11 @@ class AdministratorClient extends Thread
 	/** Client invocation of FE operation getPlayerStatus using CORBA  */
 	protected void getPlayerStatus(String pAdminUsername, String pAdminPassword, String pIPAddress)
 	{
-		if(aInterfaceIDL.getPlayerStatus(pAdminUsername, pAdminPassword, pIPAddress))
+		aInterfaceIDL.getPlayerStatus(pAdminUsername, pAdminPassword, pIPAddress);
+		/*if TODO
 			aLog.info("GetPlayerStatus Successfull");
 		else
-			aLog.info("GetPlayerStatus Failed");
+			aLog.info("GetPlayerStatus Failed");*/
 	}
 	
 	/** Client invocation of FE operation suspendAccount using CORBA  */

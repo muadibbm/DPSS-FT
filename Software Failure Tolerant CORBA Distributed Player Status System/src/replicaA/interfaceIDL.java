@@ -1,4 +1,4 @@
-package dpss;
+package replicaA;
 
 /**
  * Interface definition: interfaceIDL.

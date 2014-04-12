@@ -1,4 +1,4 @@
-package dpss;
+package replicaA;
 
 /**
  * Interface definition: interfaceIDL.
@@ -30,7 +30,7 @@ public interface interfaceIDLOperations
     /**
      * Operation getPlayerStatus
      */
-    public boolean getPlayerStatus(String pAdminUsername, String pAdminPassword, String pIPAddress);
+    public String getPlayerStatus(String pAdminUsername, String pAdminPassword, String pIPAddress);
 
     /**
      * Operation suspendAccount

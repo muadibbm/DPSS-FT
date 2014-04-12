@@ -1,4 +1,4 @@
-package dpss;
+package frontEnd;
 
 /** 
  * Helper class for : interfaceIDL
@@ -12,7 +12,7 @@ public class interfaceIDLHelper
      * @param a an any
      * @param t interfaceIDL value
      */
-    public static void insert(org.omg.CORBA.Any a, dpss.interfaceIDL t)
+    public static void insert(org.omg.CORBA.Any a, frontEnd.interfaceIDL t)
     {
         a.insert_Object(t , type());
     }
@@ -23,7 +23,7 @@ public class interfaceIDLHelper
      * @param a an any
      * @return the extracted interfaceIDL value
      */
-    public static dpss.interfaceIDL extract( org.omg.CORBA.Any a )
+    public static frontEnd.interfaceIDL extract( org.omg.CORBA.Any a )
     {
         if ( !a.type().equivalent( type() ) )
         {
@@ -31,7 +31,7 @@ public class interfaceIDLHelper
         }
         try
         {
-            return dpss.interfaceIDLHelper.narrow( a.extract_Object() );
+            return frontEnd.interfaceIDLHelper.narrow( a.extract_Object() );
         }
         catch ( final org.omg.CORBA.BAD_PARAM e )
         {
@@ -73,9 +73,9 @@ public class interfaceIDLHelper
      * @param istream the input stream
      * @return the readed interfaceIDL value
      */
-    public static dpss.interfaceIDL read(org.omg.CORBA.portable.InputStream istream)
+    public static frontEnd.interfaceIDL read(org.omg.CORBA.portable.InputStream istream)
     {
-        return(dpss.interfaceIDL)istream.read_Object(dpss._interfaceIDLStub.class);
+        return(frontEnd.interfaceIDL)istream.read_Object(frontEnd._interfaceIDLStub.class);
     }
 
     /**
@@ -83,7 +83,7 @@ public class interfaceIDLHelper
      * @param ostream the output stream
      * @param value interfaceIDL value
      */
-    public static void write(org.omg.CORBA.portable.OutputStream ostream, dpss.interfaceIDL value)
+    public static void write(org.omg.CORBA.portable.OutputStream ostream, frontEnd.interfaceIDL value)
     {
         ostream.write_Object((org.omg.CORBA.portable.ObjectImpl)value);
     }
