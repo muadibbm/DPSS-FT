@@ -2,10 +2,10 @@ package clients;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.logging.Logger;
 
 import org.omg.CORBA.ORB;
 
-import system.Parameters;
 import dpss.interfaceIDL;
 import dpss.interfaceIDLHelper;
 
@@ -13,12 +13,14 @@ import dpss.interfaceIDLHelper;
  * This is the AdministratorClient class which operates the administrator
  * @author Mehrdad Dehdashti
  */
-public class AdministratorClient extends Thread
+class AdministratorClient extends Thread
 {
+	private Logger aLog;
 	private interfaceIDL aInterfaceIDL;
 	
-	public AdministratorClient (String pName, String[] pArgs)
+	protected AdministratorClient (String pName, String[] pArgs)
 	{
+		aLog = Log.createLog(pName);
 		try 
 		{
 			ORB orb = ORB.init(pArgs, null);
@@ -29,23 +31,27 @@ public class AdministratorClient extends Thread
 			// Transform the reference string to CORBA object
 			org.omg.CORBA.Object reference_CORBA = orb.string_to_object(stringORB);
 			aInterfaceIDL = interfaceIDLHelper.narrow(reference_CORBA);
-			// TODO : log
+			aLog.info("ORB IOR read from file");
 		} catch (Exception e) {
-			// TODO : log error
+			aLog.info("Acquiring ORB failed");
 		}
 	}
 	
 	/** Client invocation of FE operation getPlayerStatus using CORBA  */
-	public void getPlayerStatus(String pAdminUsername, String pAdminPassword, String pIPAddress)
+	protected void getPlayerStatus(String pAdminUsername, String pAdminPassword, String pIPAddress)
 	{
-		aInterfaceIDL.getPlayerStatus(pAdminUsername, pAdminPassword, pIPAddress);
-		// TODO : if log else log
+		if(aInterfaceIDL.getPlayerStatus(pAdminUsername, pAdminPassword, pIPAddress))
+			aLog.info("GetPlayerStatus Successfull");
+		else
+			aLog.info("GetPlayerStatus Failed");
 	}
 	
 	/** Client invocation of FE operation suspendAccount using CORBA  */
-	public void suspendAccount(String pAdminUsername, String pAdminPassword, String pIPAddress, String pUsernameToSuspend)
+	protected void suspendAccount(String pAdminUsername, String pAdminPassword, String pIPAddress, String pUsernameToSuspend)
 	{
-		aInterfaceIDL.suspendAccount(pAdminUsername, pAdminPassword, pIPAddress, pUsernameToSuspend);
-		// TODO : if log else log
+		if(aInterfaceIDL.suspendAccount(pAdminUsername, pAdminPassword, pIPAddress, pUsernameToSuspend))
+			aLog.info("Player Account suspended :\nUsername \"" +  pUsernameToSuspend);
+		else
+			aLog.info("SuspendAccount Failed");
 	}
 }

@@ -1,8 +1,13 @@
 package frontEnd;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,7 +24,6 @@ import org.omg.PortableServer.POAPackage.ServantAlreadyActive;
 import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 import dpss.interfaceIDLPOA;
-import system.Parameters;
 
 /**
  * This is the CORBA front end which handles all relay request from the clients to the 
@@ -28,16 +32,39 @@ import system.Parameters;
  */
 public class FrontEnd extends interfaceIDLPOA implements Runnable
 {
-	private Logger aLog;
-	private Queue <List<Object>> aQueue;
+	private static Logger aLog;
+	private static Queue <List<Object>> aQueue;
+	private static boolean bMethodBeingProcessed; // Used to check if the leader has sent back the result
+	private static boolean bConfirmation; // Used to check if the method invoked was a success or failure
 	private FrontEndORBThread aORBThread;
 	private FrontEndUDPThread aUDPThread;
 	
-	public FrontEnd(String[] pArgs)
+	// Used for UDP communication between front end and replica leader
+	private DatagramSocket sendSocket;
+	private DatagramPacket requestToReplicaLeader;
+	private byte [] message;
+	private String data;
+	private InetAddress host;
+	
+	// Main method which runs the front end
+	public static void main(String[] args) 
 	{
-		aLog = system.Log.createLog(Parameters.FE_NAME);
+		new Thread(new FrontEnd(args)).start();
+	}
+	
+	private FrontEnd(String[] pArgs)
+	{
+		aLog = Log.createLog(Parameters.FE_NAME);
 		aQueue = new LinkedList <List<Object>>();
 		aLog.info("Queue initialized");
+		bMethodBeingProcessed = false;
+		bConfirmation = false;
+		try {
+			sendSocket = new DatagramSocket();
+			host = InetAddress.getByName("localhost");
+		} catch (SocketException | UnknownHostException e) {
+			aLog.info("Error creating send socket: " + e.getMessage());
+		}
 		aORBThread = new FrontEndORBThread(createORB(pArgs));
 		aORBThread.start();
 		aLog.info("ORB Running");
@@ -48,7 +75,7 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 	
 	private FrontEnd()
 	{
-		// Private constructor used for creating ORB interface
+		// Constructor used for creating ORB interface
 	}
 	
 	@Override
@@ -76,7 +103,7 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 			file.print(stringORB);
 			file.close();
 			rootPOA.the_POAManager().activate();
-			aLog.info("FE ORB init completed with file " + Parameters.FE_NAME + ".txt");
+			aLog.info("FE ORB init completed with file " + Parameters.FE_NAME + "_IOR.txt");
 		} catch (InvalidName | ServantAlreadyActive | WrongPolicy | 
 				ObjectNotActive | FileNotFoundException | AdapterInactive e) {
 			aLog.info("ORB Creation Error: " + e.getMessage());
@@ -89,31 +116,20 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 	private void handleFrontEndCommunication()
 	{
 		List<Object> tmpList;
-		String IPAddress;
 		while(true)
 		{
-			if(!aQueue.isEmpty())
+			if(!aQueue.isEmpty()) // Process requests one at a time
 			{
+				bMethodBeingProcessed = true;
 				tmpList = aQueue.remove();
-				IPAddress = ((String)tmpList.get(6));
-				if(IPAddress.length() >= 3 && IPAddress.substring(0,3).equals(Parameters.GeoLocationOfGameServerNA))
-				{
-					sendRequestToReplicaLeader(Parameters.UDP_PORT_REPLICA_LEAD_NA, tmpList);
-				}
-				else if(IPAddress.length() >= 2 && IPAddress.substring(0,2).equals(Parameters.GeoLocationOfGameServerEU))
-				{
-					sendRequestToReplicaLeader(Parameters.UDP_PORT_REPLICA_LEAD_EU, tmpList);
-				}
-				else if(IPAddress.length() >= 3 && IPAddress.substring(0,3).equals(Parameters.GeoLocationOfGameServerAS))
-				{
-					sendRequestToReplicaLeader(Parameters.UDP_PORT_REPLICA_LEAD_AS, tmpList);
-				}
-				else
-				{
-					aLog.info("Invalid GeoLocation");
-					//TODO : return false; how to return for the client ?
-				}
+				sendRequestToReplicaLeader(tmpList);
 			}
+
+			if(aUDPThread.hasLeaderResponded())
+				bMethodBeingProcessed = false;
+			
+			bConfirmation = aUDPThread.getLeaderConfirmation(); // Get response from replica leader
+			
 			if(aUDPThread.hasCrashed())
 			{
 				aLog.info("Crash detected in UDP Thread, restarting UDP");
@@ -123,33 +139,122 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 		}
 	}
 	
-	/* Sends pArguments through UDP using the given aPort */
-	private void sendRequestToReplicaLeader(int aPort, List <Object> pArguments)
+	/* Sends pArguments through UDP using the replica leader port */
+	private void sendRequestToReplicaLeader(List <Object> pArguments)
 	{
+		
 		Parameters.METHOD_CODE methodCode = (Parameters.METHOD_CODE)pArguments.get(0);
 		if(methodCode == Parameters.METHOD_CODE.CREATE_ACCOUNT)
 		{
-			// TODO
+			aLog.info("Sending request to replica leader for CREATE PLAYER ACCOUNT");
+			try {	
+				data = Parameters.FE_NAME + Parameters.UDP_PARSER +
+						methodCode.toString() + Parameters.UDP_PARSER +
+						pArguments.get(1) + Parameters.UDP_PARSER +
+						pArguments.get(2) + Parameters.UDP_PARSER +
+						pArguments.get(3) + Parameters.UDP_PARSER +
+						pArguments.get(4) + Parameters.UDP_PARSER +
+						pArguments.get(5) + Parameters.UDP_PARSER +
+						pArguments.get(6);
+				message = data.getBytes();
+				requestToReplicaLeader = new DatagramPacket(message, data.length(), host, Parameters.UDP_PORT_REPLICA_LEAD);
+				sendSocket.send(requestToReplicaLeader);
+			} catch (SocketException e) {
+				aLog.info("SocketException : " + e.getMessage());
+			} catch (IOException e) {
+				aLog.info("IOException : " + e.getMessage());
+			}
 		}
 		else if(methodCode == Parameters.METHOD_CODE.PLAYER_SIGN_IN)
 		{
-			// TODO
+			aLog.info("Sending request to replica leader for PLAYER SIGN IN");
+			try {	
+				data = Parameters.FE_NAME + Parameters.UDP_PARSER +
+						methodCode.toString() + Parameters.UDP_PARSER +
+						pArguments.get(1) + Parameters.UDP_PARSER +
+						pArguments.get(2) + Parameters.UDP_PARSER +
+						pArguments.get(3) + Parameters.UDP_PARSER;
+				message = data.getBytes();
+				requestToReplicaLeader = new DatagramPacket(message, data.length(), host, Parameters.UDP_PORT_REPLICA_LEAD);
+				sendSocket.send(requestToReplicaLeader);
+			} catch (SocketException e) {
+				aLog.info("SocketException : " + e.getMessage());
+			} catch (IOException e) {
+				aLog.info("IOException : " + e.getMessage());
+			}
 		}
 		else if(methodCode == Parameters.METHOD_CODE.PLAYER_SIGN_OUT)
 		{
-			// TODO
+			aLog.info("Sending request to replica leader for PLAYER SIGN OUT");
+			try {	
+				data = Parameters.FE_NAME + Parameters.UDP_PARSER +
+						methodCode.toString() + Parameters.UDP_PARSER +
+						pArguments.get(1) + Parameters.UDP_PARSER +
+						pArguments.get(2) + Parameters.UDP_PARSER;
+				message = data.getBytes();
+				requestToReplicaLeader = new DatagramPacket(message, data.length(), host, Parameters.UDP_PORT_REPLICA_LEAD);
+				sendSocket.send(requestToReplicaLeader);
+			} catch (SocketException e) {
+				aLog.info("SocketException : " + e.getMessage());
+			} catch (IOException e) {
+				aLog.info("IOException : " + e.getMessage());
+			}
 		}
 		else if(methodCode == Parameters.METHOD_CODE.TRANSFER_ACCOUNT)
 		{
-			// TODO
+			aLog.info("Sending request to replica leader for TRANSFER ACCOUNT");
+			try {	
+				data = Parameters.FE_NAME + Parameters.UDP_PARSER +
+						methodCode.toString() + Parameters.UDP_PARSER +
+						pArguments.get(1) + Parameters.UDP_PARSER +
+						pArguments.get(2) + Parameters.UDP_PARSER +
+						pArguments.get(3) + Parameters.UDP_PARSER +
+						pArguments.get(4) + Parameters.UDP_PARSER;
+				message = data.getBytes();
+				requestToReplicaLeader = new DatagramPacket(message, data.length(), host, Parameters.UDP_PORT_REPLICA_LEAD);
+				sendSocket.send(requestToReplicaLeader);
+			} catch (SocketException e) {
+				aLog.info("SocketException : " + e.getMessage());
+			} catch (IOException e) {
+				aLog.info("IOException : " + e.getMessage());
+			}
 		}
 		else if(methodCode == Parameters.METHOD_CODE.GET_PLAYER_STATUS)
 		{
-			// TODO
+			aLog.info("Sending request to replica leader for GET PLAYER STATUS");
+			try {	
+				data = Parameters.FE_NAME + Parameters.UDP_PARSER +
+						methodCode.toString() + Parameters.UDP_PARSER +
+						pArguments.get(1) + Parameters.UDP_PARSER +
+						pArguments.get(2) + Parameters.UDP_PARSER +
+						pArguments.get(3) + Parameters.UDP_PARSER;
+				message = data.getBytes();
+				requestToReplicaLeader = new DatagramPacket(message, data.length(), host, Parameters.UDP_PORT_REPLICA_LEAD);
+				sendSocket.send(requestToReplicaLeader);
+			} catch (SocketException e) {
+				aLog.info("SocketException : " + e.getMessage());
+			} catch (IOException e) {
+				aLog.info("IOException : " + e.getMessage());
+			}
 		}
 		else if(methodCode == Parameters.METHOD_CODE.SUSPEND_ACCOUNT)
 		{
-			// TODO
+			aLog.info("Sending request to replica leader for SUSPEND ACCOUNT");
+			try {	
+				data = Parameters.FE_NAME + Parameters.UDP_PARSER +
+						methodCode.toString() + Parameters.UDP_PARSER +
+						pArguments.get(1) + Parameters.UDP_PARSER +
+						pArguments.get(2) + Parameters.UDP_PARSER +
+						pArguments.get(3) + Parameters.UDP_PARSER +
+						pArguments.get(4) + Parameters.UDP_PARSER;
+				message = data.getBytes();
+				requestToReplicaLeader = new DatagramPacket(message, data.length(), host, Parameters.UDP_PORT_REPLICA_LEAD);
+				sendSocket.send(requestToReplicaLeader);
+			} catch (SocketException e) {
+				aLog.info("SocketException : " + e.getMessage());
+			} catch (IOException e) {
+				aLog.info("IOException : " + e.getMessage());
+			}
 		}
 		methodCode = null;
 	}
@@ -167,7 +272,9 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 		tmpList.add(pIPAddress); // index = 6
 		aQueue.add(tmpList);
 		tmpList = null;
-		return false;
+		while(bMethodBeingProcessed) { /* Wait for the leader to respond */  }
+		aLog.info("Confirmation returned to client for CREATE PLAYER ACCOUNT");
+		return bConfirmation;
 	}
 
 	@Override
@@ -180,7 +287,9 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 		tmpList.add(pIPAddress); // index = 3
 		aQueue.add(tmpList);
 		tmpList = null;
-		return false;
+		while(bMethodBeingProcessed) { /* Wait for the leader to respond */ }
+		aLog.info("Confirmation returned to client for PLAYER SIGN IN");
+		return bConfirmation;
 	}
 
 	@Override
@@ -192,7 +301,9 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 		tmpList.add(pIPAddress); // index = 2
 		aQueue.add(tmpList);
 		tmpList = null;
-		return false;
+		while(bMethodBeingProcessed) { /* Wait for the leader to respond */ }
+		aLog.info("Confirmation returned to client for PLAYER SIGN OUT");
+		return bConfirmation;
 	}
 
 	@Override
@@ -206,7 +317,9 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 		tmpList.add(pNewIPAddress); // index = 4
 		aQueue.add(tmpList);
 		tmpList = null;
-		return false;
+		while(bMethodBeingProcessed) { /* Wait for the leader to respond */ }
+		aLog.info("Confirmation returned to client for TRANSFER ACCOUNT");
+		return bConfirmation;
 	}
 
 	@Override
@@ -219,7 +332,9 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 		tmpList.add(pIPAddress); // index = 3
 		aQueue.add(tmpList);
 		tmpList = null;
-		return false;
+		while(bMethodBeingProcessed) { /* Wait for the leader to respond */ }
+		aLog.info("Confirmation returned to client for GET PLAYER STATUS");
+		return bConfirmation;
 	}
 
 	@Override
@@ -233,6 +348,8 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 		tmpList.add(pUsernameToSuspend); // index = 4
 		aQueue.add(tmpList);
 		tmpList = null;
-		return false;
+		while(bMethodBeingProcessed) { /* Wait for the leader to respond */ }
+		aLog.info("Confirmation returned to client for SUSPEND ACCOUNT");
+		return bConfirmation;
 	}
 }
