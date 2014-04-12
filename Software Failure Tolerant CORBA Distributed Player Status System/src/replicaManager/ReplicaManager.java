@@ -35,7 +35,7 @@ public class ReplicaManager
 	
 		try {
 			
-			aSocket = new DatagramSocket(Parameters.UDP_PORT_REPLICA_B);
+			aSocket = new DatagramSocket(Parameters.UDP_PORT_REPLICA_MANAGER);
 			byte [] buffer = new byte [Parameters.UDP_BUFFER_SIZE];
 			
 			//always listen for new messages on the specified port
@@ -49,7 +49,7 @@ public class ReplicaManager
 				//dataRecieved.toUpperCase();
 				messageArray = dataRecieved.split(Parameters.UDP_PARSER);
 				
-				parserPosition = dataRecieved.indexOf(Parameters.UDP_PARSER);
+				//parserPosition = dataRecieved.indexOf(Parameters.UDP_PARSER);
 				System.out.println(dataRecieved);
 				
 				//get who is initiating the request : RM, Leader, Replica1 or Replica2
