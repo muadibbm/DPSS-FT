@@ -5,7 +5,56 @@ import java.io.*;
 
 import org.omg.CORBA.ORB;
 
-public class UDP_replicaLeader extends Thread
+class UDP_replicaLeader_Multicast extends Thread
+{
+	public void run()
+	{
+		set_Multicast_UDP_Server_Online();
+	}
+	
+	UDP_replicaLeader_Multicast()
+	{
+		
+	}
+	
+	protected void set_Multicast_UDP_Server_Online()
+	{
+		MulticastSocket socket = null;
+		
+		try
+		{
+			byte[] buffer = new byte[Parameters.UDP_BUFFER_SIZE];
+			
+			DatagramPacket request = new DatagramPacket(buffer, buffer.length);
+			
+			socket = new MulticastSocket(Parameters.UDP_PORT_REPLICA_LEAD_MULTICAST); // must bind receive side
+			socket.joinGroup(InetAddress.getByName(Parameters.UDP_ADDR_REPLICA_MANAGER_COMMUNICATION_MULTICAST));
+			
+			while(true) 
+			{
+				socket.receive(request); // blocks until a datagram is received
+				
+				String l_result = new String(request.getData(), "UTF-8");
+				//System.err.println("Received " + dgram.getLength() +" bytes from " + dgram.getAddress());
+				request.setLength(buffer.length); // must reset length field!
+			}
+		}
+		catch (SocketException e)
+		{
+			System.out.println("Socket: " + e.getMessage());
+		}
+		catch (IOException e) 
+		{
+			System.out.println("IO: " + e.getMessage());
+		}
+		finally 
+		{
+			if(socket != null) socket.close();
+		}
+	}
+}
+
+class UDP_replicaLeader extends Thread
 {
 	private String m_UDPDataGram_from_stripped;
 	
@@ -14,7 +63,7 @@ public class UDP_replicaLeader extends Thread
 	{		
 		try 
 		{
-			setUDPServerOnline();
+			set_UDP_Server_Online();
 		} 
 		catch (Exception e) 
 		{
@@ -25,10 +74,11 @@ public class UDP_replicaLeader extends Thread
 	
 	private UDP_replicaLeader()
 	{
-		
+		UDP_replicaLeader_Multicast l_UDP_replicaLeader_Multicast = new UDP_replicaLeader_Multicast();
+		l_UDP_replicaLeader_Multicast.run();
 	}
 	
-	protected void setUDPServerOnline()
+	protected void set_UDP_Server_Online()
 	{	
 		DatagramSocket aSocket = null;
 		try
@@ -64,12 +114,18 @@ public class UDP_replicaLeader extends Thread
   				    				
   				    				if(m_UDPDataGram_from_stripped != "")
   				    				{
+  				    					// send data to the orb
   				    					String l_invocationResponse = l_LocalOrbProcessing.performRMI(m_UDPDataGram_from_stripped);
+  				    					
+  				    					// send response to FE
   				    					sendPacket(l_invocationResponse, Parameters.UDP_PORT_FE);
   				    				}
-  				    				// send data to the orb
+  				    				
+  				    				l_LocalOrbProcessing = null;
   				    				
   				    				// multicast data send to the Replica_A and Replica_B
+  				    				
+  				    				
   				    				break;
   				    
   				    		case "RM":
@@ -87,9 +143,7 @@ public class UDP_replicaLeader extends Thread
   				    		default:
   				    				System.out.println("Server thread interrubpted.");
   				    				break;
-  				        
   						}	
-  					
   					}
   				}
   				
@@ -142,6 +196,44 @@ public class UDP_replicaLeader extends Thread
 		
 		return false;
 	}
+	
+	protected boolean sendMulticastPacket_Replicas(String p_Data, int p_portNumber) throws IOException, InterruptedException
+	{
+		DatagramSocket socket = null; 
+
+		try 
+		{
+			socket = new DatagramSocket();
+
+			byte[] buffer = p_Data.getBytes();
+			DatagramPacket dgram;
+			
+			dgram = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(Parameters.UDP_ADDR_REPLICA_COMMUNICATION_MULTICAST), p_portNumber);
+			while(true) 
+			{
+				//System.err.print(".");
+				socket.send(dgram);
+				Thread.sleep(1000);
+			}
+		} 
+	
+		catch (SocketException e)
+		{
+			System.out.println("Socket: " + e.getMessage());
+		}
+		catch (IOException e)
+		{
+			System.out.println("IO: " + e.getMessage());
+		}
+		finally 
+		{
+			if(socket != null) socket.close();
+		}
+		
+		return false;
+	}
+	
+	
 	
 	// Parse the datagram and extract the senders name into a String Array
 	protected String parseSenderName(String p_input)
