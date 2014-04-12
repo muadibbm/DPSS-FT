@@ -29,7 +29,7 @@ public class Parameters
 	protected static int UDP_BUFFER_SIZE = 10000;
 	
 	protected static String FE_NAME = "FE";
-	protected static String RM_NAME = "RM";
+	protected static String RM_NAME = "RM"; 
 	protected static String RA_NAME = "RA";
 	protected static String RB_NAME = "RB";
 	protected static String LR_NAME = "LR";
