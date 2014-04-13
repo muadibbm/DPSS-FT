@@ -66,7 +66,9 @@ class FrontEndUDPThread extends Thread
 			messageArray = (new String(request.getData())).split(Parameters.UDP_PARSER);
 			if(messageArray[0].equals(Parameters.LR_NAME))
 			{
-				switch(Integer.parseInt(messageArray[1]))
+				System.out.println("FrontEndUDPThread.handleCommunication: messageArray" + messageArray[0]);
+				System.out.println("FrontEndUDPThread.handleCommunication: messageArray" + messageArray[1]);
+				switch(Integer.parseInt(messageArray[1].substring(0, 1)))
 				{
 					case 0 : bConfirmation = false; break;
 					case 1 : bConfirmation = true; break;

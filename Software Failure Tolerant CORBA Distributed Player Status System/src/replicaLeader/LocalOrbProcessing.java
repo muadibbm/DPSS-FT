@@ -1,9 +1,15 @@
 package replicaLeader;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 
 import org.omg.CORBA.ORB;
+import org.omg.CORBA.ORBPackage.InvalidName;
+import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
+import org.omg.PortableServer.POAPackage.ObjectNotActive;
+import org.omg.PortableServer.POAPackage.ServantAlreadyActive;
+import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 import replicaLeader.Parameters.METHOD_CODE;
 
@@ -25,6 +31,8 @@ public class LocalOrbProcessing
 		
 		if(l_segments != null)
 		{
+			
+			System.out.println("LocalOrbProcessing.extractParameters: failed to parse input data" + l_segments);
 			return l_segments;			
 		}
 		
@@ -90,12 +98,13 @@ public class LocalOrbProcessing
 		return aGameServerRef;
 	}
 	
-	protected String performRMI(String p_input)
+	protected String performRMI(String p_input) throws InvalidName, ServantAlreadyActive, WrongPolicy, ObjectNotActive, FileNotFoundException, AdapterInactive
 	{
-		String[] l_ParamArray = extractParameters(p_input);
+		String l_ParamArray[] = p_input.split(Parameters.UDP_PARSER);
 		
 		if(l_ParamArray != null)
 		{
+			
 			int l_numElements = l_ParamArray.length;
 			GameServerInterface l_LocalGameServerReference =  getServerReference(l_ParamArray[l_numElements - 1]);
 			
@@ -109,13 +118,13 @@ public class LocalOrbProcessing
 			
 			// Send CREATE PLAYER ACCOUNT
 			// createPlayerAccount(String FirstName, String LastName, String Age, String Username, String Password, String IPAddress)
-			if(l_functionValue.equals(0)) 
+			if(l_functionValue == METHOD_CODE.CREATE_ACCOUNT) 
 			{
 				System.out.println("LocalOrbProcessing.performRMI : Creating Player Account Request/n");
-				if(l_numElements == 6)
+				if(l_numElements == 7)
 				{
-					String l_MethodStatus =  l_LocalGameServerReference.createPlayerAccount(l_ParamArray[0], l_ParamArray[1], l_ParamArray[2], l_ParamArray[3], l_ParamArray[4], l_ParamArray[5]);
-					if(l_MethodStatus == "SignUpsuccessful")
+					String l_MethodStatus =  l_LocalGameServerReference.createPlayerAccount(l_ParamArray[1], l_ParamArray[2], l_ParamArray[3], l_ParamArray[4], l_ParamArray[5], l_ParamArray[6]);
+					if(l_MethodStatus.equals("SignUpsuccessful"))
 					{
 						return "1";
 					}
@@ -130,13 +139,13 @@ public class LocalOrbProcessing
 			
 			// Send PLAYER SIGN IN
 			// playerSignIn(String UserName, String Password, String IPAddres);
-			else if(l_functionValue.equals(1)) 
+			else if(l_functionValue == METHOD_CODE.PLAYER_SIGN_IN) 
 			{
 				System.out.println("LocalOrbProcessing.performRMI : Player Sign In Request/n");
-				if(l_numElements == 3)
+				if(l_numElements == 4)
 				{
-					String l_MethodStatus =  l_LocalGameServerReference.playerSignIn(l_ParamArray[0], l_ParamArray[1], l_ParamArray[2]);
-					if(l_MethodStatus == "Login successful")
+					String l_MethodStatus =  l_LocalGameServerReference.playerSignIn(l_ParamArray[1], l_ParamArray[2], l_ParamArray[3]);
+					if(l_MethodStatus.equals("Login successful"))
 					{
 						return "1";
 					}
@@ -151,13 +160,13 @@ public class LocalOrbProcessing
 			
 			// Send PLAYER SIGN OUT
 			// playerSignOut(String p_Username, String IPAddress) 
-			else if(l_functionValue.equals(2)) 
+			else if(l_functionValue == METHOD_CODE.PLAYER_SIGN_OUT) 
 			{
 				System.out.println("LocalOrbProcessing.performRMI : Player Sign Out Request/n");
-				if(l_numElements == 2)
+				if(l_numElements == 3)
 				{
-					String l_MethodStatus =  l_LocalGameServerReference.playerSignOut(l_ParamArray[0], l_ParamArray[1]);
-					if(l_MethodStatus == "Successfully Signed Out.")
+					String l_MethodStatus =  l_LocalGameServerReference.playerSignOut(l_ParamArray[1], l_ParamArray[2]);
+					if(l_MethodStatus.equals("Successfully Signed Out."))
 					{
 						return "1";
 					}
@@ -172,12 +181,12 @@ public class LocalOrbProcessing
 			
 			// Send PLAYER TRANSFER ACCOUNT
 			//String transferAccount(String p_Username, String p_Password, String p_oldIPAddress, String p_newIPAddress)
-			else if(l_functionValue.equals(3)) 
+			else if(l_functionValue == METHOD_CODE.TRANSFER_ACCOUNT) 
 			{
 				System.out.println("LocalOrbProcessing.performRMI : Player Account Transfer Request/n");
-				if(l_numElements == 4)
+				if(l_numElements == 5)
 				{
-					String l_MethodStatus =  l_LocalGameServerReference.playerSignOut(l_ParamArray[0], l_ParamArray[1]);
+					String l_MethodStatus =  l_LocalGameServerReference.transferAccount(l_ParamArray[1], l_ParamArray[2], l_ParamArray[3], l_ParamArray[4]);
 					if(l_MethodStatus == "Account Transfer Complete")
 					{
 						return "1";
@@ -193,12 +202,12 @@ public class LocalOrbProcessing
 			
 			// Send GET PLAYER STATUS
 			// getPlayerStatus(String AdminUserName, String AdminPassword, String AdminIPAddress);
-			else if(l_functionValue.equals(4)) 
+			else if(l_functionValue ==  METHOD_CODE.GET_PLAYER_STATUS) 
 			{
 				System.out.println("LocalOrbProcessing.performRMI : Get Player Status Request/n");
-				if(l_numElements == 3)
+				if(l_numElements == 4)
 				{
-					String l_MethodStatus =  l_LocalGameServerReference.getPlayerStatus(l_ParamArray[0], l_ParamArray[1], l_ParamArray[2]);
+					String l_MethodStatus =  l_LocalGameServerReference.getPlayerStatus(l_ParamArray[1], l_ParamArray[2], l_ParamArray[3]);
 					if(l_MethodStatus != "")
 					{
 						return "1";
@@ -214,12 +223,12 @@ public class LocalOrbProcessing
 			
 			// Send SUSPEND ACCOUNT
 			// suspendAccount(String p_AdminUserName, String p_AdminPassword, String p_AdminIPAddress, String p_UsernametoSuspend) 
-			else if(l_functionValue.equals(5)) 
+			else if(l_functionValue == METHOD_CODE.SUSPEND_ACCOUNT) 
 			{
 				System.out.println("LocalOrbProcessing.performRMI : Get Suspend Account Request/n");
-				if(l_numElements == 4)
+				if(l_numElements == 5)
 				{
-					String l_MethodStatus =  l_LocalGameServerReference.getPlayerStatus(l_ParamArray[0], l_ParamArray[1], l_ParamArray[2]);
+					String l_MethodStatus =  l_LocalGameServerReference.suspendAccount(l_ParamArray[1], l_ParamArray[2], l_ParamArray[3], l_ParamArray[4]);
 					if(l_MethodStatus != "Account Suspension Confirmed.")
 					{
 						return "1";
@@ -231,18 +240,10 @@ public class LocalOrbProcessing
 					System.out.println("LocalOrbProcessing.performRMI : Eror: Have not parsed enough params for suspend account/n");
 					return "0";
 				}
-			}
-			
-			// START GAME SERVER
-			// suspendAccount(String p_AdminUserName, String p_AdminPassword, String p_AdminIPAddress, String p_UsernametoSuspend) 
-			else if(l_functionValue.equals(6)) 
-			{
-				System.out.println("LocalOrbProcessing.performRMI : Start Game Server Request/n");
-				
-				// instantiate the GAME SERVERS
-			}		
+			} 
 		}
-		System.out.println("LocalOrbProcessing.performRMI : Eror: Parsing for method selection not done right/n");
-		return "0";	
+		System.out.println("LocalOrbProcessing.performRMI : Eror: Parsing for method selection not done right");
+		return "0";
+		
 	}
 }
