@@ -51,6 +51,7 @@ class FrontEndUDPThread extends Thread
 			messageArray = (new String(request.getData())).split(Parameters.UDP_PARSER);
 			if(messageArray[0].equals(Parameters.LR_NAME))
 			{
+				// TODO : add method type check
 				switch(Integer.parseInt(messageArray[1].substring(0, 1)))
 				{
 					case 0 : FrontEndORBThread.setConfimation(false); break;

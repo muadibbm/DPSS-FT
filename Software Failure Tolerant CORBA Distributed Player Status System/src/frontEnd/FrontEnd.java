@@ -333,8 +333,7 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 		while(!FrontEndORBThread.hasLeaderResponded())  /* Wait for the leader to respond */
 			System.out.print("");
 		aLog.info("Number of Players returned to client for GET PLAYER STATUS");
-		// TODO
-		return "";
+		return FrontEndORBThread.getResponse();
 	}
 
 	@Override

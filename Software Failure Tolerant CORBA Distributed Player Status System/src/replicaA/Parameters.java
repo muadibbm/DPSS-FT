@@ -41,4 +41,11 @@ class Parameters
 	protected static String GeoLocationOfGameServerNA = "132";
 	protected static String GeoLocationOfGameServerEU = "93";
 	protected static String GeoLocationOfGameServerAS = "182";
+	
+	// For validating IPAddress using regualr expressions
+	public static final String PATTERN_FOR_IPADDRESS_VALIDATION = 
+		        "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+		        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+		        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+		        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
 }

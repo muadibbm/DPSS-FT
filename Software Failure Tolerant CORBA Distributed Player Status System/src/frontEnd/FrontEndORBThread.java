@@ -11,6 +11,7 @@ class FrontEndORBThread extends Thread
 	private ORB orb;
 	private static boolean bLeaderResponded;
 	private static boolean bConfirmation;
+	private static String aResponse;
 
 	protected FrontEndORBThread(ORB pOrb)
 	{
@@ -39,6 +40,17 @@ class FrontEndORBThread extends Thread
 	protected static boolean getConfirmation()
 	{
 		return bConfirmation;
+	}
+	
+	protected static void setResponse(String pResponse)
+	{
+		aResponse = pResponse;
+	}
+	
+	// Used for getting the leader response to the client for GetPlayerStatus
+	protected static String getResponse()
+	{
+		return aResponse;
 	}
 	
 	
