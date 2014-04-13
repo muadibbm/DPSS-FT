@@ -20,16 +20,17 @@ class ReplicaManagerUDPListener extends Thread
 {
 	private int aPort;
 	private boolean bCrashed;
+	private boolean bShouldRestart;
 	private DatagramSocket aDatagramSocket;
 	private DatagramPacket requestFromReplicaManager;
 	private byte [] buffer;
 	private String [] messageArray;
-	private String data;
 	
 	protected ReplicaManagerUDPListener(int pPort) throws SocketException
 	{
 		aPort = pPort;
 		bCrashed = false;
+		bShouldRestart = false;
 		aDatagramSocket = new DatagramSocket(aPort);
 		buffer = new byte [Parameters.UDP_BUFFER_SIZE];
 	}
@@ -37,6 +38,11 @@ class ReplicaManagerUDPListener extends Thread
 	protected boolean hasCrashed()
 	{
 		return bCrashed;
+	}
+	
+	protected boolean shouldRestart()
+	{
+		return bShouldRestart;
 	}
 	
 	@Override
@@ -49,6 +55,7 @@ class ReplicaManagerUDPListener extends Thread
 	/* Handles communication with the replica manager */
 	public void handleCommunication()
 	{
+		bShouldRestart = false;
 		try
 		{
 			requestFromReplicaManager = new DatagramPacket(buffer, buffer.length);
@@ -56,9 +63,9 @@ class ReplicaManagerUDPListener extends Thread
 			messageArray = (new String(requestFromReplicaManager.getData())).split(Parameters.UDP_PARSER);
 			if(messageArray[0].equals(Parameters.RM_NAME))
 			{
-				 
+				if(messageArray[1].equals(Parameters.METHOD_CODE.RESTART_REPLICA.name()))
+					bShouldRestart = true;
 			}
-		 
 		}
 		catch (IOException e)
 		{
@@ -74,7 +81,8 @@ class ReplicaManagerUDPListener extends Thread
  */
 class ReplicaAUDPThread extends Thread
 {
-	private Logger aLog;
+	private static ReplicaAUDPThread replicaA;
+	protected Logger aLog;
 	private interfaceIDL aInterfaceIDL;
 	private GameServer aNAGameServer;
 	private GameServer aEUGameServer;
@@ -93,12 +101,30 @@ class ReplicaAUDPThread extends Thread
 	private DatagramPacket replyToLeaderPacket;
 	private String data;
 	// For receiving from replica manager UDP
-	private ReplicaManagerUDPListener replicaManagerListener;
+	protected ReplicaManagerUDPListener replicaManagerListener;
 	
 	// Main method which runs the UDP thread for replica A
 	public static void main(String[] args) 
 	{
-		new ReplicaAUDPThread(Parameters.UDP_PORT_REPLICA_A, args);
+		replicaA = new ReplicaAUDPThread(Parameters.UDP_PORT_REPLICA_A, args);
+		while (true)
+		{
+			if(replicaA.replicaManagerListener.shouldRestart())
+			{
+				replicaA.stopServers();
+				replicaA.startServers();
+			}
+			if(replicaA.replicaManagerListener.hasCrashed())
+			{
+				replicaA.aLog.info("Crash detected in ReplicaA Replica Manager UDP Thread, restarting UDP");
+				try {
+					replicaA.replicaManagerListener = new ReplicaManagerUDPListener(Parameters.UDP_PORT_REPLICA_A);
+				} catch (SocketException e) {
+					replicaA.aLog.info("ReplicaA Replica Manager creating failed");
+				}
+				replicaA.replicaManagerListener.start();
+			}
+		}
 	}
 	
 	private ReplicaAUDPThread(int pPort, String[] pArgs)
@@ -114,9 +140,9 @@ class ReplicaAUDPThread extends Thread
 		} catch (IOException e) {
 			aLog.info("UDP Socket creation failed");
 		}
-		startServers(); // TODO : remove this
 		// Start the UDP communication for replica A
 		aLog.info("UDP Running");
+		replicaManagerListener.start();
 		start();
 	}
 	
@@ -157,7 +183,8 @@ class ReplicaAUDPThread extends Thread
 		return true;
 	}
 	
-	private boolean startServers()
+	/* Creates and starts the servers */
+	protected boolean startServers()
 	{
 		try
 		{
@@ -184,7 +211,8 @@ class ReplicaAUDPThread extends Thread
 		return true;
 	}
 	
-	private boolean stopServers()
+	/* Stops the servers and clears their resources */
+	protected boolean stopServers()
 	{
 		try
 		{
