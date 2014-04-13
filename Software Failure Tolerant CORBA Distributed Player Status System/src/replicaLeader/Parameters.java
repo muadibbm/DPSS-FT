@@ -14,10 +14,6 @@ public class Parameters
 	
 	protected static int UDP_PORT_REPLICA_MANAGER = 5000;
 	
-	protected static int UDP_PORT_REPLICA_MANAGER_MULTICAST = 5500;
-	
-	protected static String UDP_ADDR_REPLICA_MANAGER_COMMUNICATION_MULTICAST = "224.0.0.4";
-	
 	protected static int UDP_PORT_FE = 6000;
 	
 	
@@ -29,8 +25,7 @@ public class Parameters
 	    , TRANSFER_ACCOUNT
 	    , GET_PLAYER_STATUS
 	    , SUSPEND_ACCOUNT
-	    , START_REPLICA
-	    , STOP_REPLICA;
+	    , RESTART_REPLICA;
 	}
 	
 	protected static String UDP_PARSER = "/";
