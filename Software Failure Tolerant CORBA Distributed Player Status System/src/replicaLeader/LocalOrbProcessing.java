@@ -24,7 +24,7 @@ public class LocalOrbProcessing
 	private String m_IPAddress;*/
 	
 	
-	// extract required parameters from the input data
+/*	// extract required parameters from the input data
 	private String[] extractParameters(String p_input)
 	{
 		String l_segments[] = p_input.split(Parameters.UDP_PARSER);
@@ -39,6 +39,7 @@ public class LocalOrbProcessing
 		System.out.println("LocalOrbProcessing.extractParameters: failed to parse input data");
 		return null;
 	}
+*/	
 	
 	// extract ip address, get required Local Server <location> reference
 	private GameServerInterface  getServerReference(String p_IPAddress)

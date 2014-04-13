@@ -70,9 +70,11 @@ class UDP_replicaLeader extends Thread
   				    				
   				    				if(m_UDPDataGram_from_stripped != "")
   				    				{
-  				    					
-  	  				    				// Creating Multicast datagram packet
+  				    				
   	  				    				String l_multiCastDGram_replica =  Parameters.LR_NAME + Parameters.UDP_PARSER + m_UDPDataGram_from_stripped;
+  	  				    				// Creating Multicast datagram packet
+  				    					System.out.println("UDP_replicaLeader.set_UDP_Server_Online : l_multiCastDGram_replica - "+ l_multiCastDGram_replica);
+  	  				    				
   	  				    				
   	  				    				// Send Multi-cast data to Replica A and Replica B
   	  				    				sendMulticastPacket_Replicas(l_multiCastDGram_replica);
@@ -86,7 +88,7 @@ class UDP_replicaLeader extends Thread
   				    				
   				    					// send response to FE
   				    					System.out.println("UDP_replicaLeader.set_UDP_Server_Online : l_invocationResponse - "+ l_invocationResponse);
-  				    					//sendPacket(l_invocationResponse, Parameters.UDP_PORT_FE);
+  				    					sendPacket(l_invocationResponse, Parameters.UDP_PORT_FE);
   				    				}
   				    				
   				    				l_LocalOrbProcessing = null;
@@ -98,6 +100,9 @@ class UDP_replicaLeader extends Thread
   				    
   				    		case "RM":
   				    				// commands me to start the orb and my personal NA, AS and EU Servers 
+  				    				System.out.println("Receiving data from FE: m_UDPDataGram_from_stripped - " + m_UDPDataGram_from_stripped);
+  				    			
+  				    				
   				    			break;
   				    		
   				    		case "RA":
@@ -176,12 +181,14 @@ class UDP_replicaLeader extends Thread
 			byte[] buffer = p_Data.getBytes();
 			DatagramPacket dgram;
 			
+			System.out.println("UDP_replicaLeader.sendMulticastPacket_Replicas : p_Data - "+ p_Data);
+			
 			dgram = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(Parameters.UDP_ADDR_REPLICA_COMMUNICATION_MULTICAST), Parameters.UDP_PORT_REPLICA_LEAD_MULTICAST);
-			while(true) 
+			//while(true) 
 			{
 				//System.err.print(".");
 				socket.send(dgram);
-				Thread.sleep(1000);
+				//Thread.sleep(1000);
 			}
 		} 
 	
