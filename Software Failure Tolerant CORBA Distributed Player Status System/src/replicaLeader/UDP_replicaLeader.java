@@ -4,55 +4,11 @@ import java.net.*;
 import java.io.*;
 
 import org.omg.CORBA.ORB;
-
-class UDP_replicaLeader_Multicast extends Thread
-{
-	public void run()
-	{
-		set_Multicast_UDP_Server_Online();
-	}
-	
-	UDP_replicaLeader_Multicast()
-	{
-		
-	}
-	
-	protected void set_Multicast_UDP_Server_Online()
-	{
-		MulticastSocket socket = null;
-		
-		try
-		{
-			byte[] buffer = new byte[Parameters.UDP_BUFFER_SIZE];
-			
-			DatagramPacket request = new DatagramPacket(buffer, buffer.length);
-			
-			socket = new MulticastSocket(Parameters.UDP_PORT_REPLICA_LEAD_MULTICAST); // must bind receive side
-			socket.joinGroup(InetAddress.getByName(Parameters.UDP_ADDR_REPLICA_COMMUNICATION_MULTICAST));
-			
-			while(true) 
-			{
-				socket.receive(request); // blocks until a datagram is received
-				
-				String l_result = new String(request.getData(), "UTF-8");
-				//System.err.println("Received " + dgram.getLength() +" bytes from " + dgram.getAddress());
-				request.setLength(buffer.length); // must reset length field!
-			}
-		}
-		catch (SocketException e)
-		{
-			System.out.println("Socket: " + e.getMessage());
-		}
-		catch (IOException e) 
-		{
-			System.out.println("IO: " + e.getMessage());
-		}
-		finally 
-		{
-			if(socket != null) socket.close();
-		}
-	}
-}
+import org.omg.CORBA.ORBPackage.InvalidName;
+import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
+import org.omg.PortableServer.POAPackage.ObjectNotActive;
+import org.omg.PortableServer.POAPackage.ServantAlreadyActive;
+import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 class UDP_replicaLeader extends Thread
 {
@@ -74,11 +30,10 @@ class UDP_replicaLeader extends Thread
 	
 	private UDP_replicaLeader()
 	{
-		UDP_replicaLeader_Multicast l_UDP_replicaLeader_Multicast = new UDP_replicaLeader_Multicast();
-		l_UDP_replicaLeader_Multicast.run();
+
 	}
 	
-	protected void set_UDP_Server_Online()
+	protected void set_UDP_Server_Online() throws InvalidName, ServantAlreadyActive, WrongPolicy, ObjectNotActive, AdapterInactive
 	{	
 		DatagramSocket aSocket = null;
 		try
@@ -117,7 +72,10 @@ class UDP_replicaLeader extends Thread
   				    					// send data to the orb
   				    					String l_invocationResponse = l_LocalOrbProcessing.performRMI(m_UDPDataGram_from_stripped);
   				    					
+  				    					l_invocationResponse = Parameters.LR_NAME + Parameters.UDP_PARSER + l_invocationResponse;
+  				    				
   				    					// send response to FE
+  				    					System.out.println("UDP_replicaLeader.set_UDP_Server_Online : l_invocationResponse - "+ l_invocationResponse);
   				    					sendPacket(l_invocationResponse, Parameters.UDP_PORT_FE);
   				    				}
   				    				
@@ -255,5 +213,4 @@ class UDP_replicaLeader extends Thread
 		UDP_replicaLeader m_UDP_replicaLeader = new UDP_replicaLeader();
 		m_UDP_replicaLeader.start();
 	}
-
 }

@@ -23,8 +23,12 @@ public class GameServer_Europe {
 	 * @throws FileNotFoundException 
 	 * @throws AdapterInactive 
 	 */
-	public static void main(String[] args) throws InvalidName, ServantAlreadyActive, WrongPolicy, ObjectNotActive, FileNotFoundException, AdapterInactive 
+	protected void StartGameServer_Europe() throws InvalidName, ServantAlreadyActive, WrongPolicy, ObjectNotActive, FileNotFoundException, AdapterInactive 
 	{
+		System.out.println("GameServer_Europe.StartGameServer_Europe: Server going Online");
+		
+		String[] args = null;
+		
 		// TODO Auto-generated method stub
 		// initializing ORB for server instance
 		ORB orb = ORB.init(args,null);
