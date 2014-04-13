@@ -6,7 +6,7 @@ import java.net.*;
 public class ReplicaManager 
 {
 	
-	
+	static int leaderCounter = 0 , replicaAcounter = 0 , replicaBCounter = 0;
 	
 	static DatagramSocket aSocket = null;
 	static boolean waitForConnection = true;
@@ -58,8 +58,59 @@ public class ReplicaManager
 				
 				//get who is initiating the request : RM, Leader, Replica1 or Replica2
 				requestServerInitials = messageArray[0];
-				requestMethodCode = messageArray[1]; 
-			}
+				
+				
+				
+				//check the message from the leader
+				if ( requestServerInitials.contains(Parameters.LR_NAME)) {
+					
+					if (Integer.parseInt(messageArray[1]) == 0) {
+						if (leaderCounter != 0 ) {
+							leaderCounter ++;
+							if(leaderCounter>=3) {
+								stopServer(Parameters.UDP_PORT_REPLICA_LEAD);
+							}
+						} else leaderCounter++;
+					}
+					else if (Integer.parseInt(messageArray[1]) == 1) {
+						leaderCounter = 0;
+					}
+				}
+					//check the message from the Replica A
+					if ( requestServerInitials.contains(Parameters.RA_NAME)) {
+						
+						if (Integer.parseInt(messageArray[1]) == 0) {
+							if (replicaAcounter != 0 ) {
+								replicaAcounter ++;
+								if(replicaAcounter>=3) {
+									stopServer(Parameters.UDP_PORT_REPLICA_A);
+								}
+							} else replicaAcounter++;
+						}
+						else if (Integer.parseInt(messageArray[1]) == 1) {
+							replicaAcounter = 0;
+						}
+					}
+						
+						//check the message from the Replica B
+						if ( requestServerInitials.contains(Parameters.RB_NAME)) {
+							
+							if (Integer.parseInt(messageArray[1]) == 0) {
+								if (replicaBCounter != 0 ) {
+									replicaBCounter ++;
+									if(replicaBCounter>=3) {
+										stopServer(Parameters.UDP_PORT_REPLICA_B);
+									}
+								} else replicaBCounter++;
+							}
+							else if (Integer.parseInt(messageArray[1]) == 1) {
+								replicaBCounter = 0;
+							}
+						}
+					
+				}
+				//requestMethodCode = messageArray[1]; 
+			
 		}
 			catch (Exception e) {e.printStackTrace();} 
 		}
@@ -67,7 +118,7 @@ public class ReplicaManager
 	public static void startServerGroup(int portNumber){
 		int UDPcommunicationPort = portNumber;
 		DatagramSocket aSocket = null;
-		String RMInitMessage = Parameters.RM_NAME + "/" + Parameters.METHOD_CODE.START_REPLICA.name();
+		String RMInitMessage = Parameters.RM_NAME + "/" + Parameters.METHOD_CODE.RESTART_REPLICA.name();
 		boolean ackRecieved = false;
 		String dataFromReplay = null;
 		
@@ -98,7 +149,7 @@ public class ReplicaManager
 	public static boolean stopServer (int portNumber) {
 		int stopServerPort = portNumber;
 		DatagramSocket aSocket = null;
-		String RMInitMessage = Parameters.RM_NAME + "/" + Parameters.METHOD_CODE.STOP_REPLICA.name();
+		String RMInitMessage = Parameters.RM_NAME + "/" + Parameters.METHOD_CODE.RESTART_REPLICA.name();
 		boolean ackRecieved = false;
 		String dataFromReplay = null;
 		
