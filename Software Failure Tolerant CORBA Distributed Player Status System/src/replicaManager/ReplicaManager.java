@@ -126,7 +126,7 @@ public class ReplicaManager
 			aSocket = new DatagramSocket();
 			byte [] m = RMInitMessage.getBytes();
 			InetAddress aHost = InetAddress.getByName("localhost");
-			DatagramPacket request = new DatagramPacket(m,RMInitMessage.length(), aHost, UDPcommunicationPort);
+			DatagramPacket request = new DatagramPacket(m,m.length, aHost, UDPcommunicationPort);
 			aSocket.send(request);
 
 		}

@@ -11,9 +11,12 @@ import org.omg.PortableServer.POAPackage.ObjectNotActive;
 import org.omg.PortableServer.POAPackage.ServantAlreadyActive;
 import org.omg.PortableServer.POAPackage.WrongPolicy;
 
+import replicaLeader.Parameters.METHOD_CODE;
+
 class UDP_replicaLeader extends Thread
 {
 	private String m_UDPDataGram_from_stripped;
+	private static int m_startLocalServerOnce = 0;
 	
 	@Override
 	public void run()
@@ -24,7 +27,7 @@ class UDP_replicaLeader extends Thread
 		} 
 		catch (Exception e) 
 		{
-			System.out.println("Server thread interrubpted.");
+			System.out.println("Server thread interrupted.");
 		}
      //System.out.println("Exiting child thread.");
 	}
@@ -100,8 +103,10 @@ class UDP_replicaLeader extends Thread
   				    
   				    		case "RM":
   				    				// commands me to start the orb and my personal NA, AS and EU Servers 
-  				    				System.out.println("Receiving data from FE: m_UDPDataGram_from_stripped - " + m_UDPDataGram_from_stripped);
+  				    				System.out.println("Receiving data from RM: m_UDPDataGram_from_stripped - " + m_UDPDataGram_from_stripped+"----");
   				    			
+  				    				LocalRMRequestProcessing l_LocalRMRequestProcessing = new LocalRMRequestProcessing();
+  				    				l_LocalRMRequestProcessing.getMethodName(m_UDPDataGram_from_stripped);
   				    				
   				    			break;
   				    		
@@ -114,7 +119,7 @@ class UDP_replicaLeader extends Thread
   				    			break;
   				    		
   				    		default:
-  				    				System.out.println("Server thread interrubpted.");
+  				    				System.out.println("Unknown Sender. Protocol not being followed");
   				    				break;
   						}	
   					}

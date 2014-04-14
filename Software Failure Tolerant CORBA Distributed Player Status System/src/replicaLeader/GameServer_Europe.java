@@ -23,7 +23,7 @@ public class GameServer_Europe {
 	 * @throws FileNotFoundException 
 	 * @throws AdapterInactive 
 	 */
-	protected void StartGameServer_Europe() throws InvalidName, ServantAlreadyActive, WrongPolicy, ObjectNotActive, FileNotFoundException, AdapterInactive 
+	protected static void StartGameServer_Europe() throws InvalidName, ServantAlreadyActive, WrongPolicy, ObjectNotActive, FileNotFoundException, AdapterInactive 
 	{
 		System.out.println("GameServer_Europe.StartGameServer_Europe: Server going Online");
 		
