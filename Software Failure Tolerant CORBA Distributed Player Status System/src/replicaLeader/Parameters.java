@@ -11,7 +11,7 @@ public class Parameters
 	protected static int UDP_PORT_REPLICA_LEAD_EU = 2200;
 	protected static int UDP_PORT_REPLICA_LEAD_AS = 2300;	
 	
-	protected static int UDP_PORT_REPLICA_LEAD_MULTICAST = 4500;
+	protected static int UDP_PORT_REPLICA_LEAD_MULTICAST = 4446;
 	
 	protected static String UDP_ADDR_REPLICA_COMMUNICATION_MULTICAST = "224.0.0.2";
 	

@@ -91,12 +91,11 @@ class ReplicaAUDPThread extends Thread
 	private Thread aEUThread;
 	private Thread aASThread;
 	// For receiving from replica leader multicast
-	private MulticastSocket aMulticastSocket;
+	private static MulticastSocket aMulticastSocket;
 	private DatagramPacket requestFromLeaderPacket;
 	private byte [] buffer;
 	private String [] messageArray;
 	// For sending replies to replica leader UDP
-	private InetAddress localhost;
 	private DatagramSocket aSendSocket;
 	private DatagramPacket replyToLeaderPacket;
 	private String data;
@@ -134,7 +133,6 @@ class ReplicaAUDPThread extends Thread
 		try {
 			aMulticastSocket = new MulticastSocket(Parameters.UDP_PORT_REPLICA_LEAD_MULTICAST);
 			aMulticastSocket.joinGroup(InetAddress.getByName(Parameters.UDP_ADDR_REPLICA_COMMUNICATION_MULTICAST));
-			localhost = InetAddress.getByName("localhost");
 			aSendSocket = new DatagramSocket();
 			replicaManagerListener = new ReplicaManagerUDPListener(Parameters.UDP_PORT_REPLICA_A);
 		} catch (IOException e) {
@@ -300,7 +298,7 @@ class ReplicaAUDPThread extends Thread
 				}
 				
 				buffer = data.getBytes();
-				replyToLeaderPacket = new DatagramPacket(buffer, data.length(), localhost, Parameters.UDP_PORT_REPLICA_LEAD);
+				replyToLeaderPacket = new DatagramPacket(buffer, data.length(),  InetAddress.getByName("localhost"), Parameters.UDP_PORT_REPLICA_LEAD);
 				aSendSocket.send(replyToLeaderPacket);
 			}
 		}
