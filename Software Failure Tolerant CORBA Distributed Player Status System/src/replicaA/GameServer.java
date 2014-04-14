@@ -31,8 +31,8 @@ import org.omg.PortableServer.POAPackage.WrongPolicy;
 class GameServer extends interfaceIDLPOA implements Runnable
 {
 	private String aServerName;
-	private Hashtable<String, List<Account>> aDatabase;
-	private Logger aLog;
+	private static Hashtable<String, List<Account>> aDatabase;
+	private static Logger aLog;
 	private ORBThread aORBThread;
 	private UDPThread aUDPThread;
 	private int aPortUDP;
@@ -123,8 +123,6 @@ class GameServer extends interfaceIDLPOA implements Runnable
 	@Override
 	public boolean createPlayerAccount(String pFirstName, String pLastName, int pAge, String pUsername, String pPassword, String pIPAddress) 
 	{
-		try
-		{
 			if(pAge <= 0)
 			{
 				aLog.info("Error Creating Player Account : Invalid Age");
@@ -173,17 +171,6 @@ class GameServer extends interfaceIDLPOA implements Runnable
 					"\", Age \"" +  pAge +  "\", Username \"" +  pUsername +  "\", Password \"" + pPassword + "\", IP-address \"" +
 					pIPAddress + "\", Player is currently Offline");
 			return true;
-		}
-		catch(NullPointerException e)
-		{
-			aLog.info("Error Creating Player Account : Missing Parameter");
-			return false;
-		}
-		catch(NumberFormatException e)
-		{
-			aLog.info("Error Creating Player Account : Invalid Age");
-			return false;
-		}
 	}
 
 	/**
@@ -338,8 +325,6 @@ class GameServer extends interfaceIDLPOA implements Runnable
 			tmpAccount = null;
 			return false;
 		}
-		try
-		{
 			synchronized(this)
 			{
 				if(aDatabase.get(String.valueOf(pUsername.toUpperCase().charAt(0))).remove(tmpAccount))
@@ -386,17 +371,6 @@ class GameServer extends interfaceIDLPOA implements Runnable
 			}		
 			aLog.info("Player Account Transferred :\nUsername \"" +  pUsername +  "\", Password \"" + pPassword + "\", IP-address \"" + pNewIPAddress + "\"");
 			return true;
-		}
-		catch(NullPointerException e)
-		{
-			aLog.info("Error Transferring Account : Missing Parameter");
-			return false;
-		}
-		catch(NumberFormatException e)
-		{
-			aLog.info("Error Transferring Account : Invalid Age");
-			return false;
-		}
 	}
 
 	/**

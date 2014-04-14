@@ -45,6 +45,11 @@ class ReplicaManagerUDPListener extends Thread
 		return bShouldRestart;
 	}
 	
+	protected void resetShouldRestart()
+	{
+		bShouldRestart = false;
+	}
+	
 	@Override
 	public void run ()
 	{
@@ -55,7 +60,6 @@ class ReplicaManagerUDPListener extends Thread
 	/* Handles communication with the replica manager */
 	public void handleCommunication()
 	{
-		bShouldRestart = false;
 		try
 		{
 			requestFromReplicaManager = new DatagramPacket(buffer, buffer.length);
@@ -63,8 +67,12 @@ class ReplicaManagerUDPListener extends Thread
 			messageArray = (new String(requestFromReplicaManager.getData())).split(Parameters.UDP_PARSER);
 			if(messageArray[0].equals(Parameters.RM_NAME))
 			{
+				messageArray[1] = messageArray[1].trim();
 				if(messageArray[1].equals(Parameters.METHOD_CODE.RESTART_REPLICA.name()))
+				{
 					bShouldRestart = true;
+					System.out.println(bShouldRestart);
+				}
 			}
 		}
 		catch (IOException e)
@@ -112,6 +120,7 @@ class ReplicaAUDPThread extends Thread
 			{
 				replicaA.stopServers();
 				replicaA.startServers();
+				replicaA.replicaManagerListener.resetShouldRestart();
 			}
 			if(replicaA.replicaManagerListener.hasCrashed())
 			{
@@ -223,6 +232,7 @@ class ReplicaAUDPThread extends Thread
 			aNAGameServer = null;
 			aEUGameServer = null;
 			aASGameServer = null;
+			aLog.info("Stopped All Servers");
 		}
 		catch(Exception e)
 		{
@@ -250,8 +260,10 @@ class ReplicaAUDPThread extends Thread
 			requestFromLeaderPacket.setLength(buffer.length);
 			if(messageArray[0].equals(Parameters.LR_NAME))
 			{
+				messageArray[1] = messageArray[1].trim();
 				if(messageArray[1].equals(Parameters.METHOD_CODE.CREATE_ACCOUNT.name()))
 				{
+					messageArray[7] = messageArray[7].trim();
 					setORBreference(messageArray[7]);
 					if(aInterfaceIDL.createPlayerAccount(messageArray[2], messageArray[3], Integer.parseInt(messageArray[4]),
 														 messageArray[5], messageArray[6], messageArray[7]))
@@ -261,6 +273,7 @@ class ReplicaAUDPThread extends Thread
 				}
 				else if(messageArray[1].equals(Parameters.METHOD_CODE.PLAYER_SIGN_IN.name()))
 				{
+					messageArray[4] = messageArray[4].trim();
 					setORBreference(messageArray[4]);
 					if(aInterfaceIDL.playerSignIn(messageArray[2], messageArray[3], messageArray[4]))
 						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1";
@@ -269,6 +282,7 @@ class ReplicaAUDPThread extends Thread
 				}
 				else if(messageArray[1].equals(Parameters.METHOD_CODE.PLAYER_SIGN_OUT.name()))
 				{
+					messageArray[3] = messageArray[3].trim();
 					setORBreference(messageArray[3]);
 					if(aInterfaceIDL.playerSignOut(messageArray[2], messageArray[3]))
 						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1";
@@ -277,6 +291,7 @@ class ReplicaAUDPThread extends Thread
 				}
 				else if(messageArray[1].equals(Parameters.METHOD_CODE.TRANSFER_ACCOUNT.name()))
 				{
+					messageArray[5] = messageArray[5].trim();
 					setORBreference(messageArray[4]);
 					if(aInterfaceIDL.transferAccount(messageArray[2], messageArray[3], messageArray[4], messageArray[5]))
 						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1";
@@ -285,6 +300,7 @@ class ReplicaAUDPThread extends Thread
 				}
 				else if(messageArray[1].equals(Parameters.METHOD_CODE.SUSPEND_ACCOUNT.name()))
 				{
+					messageArray[5] = messageArray[5].trim();
 					setORBreference(messageArray[4]);
 					if(aInterfaceIDL.suspendAccount(messageArray[2], messageArray[3], messageArray[4], messageArray[5]))
 						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1";
@@ -293,6 +309,7 @@ class ReplicaAUDPThread extends Thread
 				}
 				else if(messageArray[1].equals(Parameters.METHOD_CODE.GET_PLAYER_STATUS.name()))
 				{
+					messageArray[4] = messageArray[4].trim();
 					setORBreference(messageArray[4]);
 					data = Parameters.RA_NAME + Parameters.UDP_PARSER + aInterfaceIDL.getPlayerStatus(messageArray[2], messageArray[3], messageArray[4]);
 				}
