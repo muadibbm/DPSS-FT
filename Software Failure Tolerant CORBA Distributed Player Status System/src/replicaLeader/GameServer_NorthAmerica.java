@@ -12,8 +12,23 @@ import org.omg.PortableServer.POAPackage.ObjectNotActive;
 import org.omg.PortableServer.POAPackage.ServantAlreadyActive;
 import org.omg.PortableServer.POAPackage.WrongPolicy;
 
-public class GameServer_NorthAmerica {
+public class GameServer_NorthAmerica extends Thread
+{
 
+	public void run()
+	{
+		try 
+		{
+			StartGameServer_NorthAmerica();
+		} 
+		catch (InvalidName | ServantAlreadyActive | WrongPolicy
+				| ObjectNotActive | FileNotFoundException | AdapterInactive e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * @param args
 	 * @throws InvalidName 
@@ -23,7 +38,7 @@ public class GameServer_NorthAmerica {
 	 * @throws FileNotFoundException 
 	 * @throws AdapterInactive 
 	 */
-	public static void StartGameServer_NorthAmerica() throws InvalidName, ServantAlreadyActive, WrongPolicy, ObjectNotActive, FileNotFoundException, AdapterInactive 
+	private void StartGameServer_NorthAmerica() throws InvalidName, ServantAlreadyActive, WrongPolicy, ObjectNotActive, FileNotFoundException, AdapterInactive 
 	{
 		System.out.println("GameServer_NorthAmerica.StartGameServer_NorthAmerica: Server going Online");
 		

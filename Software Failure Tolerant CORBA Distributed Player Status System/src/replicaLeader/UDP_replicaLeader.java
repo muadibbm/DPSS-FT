@@ -103,19 +103,21 @@ class UDP_replicaLeader extends Thread
   				    
   				    		case "RM":
   				    				// commands me to start the orb and my personal NA, AS and EU Servers 
-  				    				System.out.println("Receiving data from RM: m_UDPDataGram_from_stripped - " + m_UDPDataGram_from_stripped+"----");
+  				    				System.out.println("Receiving data from RM: m_UDPDataGram_from_stripped - " + m_UDPDataGram_from_stripped);
   				    			
   				    				LocalRMRequestProcessing l_LocalRMRequestProcessing = new LocalRMRequestProcessing();
-  				    				l_LocalRMRequestProcessing.getMethodName(m_UDPDataGram_from_stripped);
+  				    				l_LocalRMRequestProcessing.ProcessRMRequests(m_UDPDataGram_from_stripped);
   				    				
   				    			break;
   				    		
   				    		case "RA":
   				    				// result of a certain request
+  				    				System.out.println("Receiving data from RA: m_UDPDataGram_from_stripped - " + m_UDPDataGram_from_stripped);
   				    			break;
   				    		
   				    		case "RB":
   				    				// result of a certain request
+  				    			System.out.println("Receiving data from RB: m_UDPDataGram_from_stripped - " + m_UDPDataGram_from_stripped);
   				    			break;
   				    		
   				    		default:

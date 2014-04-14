@@ -7,6 +7,9 @@ public class Parameters
 	protected static int UDP_PORT_REPLICA_B = 3000;
 	
 	protected static int UDP_PORT_REPLICA_LEAD = 4000;
+	protected static int UDP_PORT_REPLICA_LEAD_NA = 2100;
+	protected static int UDP_PORT_REPLICA_LEAD_EU = 2200;
+	protected static int UDP_PORT_REPLICA_LEAD_AS = 2300;	
 	
 	protected static int UDP_PORT_REPLICA_LEAD_MULTICAST = 4500;
 	
@@ -25,7 +28,7 @@ public class Parameters
 	    , TRANSFER_ACCOUNT
 	    , GET_PLAYER_STATUS
 	    , SUSPEND_ACCOUNT
-	    , RESTART_REPLICA;
+	    , RESTART_REPLICA
 	}
 	
 	protected static String UDP_PARSER = "/";

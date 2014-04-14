@@ -27,9 +27,9 @@ public class GameServerImpl extends GameServerInterfacePOA
 		m_Location = ServerLocation;
 		udpPeer = new UDPPeer(UDPPortNumber, this);
 		udpPeer.start();
-		GameServerImpl.m_UDPLocation_PortNumber_Map.put("NorthAmerica", 3471);
-		GameServerImpl.m_UDPLocation_PortNumber_Map.put("Asia", 3469);
-		GameServerImpl.m_UDPLocation_PortNumber_Map.put("Europe", 3474);
+		GameServerImpl.m_UDPLocation_PortNumber_Map.put("NorthAmerica", Parameters.UDP_PORT_REPLICA_LEAD_NA);
+		GameServerImpl.m_UDPLocation_PortNumber_Map.put("Asia", Parameters.UDP_PORT_REPLICA_LEAD_AS);
+		GameServerImpl.m_UDPLocation_PortNumber_Map.put("Europe", Parameters.UDP_PORT_REPLICA_LEAD_EU);
 	}
 	
 	
