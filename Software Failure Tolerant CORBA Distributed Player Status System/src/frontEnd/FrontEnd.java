@@ -34,11 +34,8 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 {
 	private static Logger aLog;
 	private static Queue <List<Object>> aQueue;
-	private static boolean bMethodBeingProcessed; // Used to check if the leader has sent back the result
-	private static boolean bConfirmation; // Used to check if the method invoked was a success or failure
-	private FrontEndORBThread aORBThread;
-	private FrontEndUDPThread aUDPThread;
-	
+	private static FrontEndORBThread aORBThread;
+	private static FrontEndUDPThread aUDPThread;
 	// Used for UDP communication between front end and replica leader
 	private DatagramSocket sendSocket;
 	private DatagramPacket requestToReplicaLeader;
@@ -57,8 +54,6 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 		aLog = Log.createLog(Parameters.FE_NAME);
 		aQueue = new LinkedList <List<Object>>();
 		aLog.info("Queue initialized");
-		bMethodBeingProcessed = false;
-		bConfirmation = false;
 		try {
 			sendSocket = new DatagramSocket();
 			host = InetAddress.getByName("localhost");
@@ -120,15 +115,9 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 		{
 			if(!aQueue.isEmpty()) // Process requests one at a time
 			{
-				bMethodBeingProcessed = true;
 				tmpList = aQueue.remove();
 				sendRequestToReplicaLeader(tmpList);
 			}
-
-			if(aUDPThread.hasLeaderResponded())
-				bMethodBeingProcessed = false;
-			
-			bConfirmation = aUDPThread.getLeaderConfirmation(); // Get response from replica leader
 			
 			if(aUDPThread.hasCrashed())
 			{
@@ -262,6 +251,7 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 	@Override
 	public boolean createPlayerAccount(String pFirstName, String pLastName, int pAge, String pUsername, String pPassword, String pIPAddress) 
 	{
+		FrontEndORBThread.setLeaderResponded(false);
 		List<Object> tmpList = new ArrayList<Object>();
 		tmpList.add(Parameters.METHOD_CODE.CREATE_ACCOUNT); // index = 0
 		tmpList.add(pFirstName); // index = 1
@@ -272,14 +262,16 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 		tmpList.add(pIPAddress); // index = 6
 		aQueue.add(tmpList);
 		tmpList = null;
-		while(bMethodBeingProcessed) { /* Wait for the leader to respond */  }
+		while(!FrontEndORBThread.hasLeaderResponded())  /* Wait for the leader to respond */
+			System.out.print("");
 		aLog.info("Confirmation returned to client for CREATE PLAYER ACCOUNT");
-		return bConfirmation;
+		return FrontEndORBThread.getConfirmation();
 	}
 
 	@Override
 	public boolean playerSignIn(String pUsername, String pPassword, String pIPAddress) 
 	{
+		FrontEndORBThread.setLeaderResponded(false);
 		List<Object> tmpList = new ArrayList<Object>();
 		tmpList.add(Parameters.METHOD_CODE.PLAYER_SIGN_IN); // index = 0
 		tmpList.add(pUsername); // index = 1
@@ -287,28 +279,32 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 		tmpList.add(pIPAddress); // index = 3
 		aQueue.add(tmpList);
 		tmpList = null;
-		while(bMethodBeingProcessed) { /* Wait for the leader to respond */ }
+		while(!FrontEndORBThread.hasLeaderResponded())  /* Wait for the leader to respond */
+			System.out.print("");
 		aLog.info("Confirmation returned to client for PLAYER SIGN IN");
-		return bConfirmation;
+		return FrontEndORBThread.getConfirmation();
 	}
 
 	@Override
 	public boolean playerSignOut(String pUsername, String pIPAddress) 
 	{
+		FrontEndORBThread.setLeaderResponded(false);
 		List<Object> tmpList = new ArrayList<Object>();
 		tmpList.add(Parameters.METHOD_CODE.PLAYER_SIGN_OUT); // index = 0
 		tmpList.add(pUsername); // index = 1
 		tmpList.add(pIPAddress); // index = 2
 		aQueue.add(tmpList);
 		tmpList = null;
-		while(bMethodBeingProcessed) { /* Wait for the leader to respond */ }
+		while(!FrontEndORBThread.hasLeaderResponded())  /* Wait for the leader to respond */
+			System.out.print("");
 		aLog.info("Confirmation returned to client for PLAYER SIGN OUT");
-		return bConfirmation;
+		return FrontEndORBThread.getConfirmation();
 	}
 
 	@Override
 	public boolean transferAccount(String pUsername, String pPassword, String pOldIPAddress, String pNewIPAddress) 
 	{
+		FrontEndORBThread.setLeaderResponded(false);
 		List<Object> tmpList = new ArrayList<Object>();
 		tmpList.add(Parameters.METHOD_CODE.TRANSFER_ACCOUNT); // index = 0
 		tmpList.add(pUsername); // index = 1
@@ -317,14 +313,16 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 		tmpList.add(pNewIPAddress); // index = 4
 		aQueue.add(tmpList);
 		tmpList = null;
-		while(bMethodBeingProcessed) { /* Wait for the leader to respond */ }
+		while(!FrontEndORBThread.hasLeaderResponded())  /* Wait for the leader to respond */
+			System.out.print("");
 		aLog.info("Confirmation returned to client for TRANSFER ACCOUNT");
-		return bConfirmation;
+		return FrontEndORBThread.getConfirmation();
 	}
 
 	@Override
 	public String getPlayerStatus(String pAdminUsername, String pAdminPassword, String pIPAddress) 
 	{
+		FrontEndORBThread.setLeaderResponded(false);
 		List<Object> tmpList = new ArrayList<Object>();
 		tmpList.add(Parameters.METHOD_CODE.GET_PLAYER_STATUS); // index = 0
 		tmpList.add(pAdminUsername); // index = 1
@@ -332,15 +330,16 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 		tmpList.add(pIPAddress); // index = 3
 		aQueue.add(tmpList);
 		tmpList = null;
-		while(bMethodBeingProcessed) { /* Wait for the leader to respond */ }
+		while(!FrontEndORBThread.hasLeaderResponded())  /* Wait for the leader to respond */
+			System.out.print("");
 		aLog.info("Number of Players returned to client for GET PLAYER STATUS");
-		// TODO
-		return "";
+		return FrontEndORBThread.getResponse();
 	}
 
 	@Override
 	public boolean suspendAccount(String pAdminUsername, String pAdminPassword, String pIPAddress, String pUsernameToSuspend) 
 	{
+		FrontEndORBThread.setLeaderResponded(false);
 		List<Object> tmpList = new ArrayList<Object>();
 		tmpList.add(Parameters.METHOD_CODE.SUSPEND_ACCOUNT ); // index = 0
 		tmpList.add(pAdminUsername); // index = 1
@@ -349,8 +348,9 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 		tmpList.add(pUsernameToSuspend); // index = 4
 		aQueue.add(tmpList);
 		tmpList = null;
-		while(bMethodBeingProcessed) { /* Wait for the leader to respond */ }
+		while(!FrontEndORBThread.hasLeaderResponded())  /* Wait for the leader to respond */
+			System.out.print("");
 		aLog.info("Confirmation returned to client for SUSPEND ACCOUNT");
-		return bConfirmation;
+		return FrontEndORBThread.getConfirmation();
 	}
 }

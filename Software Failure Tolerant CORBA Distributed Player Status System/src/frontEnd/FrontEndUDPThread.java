@@ -17,15 +17,11 @@ class FrontEndUDPThread extends Thread
 	private String [] messageArray;
 	private int aPort;
 	private boolean bCrashed;
-	private boolean bLeaderResponded;
-	private boolean bConfirmation;
 	
 	protected FrontEndUDPThread(int pPort) 
 	{
 		aPort = pPort;
 		bCrashed = false;
-		bLeaderResponded = false;
-		bConfirmation = false;
 		buffer = new byte [Parameters.UDP_BUFFER_SIZE];
 		try {
 			aDatagramSocket = new DatagramSocket(aPort);
@@ -39,16 +35,6 @@ class FrontEndUDPThread extends Thread
 		return bCrashed;
 	}
 	
-	protected boolean hasLeaderResponded()
-	{
-		return bLeaderResponded;
-	}
-	
-	protected boolean getLeaderConfirmation()
-	{
-		return bConfirmation;
-	}
-	
 	@Override
 	public void run ()
 	{
@@ -59,21 +45,19 @@ class FrontEndUDPThread extends Thread
 	/*  Handles the messages received from the replica leader */
 	private void handleCommunication() 
 	{
-		bLeaderResponded = false;
 		try {
 			request = new DatagramPacket(buffer, buffer.length);
 			aDatagramSocket.receive(request);
 			messageArray = (new String(request.getData())).split(Parameters.UDP_PARSER);
 			if(messageArray[0].equals(Parameters.LR_NAME))
 			{
-				System.out.println("FrontEndUDPThread.handleCommunication: messageArray" + messageArray[0]);
-				System.out.println("FrontEndUDPThread.handleCommunication: messageArray" + messageArray[1]);
+				// TODO : add method type check
 				switch(Integer.parseInt(messageArray[1].substring(0, 1)))
 				{
-					case 0 : bConfirmation = false; break;
-					case 1 : bConfirmation = true; break;
+					case 0 : FrontEndORBThread.setConfimation(false); break;
+					case 1 : FrontEndORBThread.setConfimation(true); break;
 				}
-				bLeaderResponded = true;
+				FrontEndORBThread.setLeaderResponded(true);
 			}
 		} catch (IOException e) {
 			aDatagramSocket.close();

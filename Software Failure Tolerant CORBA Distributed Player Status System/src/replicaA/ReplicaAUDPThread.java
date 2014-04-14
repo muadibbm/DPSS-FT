@@ -261,6 +261,43 @@ class ReplicaAUDPThread extends Thread
 					else
 						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "0";
 				}
+				else if(messageArray[1].equals(Parameters.METHOD_CODE.PLAYER_SIGN_IN.name()))
+				{
+					setORBreference(messageArray[4]);
+					if(aInterfaceIDL.playerSignIn(messageArray[2], messageArray[3], messageArray[4]))
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1";
+					else
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "0";
+				}
+				else if(messageArray[1].equals(Parameters.METHOD_CODE.PLAYER_SIGN_OUT.name()))
+				{
+					setORBreference(messageArray[3]);
+					if(aInterfaceIDL.playerSignOut(messageArray[2], messageArray[3]))
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1";
+					else
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "0";
+				}
+				else if(messageArray[1].equals(Parameters.METHOD_CODE.TRANSFER_ACCOUNT.name()))
+				{
+					setORBreference(messageArray[4]);
+					if(aInterfaceIDL.transferAccount(messageArray[2], messageArray[3], messageArray[4], messageArray[5]))
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1";
+					else
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "0";
+				}
+				else if(messageArray[1].equals(Parameters.METHOD_CODE.SUSPEND_ACCOUNT.name()))
+				{
+					setORBreference(messageArray[4]);
+					if(aInterfaceIDL.suspendAccount(messageArray[2], messageArray[3], messageArray[4], messageArray[5]))
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1";
+					else
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "0";
+				}
+				else if(messageArray[1].equals(Parameters.METHOD_CODE.GET_PLAYER_STATUS.name()))
+				{
+					setORBreference(messageArray[4]);
+					data = Parameters.RA_NAME + Parameters.UDP_PARSER + aInterfaceIDL.getPlayerStatus(messageArray[2], messageArray[3], messageArray[4]);
+				}
 				
 				buffer = data.getBytes();
 				replyToLeaderPacket = new DatagramPacket(buffer, data.length(), localhost, Parameters.UDP_PORT_REPLICA_LEAD);
