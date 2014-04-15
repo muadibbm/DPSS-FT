@@ -7,9 +7,9 @@ public class Parameters
 	protected static int UDP_PORT_REPLICA_B = 3000;
 	
 	protected static int UDP_PORT_REPLICA_LEAD = 4000;
-	protected static int UDP_PORT_REPLICA_LEAD_NA = 2100;
-	protected static int UDP_PORT_REPLICA_LEAD_EU = 2200;
-	protected static int UDP_PORT_REPLICA_LEAD_AS = 2300;	
+	protected static int UDP_PORT_REPLICA_LEAD_NA = 4100;
+	protected static int UDP_PORT_REPLICA_LEAD_EU = 4200;
+	protected static int UDP_PORT_REPLICA_LEAD_AS = 4300;	
 	
 	protected static int UDP_PORT_REPLICA_LEAD_MULTICAST = 4446;
 	

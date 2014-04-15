@@ -57,17 +57,17 @@ public class UDPPeer extends Thread
   					if(p_gameserver.m_Location == "NorthAmerica")
   	  				{
   						m_PacketData = null;
-  	  					m_PacketData = p_gameserver.m_Location + "(" + p_gameserver.GetServerDetails() + ")";
+  	  					m_PacketData = "NA" + "/" + p_gameserver.GetServerDetails();
   	  				}
   	  				else if(p_gameserver.m_Location == "Asia")
   	  				{
   	  					m_PacketData = null;
-	  					m_PacketData = p_gameserver.m_Location + "(" + p_gameserver.GetServerDetails() + ")";
+	  					m_PacketData = "AS" + "/" + p_gameserver.GetServerDetails();
   	  				}
   	  				else if(p_gameserver.m_Location == "Europe")
   	  				{
   	  					m_PacketData = null;
-	  					m_PacketData = p_gameserver.m_Location + "(" + p_gameserver.GetServerDetails() + ")";
+	  					m_PacketData = "EU" + "/" + p_gameserver.GetServerDetails();
   	  				}
   	  				else
   	  				{

@@ -32,7 +32,7 @@ class UDP_replicaLeader extends Thread
      //System.out.println("Exiting child thread.");
 	}
 	
-	private UDP_replicaLeader()
+	UDP_replicaLeader()
 	{
 
 	}
@@ -78,23 +78,22 @@ class UDP_replicaLeader extends Thread
   	  				    				// Creating Multicast datagram packet
   				    					System.out.println("UDP_replicaLeader.set_UDP_Server_Online : l_multiCastDGram_replica - "+ l_multiCastDGram_replica);
   	  				    				
-  	  				    				
-  	  				    				// Send Multi-cast data to Replica A and Replica B
-  	  				    				sendMulticastPacket_Replicas(l_multiCastDGram_replica);
-  				    					
   				    					// send data to the orb
   				    					String l_invocationResponse = l_LocalOrbProcessing.performRMI(m_UDPDataGram_from_stripped);
   				    					
+  				    					//Set value in LocalReplicsRequestProcessing
+  				    					LocalReplicsRequestProcessing.m_LeaderResultProcessed = l_invocationResponse;
   				    					
   				    					// Create Datagram to send response to FE
   				    					l_invocationResponse = Parameters.LR_NAME + Parameters.UDP_PARSER + l_invocationResponse;
-  				    				
-  				    					// send response to FE
-  				    					System.out.println("UDP_replicaLeader.set_UDP_Server_Online : l_invocationResponse - "+ l_invocationResponse);
-  				    					sendPacket(l_invocationResponse, Parameters.UDP_PORT_FE);
+  				    					
+  	  				    				// Send Multi-cast data to Replica A and Replica B
+  	  				    				sendMulticastPacket_Replicas(l_multiCastDGram_replica);
+  				    					
   				    				}
   				    				
   				    				l_LocalOrbProcessing = null;
+  				    				m_UDPDataGram_from_stripped = "";
   				    				
   				    				// multicast data send to the Replica_A and Replica_B
   				    				
@@ -113,11 +112,27 @@ class UDP_replicaLeader extends Thread
   				    		case "RA":
   				    				// result of a certain request
   				    				System.out.println("Receiving data from RA: m_UDPDataGram_from_stripped - " + m_UDPDataGram_from_stripped);
+  				    				
+  				    				if(m_UDPDataGram_from_stripped != "")
+  				    				{
+  				    					LocalReplicsRequestProcessing.m_Replica_A_Processed = m_UDPDataGram_from_stripped;
+  				    					LocalReplicsRequestProcessing.CompareResults();
+  				    				}
+  				    				
+  				    				m_UDPDataGram_from_stripped = "";
+  				    				
   				    			break;
   				    		
   				    		case "RB":
   				    				// result of a certain request
   				    			System.out.println("Receiving data from RB: m_UDPDataGram_from_stripped - " + m_UDPDataGram_from_stripped);
+  				    			if(m_UDPDataGram_from_stripped != "")
+				    				{
+				    					LocalReplicsRequestProcessing.m_Replica_B_Processed = m_UDPDataGram_from_stripped;
+				    					LocalReplicsRequestProcessing.CompareResults();
+				    				}
+				    				
+				    				m_UDPDataGram_from_stripped = "";
   				    			break;
   				    		
   				    		default:
@@ -148,7 +163,7 @@ class UDP_replicaLeader extends Thread
 		}
     }
 	
-	protected boolean sendPacket(String p_Data, int p_portNumber)
+	protected static boolean sendPacket(String p_Data, int p_portNumber)
 	{
 		DatagramSocket aSocket = null;
 		try 
