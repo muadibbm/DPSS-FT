@@ -17,7 +17,7 @@ public class TestUDPClient {
 		//String message = "LR/CREATE_ACCOUNT/Desy/Andree/22/est/test/182.22";
 		//String message = "LD/PLAYER_SIGN_IN/est/test/93.22";
 		//String message = "LD/PLAYER_SIGN_OUT/est/93.22";
-		String message = "LD/SUSPEND_ACCOUNT/Admin/Admin/93.22/est";
+		//String message = "LD/SUSPEND_ACCOUNT/Admin/Admin/93.22/est";
 				
 		//String message = "LR/CREATE_ACCOUNT/Desy/Andree/22/desy123/desy123/132.22";
 		//String message = "LD/PLAYER_SIGN_IN/desy123/desy123/132.22";
@@ -25,7 +25,7 @@ public class TestUDPClient {
 		//String message = "LD/SUSPEND_ACCOUNT/Admin/Admin/132.22/desy123";
 		//String message = "RM/NO";
 		
-		//String message = "LD/GET_PLAYER_STATUS/Admin/Admin/182.22";
+		String message = "LD/GET_PLAYER_STATUS/Admin/Admin/182.22";
 		
 		try {
 			aSocket = new DatagramSocket();

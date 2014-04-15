@@ -377,7 +377,7 @@ public class ServerReplica  extends Thread{
 					
 			}
 		}
-		currentServerStat = this.acronym + " has " + onlineUsers + " online and " + offlineUsers + " offline.";
+		currentServerStat = "/" + this.acronym + "/" + onlineUsers + "/" + offlineUsers + "/online.";
 		//returnMessage = StatusUDP(extractIP(IPAddress));
 		//System.out.println("Return message from the current server: " + currentServerStat);
 		
@@ -506,6 +506,10 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 				bufferACK = "1/1".getBytes();
 				System.out.println ("Replica " + IPaddress + " is up and running!");
 				String methodCall = null;
+				
+				int statusIndex= 0;
+				
+				
 				//always listen for new messages on the specified port
 				while (true) {							
 					DatagramPacket request = new DatagramPacket(buffer, buffer.length);
@@ -514,9 +518,16 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 					System.out.println("Data recieved at GEO server " + dataRecieved);
 					
 					if (dataRecieved.contains("online")) {
+						statusIndex =  dataRecieved.indexOf("online");
+						dataRecieved = dataRecieved.substring(0,statusIndex);
 						methodAcknowledgmentStr.concat((dataRecieved));
 						
 						globalSystemSat = globalSystemSat.concat(dataRecieved);
+
+						bufferStat = (Parameters.RB_NAME + globalSystemSat + Parameters.UDP_END_PARSE).getBytes();						
+						
+						DatagramPacket replay3 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
+						aSocket.send(replay3);
 						log (globalSystemSat);
 						System.out.println(globalSystemSat);
 					}
@@ -535,9 +546,9 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 						methodAcknowledgment =  createPlayerAccount(messageArray[2], messageArray[3], Integer.parseInt(messageArray[4]), messageArray[5], messageArray[6], messageArray[7]);
 						
 						if (methodAcknowledgment == true) {
-							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1").getBytes();						
+							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_END_PARSE).getBytes();						
 							
-						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0").getBytes();	}
+						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0"  + Parameters.UDP_END_PARSE).getBytes();	}
 						
 						DatagramPacket replay3 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
 						aSocket.send(replay3);
@@ -548,9 +559,9 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 						methodAcknowledgment =  PlayerSignIn(messageArray[2], messageArray[3], messageArray[4]);
 						
 						if (methodAcknowledgment == true) {
-							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1").getBytes();						
+							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1"  + Parameters.UDP_END_PARSE).getBytes();						
 							
-						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0").getBytes();	}
+						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0"  + Parameters.UDP_END_PARSE).getBytes();	}
 						
 						DatagramPacket replay3 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
 						aSocket.send(replay3);
@@ -560,9 +571,9 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 						//call player sign out
 						methodAcknowledgment =  PlayerSignOut(messageArray[2], messageArray[3]);
 						if (methodAcknowledgment == true) {
-							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1").getBytes();						
+							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_END_PARSE).getBytes();						
 							
-						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0").getBytes();	}
+						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0" + Parameters.UDP_END_PARSE).getBytes();	}
 						
 						DatagramPacket replay3 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
 						aSocket.send(replay3);
@@ -573,9 +584,9 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 						//call suspend account
 						methodAcknowledgment = suspendAccount(messageArray[2], messageArray[3], messageArray[4], messageArray[5]);
 						if (methodAcknowledgment == true) {
-							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1").getBytes();						
+							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_END_PARSE).getBytes();						
 							
-						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0").getBytes();	}
+						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0" + Parameters.UDP_END_PARSE).getBytes();	}
 						
 						DatagramPacket replay3 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
 						aSocket.send(replay3);
@@ -590,7 +601,9 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 						//call get player status
 						methodAcknowledgmentStr = getPlayerStatus(messageArray[2], messageArray[3], messageArray[4]);
 					//send 2 UDP messages to the other 2 servers	
-						globalSystemSat = methodAcknowledgmentStr;
+						
+						
+						
 						
 							
 						bufferStat = (Parameters.REQUEST_LOCAL_STAT).getBytes();						
@@ -600,9 +613,12 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 						aSocket.send(replay2);
 						
 						log (methodAcknowledgmentStr);
+						
 						System.out.println (methodAcknowledgmentStr);
 						
-						
+						statusIndex =  methodAcknowledgmentStr.indexOf("online");
+						methodAcknowledgmentStr = methodAcknowledgmentStr.substring(0,statusIndex-1);
+						globalSystemSat = methodAcknowledgmentStr;
 						
 						
 					} else if (dataRecieved.contains(Parameters.REQUEST_LOCAL_STAT)) {

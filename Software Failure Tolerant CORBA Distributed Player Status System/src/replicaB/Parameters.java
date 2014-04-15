@@ -5,6 +5,7 @@ public class Parameters
 {
 
 	
+	
 	protected static String REQUEST_LOCAL_STAT = "REQUEST_LOCAL_STAT_FROM_SERVER_NA_SERVER_EU_SERVER_AS";
 	
 	protected static int UDP_PORT_REPLICA_A = 2000;

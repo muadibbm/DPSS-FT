@@ -137,8 +137,6 @@ public class GameUDPServer extends Thread{
 					   messageArray[i] = null;
 				  }
 				dataRecieved = null;
-				//requestMethodCode = null;
-				//requestServerInitials = null;
 				
 				
 				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
