@@ -44,16 +44,15 @@ class UDP_replicaLeader extends Thread
 		{
 	    	aSocket = new DatagramSocket(Parameters.UDP_PORT_REPLICA_LEAD);
 	    	
-			byte[] buffer = new byte[Parameters.UDP_BUFFER_SIZE];
-			
 			System.out.println("UDP_replicaLeader.setUDPServerOnline: UDP_replicaLeader going online.");
 			
  			while(true)
  			{  
+ 				byte[] buffer = new byte[Parameters.UDP_BUFFER_SIZE];
  				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
+ 				//request.setLength(buffer.length);
   				aSocket.receive(request);     
   				String l_result = new String(request.getData(), "UTF-8");
-  				
   				System.out.println("UDP_replicaLeader.setUDPServerOnline: l_result - " + l_result);
   				
   				if(l_result != null)
@@ -93,8 +92,7 @@ class UDP_replicaLeader extends Thread
   				    				}
   				    				
   				    				l_LocalOrbProcessing = null;
-  				    				m_UDPDataGram_from_stripped = "";
-  				    				
+  				    				m_UDPDataGram_from_stripped = "";  				    				
   				    				// multicast data send to the Replica_A and Replica_B
   				    				
   				    				
@@ -115,7 +113,7 @@ class UDP_replicaLeader extends Thread
   				    				
   				    				if(m_UDPDataGram_from_stripped != "")
   				    				{
-  				    					LocalReplicsRequestProcessing.m_Replica_A_Processed = m_UDPDataGram_from_stripped;
+  				    					LocalReplicsRequestProcessing.m_Replica_A_Processed = m_UDPDataGram_from_stripped.substring(0,1);
   				    					LocalReplicsRequestProcessing.CompareResults();
   				    				}
   				    				
@@ -128,7 +126,7 @@ class UDP_replicaLeader extends Thread
   				    			System.out.println("Receiving data from RB: m_UDPDataGram_from_stripped - " + m_UDPDataGram_from_stripped);
   				    			if(m_UDPDataGram_from_stripped != "")
 				    				{
-				    					LocalReplicsRequestProcessing.m_Replica_B_Processed = m_UDPDataGram_from_stripped;
+				    					LocalReplicsRequestProcessing.m_Replica_B_Processed = m_UDPDataGram_from_stripped.substring(0,1);
 				    					LocalReplicsRequestProcessing.CompareResults();
 				    				}
 				    				

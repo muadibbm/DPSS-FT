@@ -45,9 +45,9 @@ public class LocalReplicsRequestProcessing
 			}
 		}
 		else
+		{
 			m_checkedByPrevReplica += 1;
-		
-		System.out.println("Result tried to be Processed By a Replica - " + m_checkedByPrevReplica);
-		
+			System.out.println("Result tried to be Processed By a Replica - " + m_checkedByPrevReplica);
+		}		
 	}
 }
