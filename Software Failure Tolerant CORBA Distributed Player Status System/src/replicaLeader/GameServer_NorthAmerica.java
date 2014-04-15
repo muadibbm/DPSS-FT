@@ -51,7 +51,7 @@ public class GameServer_NorthAmerica extends Thread
 		
 		int UDPPortNumber = 3471;
 		
-		GameServerImpl agameServer = new GameServerImpl("NorthAmerica",UDPPortNumber);
+		GameServerImpl agameServer = new GameServerImpl("NA",Parameters.UDP_PORT_REPLICA_LEAD_NA);
 		byte[] id = rootPOA.activate_object(agameServer);
 		org.omg.CORBA.Object ref = rootPOA.id_to_reference(id);
 		

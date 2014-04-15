@@ -61,7 +61,7 @@ public class LocalOrbProcessing
 				aGameServerRef = GameServerInterfaceHelper.narrow(o);			
 			}
 		
-			else if("92".equals(p_IPAddress.substring(0,2)))
+			else if("93".equals(p_IPAddress.substring(0,2)))
 			{
 				ORB orb = ORB.init(args, null);
 				
@@ -211,7 +211,7 @@ public class LocalOrbProcessing
 					String l_MethodStatus =  l_LocalGameServerReference.getPlayerStatus(l_ParamArray[1], l_ParamArray[2], l_ParamArray[3]);
 					if(l_MethodStatus != "")
 					{
-						return "1";
+						return l_MethodStatus;
 					}
 					return "0";
 				}

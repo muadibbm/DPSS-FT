@@ -6,7 +6,7 @@ public class UDPPeer extends Thread
 {
 	private int m_PortNumber;
 	private GameServerImpl m_gameServer = null;
-	public static String m_PacketData = null;
+	public static String m_PacketData = "";
 	
 	public void run()
 	{
@@ -47,31 +47,31 @@ public class UDPPeer extends Thread
   				aSocket.receive(request);     
   				   
     			String result = new String(request.getData(), "UTF-8");
-    			System.out.println("printing result: " + result);
+    			//System.out.println("printing result: " + result);
   				
   				if(result.substring(0, 1).matches("P"))
   				{
   					SenderPortNumber = Integer.parseInt(result.substring(1, 5));
-  					System.out.println("UDP Server @ "+p_gameserver.m_Location+" : Message Received from: " + SenderPortNumber);
+  					//System.out.println("UDP Server @ "+p_gameserver.m_Location+" : Message Received from: " + SenderPortNumber);
   					  					
-  					if(p_gameserver.m_Location == "NorthAmerica")
+  					if(p_gameserver.m_Location == "NA")
   	  				{
-  						m_PacketData = null;
+  						m_PacketData = "";
   	  					m_PacketData = "NA" + "/" + p_gameserver.GetServerDetails();
   	  				}
-  	  				else if(p_gameserver.m_Location == "Asia")
+  	  				else if(p_gameserver.m_Location == "AS")
   	  				{
-  	  					m_PacketData = null;
+  	  					m_PacketData = "";
 	  					m_PacketData = "AS" + "/" + p_gameserver.GetServerDetails();
   	  				}
-  	  				else if(p_gameserver.m_Location == "Europe")
+  	  				else if(p_gameserver.m_Location == "EU")
   	  				{
-  	  					m_PacketData = null;
+  	  					m_PacketData = "";
 	  					m_PacketData = "EU" + "/" + p_gameserver.GetServerDetails();
   	  				}
   	  				else
   	  				{
-  	  					m_PacketData = null;
+  	  					m_PacketData = "";
   	  				}
   					
   					DatatoSend = m_PacketData;
@@ -84,7 +84,7 @@ public class UDPPeer extends Thread
   					String UserData = result.substring(5, result.length());
   					String Segments[] = UserData.split("/");
   					String newAccStatus = p_gameserver.createPlayerAccount(Segments[0],Segments[1],Segments[2],Segments[3], Segments[4], Segments[5]);
-  					System.out.println("UDP Server @ "+p_gameserver.m_Location+" : " + newAccStatus);
+  					//System.out.println("UDP Server @ "+p_gameserver.m_Location+" : " + newAccStatus);
   					m_PacketData = newAccStatus;
   					DatatoSend = m_PacketData;
   					SendReply = true;  					
@@ -93,7 +93,7 @@ public class UDPPeer extends Thread
   				else
   				{
   					m_PacketData = result;
-  					System.out.println("UDP Server @ "+p_gameserver.m_Location+" : Data set is: " + m_PacketData);
+  					//System.out.println("UDP Server @ "+p_gameserver.m_Location+" : Data set is: " + m_PacketData);
   				}
   				  				
   				if(SendReply == true && SenderPortNumber != 0)
@@ -101,7 +101,7 @@ public class UDPPeer extends Thread
   					UDPSendRequestforData(DatatoSend, SenderPortNumber);
   					//DatagramPacket reply = new DatagramPacket(UDPPeer.m_PacketData.getBytes(), UDPPeer.m_PacketData.length(), request.getAddress(), request.getPort());
   		    		//aSocket.send(reply);
-  					System.out.println("UDP Server @ "+p_gameserver.m_Location+" : Message Sent to: " + SenderPortNumber);
+  					//System.out.println("UDP Server @ "+p_gameserver.m_Location+" : Message Sent to: " + SenderPortNumber);
   					SendReply = false;
   					DatatoSend = "";
   				}

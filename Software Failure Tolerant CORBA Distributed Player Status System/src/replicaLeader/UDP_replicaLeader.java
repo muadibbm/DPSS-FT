@@ -16,7 +16,6 @@ import replicaLeader.Parameters.METHOD_CODE;
 class UDP_replicaLeader extends Thread
 {
 	private String m_UDPDataGram_from_stripped;
-	private static int m_startLocalServerOnce = 0;
 	
 	@Override
 	public void run()
@@ -29,7 +28,6 @@ class UDP_replicaLeader extends Thread
 		{
 			System.out.println("Server thread interrupted.");
 		}
-     //System.out.println("Exiting child thread.");
 	}
 	
 	UDP_replicaLeader()
@@ -82,6 +80,8 @@ class UDP_replicaLeader extends Thread
   				    					
   				    					//Set value in LocalReplicsRequestProcessing
   				    					LocalReplicsRequestProcessing.m_LeaderResultProcessed = l_invocationResponse;
+  				    					System.out.println("UDP_replicaLeader.set_UDP_Server_Online : l_invocationResponse - "+ l_invocationResponse);
+  				    					
   				    					
   				    					// Create Datagram to send response to FE
   				    					l_invocationResponse = Parameters.LR_NAME + Parameters.UDP_PARSER + l_invocationResponse;
@@ -104,6 +104,7 @@ class UDP_replicaLeader extends Thread
   				    			
   				    				LocalRMRequestProcessing l_LocalRMRequestProcessing = new LocalRMRequestProcessing();
   				    				l_LocalRMRequestProcessing.ProcessRMRequests(m_UDPDataGram_from_stripped);
+  				    				m_UDPDataGram_from_stripped = "";
   				    				
   				    			break;
   				    		

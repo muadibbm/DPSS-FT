@@ -2,9 +2,9 @@ package replicaLeader;
 
 public class LocalReplicsRequestProcessing 
 {
-	static String m_LeaderResultProcessed = "";
-	static String m_Replica_A_Processed = "";
-	static String m_Replica_B_Processed = "";
+	static String m_LeaderResultProcessed;
+	static String m_Replica_A_Processed;
+	static String m_Replica_B_Processed;
 	
 	private static int m_checkedByPrevReplica = 0;
 	
@@ -22,7 +22,7 @@ public class LocalReplicsRequestProcessing
 			String l_segments_A[] = m_Replica_A_Processed.split(Parameters.UDP_PARSER);
 			String l_segments_B[] = m_Replica_B_Processed.split(Parameters.UDP_PARSER);
 					
-			System.out.println("TEsting 1");
+			//System.out.println("TEsting 1");
 			
 			// check if all results are same
 			if(l_segments_Leader[0].equals(l_segments_A[0]) || l_segments_Leader[0].equals(l_segments_B[0]))
@@ -64,6 +64,8 @@ public class LocalReplicsRequestProcessing
 					}
 				}
 
+				
+				// Fil up the 
 				m_LeaderResultProcessed = Parameters.LR_NAME ;
 				String result = "";
 				
@@ -75,10 +77,13 @@ public class LocalReplicsRequestProcessing
 							
 				m_LeaderResultProcessed = m_LeaderResultProcessed + result;
 				
-				System.out.println("LocalReplicsRequestProcessing.CompareResults: Send Packet - m_LeaderResultProcessed" + m_LeaderResultProcessed);
+				
+				// Sending datagram to Front End the result of Leader
+				System.out.println("LocalReplicsRequestProcessing.CompareResults: to Front End - m_LeaderResultProcessed" + m_LeaderResultProcessed);
 				UDP_replicaLeader.sendPacket(m_LeaderResultProcessed, Parameters.UDP_PORT_FE);
 								
 				// sending packet to Replica Manager
+				// If Replica Manager Datagram isnot empty, send it.
 				if(!l_rmdatagram.equals(""))
 				{
 					l_rmdatagram =  Parameters.LR_NAME + Parameters.UDP_PARSER + l_rmdatagram;
