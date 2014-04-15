@@ -19,3 +19,16 @@
 04/14/2014 11:50:11 PM : Local stat is requested : /EU/0/0/online.
 04/14/2014 11:52:14 PM : Local stat is requested : /EU/0/0/online.
 04/14/2014 11:53:23 PM : Local stat is requested : /EU/0/0/online.
+04/15/2014 4:07:48 PM : Local stat is requested : /EU/0/0/online.
+04/15/2014 4:09:29 PM : Local stat is requested : /EU/0/0/online.
+04/15/2014 4:10:59 PM : Local stat is requested : /EU/0/0/online.
+04/15/2014 4:16:36 PM : Local stat is requested : /EU/0/0/online.
+04/15/2014 4:25:36 PM : Local stat is requested : /EU/0/0/online.
+04/15/2014 4:27:27 PM : Local stat is requested : /EU/0/0/online.
+04/15/2014 4:30:41 PM : Local stat is requested : /EU/0/0/online.
+04/15/2014 4:32:21 PM : Local stat is requested : /EU/0/0/online.
+04/15/2014 4:46:40 PM : Local stat is requested : /EU/0/0/online.
+04/15/2014 4:53:04 PM : Local stat is requested : /EU/0/0/online.
+04/15/2014 4:56:30 PM : Local stat is requested : /EU/0/0/online.
+04/15/2014 4:59:50 PM : Local stat is requested : /EU/0/0/online.
+04/15/2014 5:04:22 PM : Local stat is requested : /EU/0/0/online.
