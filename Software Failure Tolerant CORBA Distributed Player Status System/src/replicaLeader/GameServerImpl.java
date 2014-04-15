@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,10 +15,10 @@ import java.util.Set;
 public class GameServerImpl extends GameServerInterfacePOA 
 {
 	
-	protected Hashtable<String, List<UserData>> UserData_HashTable = new Hashtable<String, List<UserData>>();
+	protected Hashtable<String, List<UserData>> UserData_HashTable; 
 	public UDPPeer udpPeer;
 	
-	private static Map<String, Integer> m_UDPLocation_PortNumber_Map = new HashMap<String, Integer>();
+	private static Map<String, Integer> m_UDPLocation_PortNumber_Map; 
 	
 	
 	public String m_Location;
@@ -27,12 +28,16 @@ public class GameServerImpl extends GameServerInterfacePOA
 	
 	GameServerImpl(String ServerLocation, int UDPPortNumber)
 	{
+		m_UDPLocation_PortNumber_Map = new HashMap<String, Integer>();
+		
 		m_Location = ServerLocation;
 		udpPeer = new UDPPeer(UDPPortNumber, this);
 		udpPeer.start();
 		GameServerImpl.m_UDPLocation_PortNumber_Map.put("NA", Parameters.UDP_PORT_REPLICA_LEAD_NA);
 		GameServerImpl.m_UDPLocation_PortNumber_Map.put("AS", Parameters.UDP_PORT_REPLICA_LEAD_AS);
 		GameServerImpl.m_UDPLocation_PortNumber_Map.put("EU", Parameters.UDP_PORT_REPLICA_LEAD_EU);
+		
+		UserData_HashTable = new Hashtable<String, List<UserData>>();
 	}
 	
 	
@@ -79,6 +84,9 @@ public class GameServerImpl extends GameServerInterfacePOA
 		// Put list in the hash table with a token of first char of user name
 		this.UserData_HashTable.put(hashTable_token,new_udl);
 		System.out.println(p_Username + " - Successfully signed up. Message sent to user\n");
+		
+		System.out.println("Hash Table: " + UserData_HashTable.toString());
+		
 		return "SignUpsuccessful";
 	}
 
@@ -249,6 +257,9 @@ public class GameServerImpl extends GameServerInterfacePOA
 	public String transferAccount(String p_Username, String p_Password,
 			String p_oldIPAddress, String p_newIPAddress) 
 	{
+		
+		System.out.println("Hash Table: " + this.UserData_HashTable.toString());
+		
 		// TODO Auto-generated method stub
 		String hashTable_token = "";
 				
@@ -260,6 +271,7 @@ public class GameServerImpl extends GameServerInterfacePOA
 		System.out.println("Server trying to access "+p_Username+" Profile\n");
 		
 		List<UserData> ud_l = this.UserData_HashTable.get(hashTable_token);
+		
 		if (ud_l != null) 
 		{
 			for(UserData record : ud_l)
@@ -432,7 +444,7 @@ public class GameServerImpl extends GameServerInterfacePOA
 		System.out.println("l_Server_Data_EU: " + l_Server_Data_EU);
 		System.out.println("l_Server_Data_AS: " + l_Server_Data_AS);
 		
-		m_finalData = l_Server_Data_NA +"/" +l_Server_Data_EU +"/"+ l_Server_Data_AS;
+		m_finalData = "1" + "/" + l_Server_Data_NA +"/" +l_Server_Data_EU +"/"+ l_Server_Data_AS;
 		
 		System.out.println("Final Data: " + m_finalData);
 		return m_finalData;
