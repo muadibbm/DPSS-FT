@@ -31,8 +31,8 @@ import org.omg.PortableServer.POAPackage.WrongPolicy;
 class GameServer extends interfaceIDLPOA implements Runnable
 {
 	private String aServerName;
-	private static Hashtable<String, List<Account>> aDatabase;
-	private static Logger aLog;
+	private Hashtable<String, List<Account>> aDatabase;
+	private Logger aLog;
 	private ORBThread aORBThread;
 	private UDPThread aUDPThread;
 	private int aPortUDP;
@@ -55,9 +55,13 @@ class GameServer extends interfaceIDLPOA implements Runnable
 		aLog.info("UDP Running");
 	}
 	
-	private GameServer()
+	private GameServer(String pServerName, int pPortUDP, Hashtable<String, List<Account>> pDatabase,
+			Logger pLog)
 	{
-		// Constructor used for creating ORB interface
+		aServerName = pServerName;
+		aPortUDP = pPortUDP;
+		aDatabase = pDatabase;
+		aLog = pLog;
 	}
 	
 	/* Clears the database and frees any resources allocated for the game server */
@@ -91,7 +95,7 @@ class GameServer extends interfaceIDLPOA implements Runnable
 			// Initialize the ORB object
 			orb = ORB.init(pArgs, null);
 			POA rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-			GameServer aInterface = new GameServer();
+			GameServer aInterface = new GameServer(aServerName, aPortUDP, aDatabase, aLog);
 			byte [] id = rootPOA.activate_object(aInterface);
 			// Obtain reference to CORBA object
 			org.omg.CORBA.Object reference_CORBA = rootPOA.id_to_reference(id);
@@ -360,6 +364,7 @@ class GameServer extends interfaceIDLPOA implements Runnable
 						message = data.getBytes();
 						requestToTransfer = new DatagramPacket(message, message.length, InetAddress.getByName("localhost"), aPortNumber);
 						datagramSocket.send(requestToTransfer);
+						datagramSocket.close();
 					} catch (SocketException e) {
 						aLog.info("Error Transferring Account : removal faild");
 						return false;
@@ -431,35 +436,31 @@ class GameServer extends interfaceIDLPOA implements Runnable
 			message = data.getBytes();
 			requestToGetPlayerStatus = new DatagramPacket(message, message.length, host, portNumber1);
 			datagramSocket.send(requestToGetPlayerStatus);
-			
 			message = new byte [1000];
 			reply = new DatagramPacket(message, message.length);
 			datagramSocket.receive(reply);
 			repliedMessage1 = new String(reply.getData());
-				
-			datagramSocket = new DatagramSocket();
-			host = InetAddress.getByName("localhost");
+			repliedMessage1 = repliedMessage1.trim();
 			data = Parameters.METHOD_CODE.GET_PLAYER_STATUS.name();
 			message = data.getBytes();
 			requestToGetPlayerStatus = new DatagramPacket(message, message.length, host, portNumber2);
 			datagramSocket.send(requestToGetPlayerStatus);
-				
 			message = new byte [1000];
 			reply = new DatagramPacket(message, message.length);
 			datagramSocket.receive(reply);
 			repliedMessage2 = new String(reply.getData());
-			
+			repliedMessage2 = repliedMessage2.trim();
+			datagramSocket.close();
 		} catch (SocketException e) {
 			return "0";
 		} catch (IOException e) {
 			return "0";
 		}
-		aLog.info("Get Player Status : " + aServerName + ": " + getNumberOfOnlinePlayer() + " online, " + getNumberOfOfflinePlayer() + 
-				" offline. \n" + repliedMessage1 + "\n" + repliedMessage2);
+		aLog.info("Get Player Status : " + aServerName + Parameters.UDP_PARSER + getNumberOfOnlinePlayer() + Parameters.UDP_PARSER + getNumberOfOfflinePlayer() + 
+				"\n" + repliedMessage1 + "\n" + repliedMessage2);
 		return "1" + Parameters.UDP_PARSER +
 				aServerName + Parameters.UDP_PARSER + getNumberOfOnlinePlayer() + Parameters.UDP_PARSER + getNumberOfOfflinePlayer() + Parameters.UDP_PARSER +
-				repliedMessage1 + Parameters.UDP_PARSER + 
-				repliedMessage2;
+				repliedMessage1 + Parameters.UDP_PARSER + repliedMessage2;
 	}
 
 	/**
