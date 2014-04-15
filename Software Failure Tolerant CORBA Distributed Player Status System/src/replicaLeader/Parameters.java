@@ -20,6 +20,7 @@ public class Parameters
 	protected static int UDP_PORT_FE = 6000;
 	
 	
+	
 	protected static enum METHOD_CODE 
 	{
 	    CREATE_ACCOUNT
@@ -32,6 +33,8 @@ public class Parameters
 	}
 	
 	protected static String UDP_PARSER = "/";
+	
+	protected static String UDP_END_PARSE = "$";
 	
 	protected static int UDP_BUFFER_SIZE = 10000;
 	

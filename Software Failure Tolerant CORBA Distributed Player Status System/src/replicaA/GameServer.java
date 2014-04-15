@@ -41,7 +41,7 @@ class GameServer extends interfaceIDLPOA implements Runnable
 	{
 		aServerName = pServerName;
 		aPortUDP = pPortUDP;
-		aLog = Log.createLog(aServerName);
+		aLog = Log.createLog("ReplicaA_" + aServerName);
 		aDatabase = new Hashtable<String, List<Account>>();
 		for(char alphabet = 'A'; alphabet <= 'Z'; alphabet++)
 			aDatabase.put(String.valueOf(alphabet), new ArrayList <Account>());

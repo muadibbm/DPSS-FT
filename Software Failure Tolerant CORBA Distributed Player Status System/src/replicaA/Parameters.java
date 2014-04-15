@@ -35,9 +35,9 @@ class Parameters
 	protected static String LR_NAME = "LR";
 	protected static String RM_NAME = "RM";
 	protected static String RA_NAME = "RA";
-	protected static String RA_NA_NAME = "ReplicaA_NA";
-	protected static String RA_EU_NAME = "ReplicaA_EU";
-	protected static String RA_AS_NAME = "ReplicaA_AS";
+	protected static String RA_NA_NAME = "NA";
+	protected static String RA_EU_NAME = "EU";
+	protected static String RA_AS_NAME = "AS";
 	
 	protected static String GeoLocationOfGameServerNA = "132";
 	protected static String GeoLocationOfGameServerEU = "93";
