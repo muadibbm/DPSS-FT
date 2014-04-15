@@ -10,25 +10,23 @@ public class LocalReplicsRequestProcessing
 	
 	protected static void CompareResults()
 	{
-		if(m_LeaderResultProcessed != "" && m_Replica_A_Processed != "" && m_Replica_B_Processed != "")
+		System.out.println("Result Processed By Leader - " + m_LeaderResultProcessed);
+		System.out.println("Result Processed By Replica A - " + m_Replica_A_Processed);
+		System.out.println("Result Processed By Replica B - " + m_Replica_B_Processed);
+		
+		if(!m_LeaderResultProcessed.equals("") && !m_Replica_A_Processed.equals("") && !m_Replica_B_Processed.equals(""))
 		{
+	
 			String l_segments_Leader[] = m_LeaderResultProcessed.split(Parameters.UDP_PARSER);
 			String l_segments_A[] = m_Replica_A_Processed.split(Parameters.UDP_PARSER);
 			String l_segments_B[] = m_Replica_B_Processed.split(Parameters.UDP_PARSER);
-			
-			String Temp_leader = m_LeaderResultProcessed.substring(2,m_LeaderResultProcessed.length());
-			String Temp_A = m_Replica_A_Processed.substring(2,m_Replica_A_Processed.length());
-			String Temp_B = m_Replica_B_Processed.substring(2,m_Replica_B_Processed.length());
-			
-			System.out.println("Result Processed By Leader - " + m_LeaderResultProcessed);
-			System.out.println("Result Processed By Replica A - " + m_Replica_A_Processed);
-			System.out.println("Result Processed By Replica B - " + m_Replica_B_Processed);
+					
 			
 			// check if all results are same
 			if(l_segments_Leader[0].equals(l_segments_A[0]) || l_segments_Leader[0].equals(l_segments_B[0]))
 			{
 				String l_rmdatagram = "";
-				if(l_segments_Leader.length < 2)
+				if(l_segments_Leader.length < 2 && l_segments_A.length < 2 && l_segments_B.length < 2)
 				{
 					if(!l_segments_Leader[0].equals(l_segments_A[0]))
 					{
@@ -42,6 +40,11 @@ public class LocalReplicsRequestProcessing
 				}
 				else // for get player status
 				{
+					String Temp_leader = m_LeaderResultProcessed.substring(2,m_LeaderResultProcessed.length());
+					String Temp_A = m_Replica_A_Processed.substring(2,m_Replica_A_Processed.length());
+					String Temp_B = m_Replica_B_Processed.substring(2,m_Replica_B_Processed.length());
+					
+					
 					if(!l_segments_Leader[0].equals(l_segments_A[0]))
 					{
 						if(checkgetPlayerStatus(Temp_leader, Temp_A).equals("Problem"))
@@ -54,8 +57,8 @@ public class LocalReplicsRequestProcessing
 					{
 						if(checkgetPlayerStatus(Temp_leader, Temp_B).equals("Problem"))
 							l_rmdatagram =  "RB";
+						
 						System.out.println("LocalReplicsRequestProcessing.CompareResults: Get Player Status Check l_rmdatagram - " + l_rmdatagram);
-
 					}
 				}
 
@@ -82,7 +85,7 @@ public class LocalReplicsRequestProcessing
 			}
 		}
 		else
-		{
+		{			
 			m_checkedByPrevReplica += 1;
 			System.out.println("Result tried to be Processed By a Replica - " + m_checkedByPrevReplica);
 		}		
@@ -119,5 +122,4 @@ public class LocalReplicsRequestProcessing
 		}
 		return "Problem"; 
 	}
-	
 }

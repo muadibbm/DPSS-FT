@@ -53,7 +53,7 @@ class UDP_replicaLeader extends Thread
  				//request.setLength(buffer.length);
   				aSocket.receive(request);     
   				String l_result = new String(request.getData(), "UTF-8");
-  				System.out.println("UDP_replicaLeader.setUDPServerOnline: l_result - " + l_result);
+  				//System.out.println("UDP_replicaLeader.setUDPServerOnline: l_result - " + l_result);
   				
   				if(l_result != null)
   				{
@@ -113,7 +113,7 @@ class UDP_replicaLeader extends Thread
   				    				
   				    				if(m_UDPDataGram_from_stripped != "")
   				    				{
-  				    					LocalReplicsRequestProcessing.m_Replica_A_Processed = m_UDPDataGram_from_stripped.substring(0,1);
+  				    					LocalReplicsRequestProcessing.m_Replica_A_Processed = m_UDPDataGram_from_stripped;
   				    					LocalReplicsRequestProcessing.CompareResults();
   				    				}
   				    				
@@ -126,7 +126,7 @@ class UDP_replicaLeader extends Thread
   				    			System.out.println("Receiving data from RB: m_UDPDataGram_from_stripped - " + m_UDPDataGram_from_stripped);
   				    			if(m_UDPDataGram_from_stripped != "")
 				    				{
-				    					LocalReplicsRequestProcessing.m_Replica_B_Processed = m_UDPDataGram_from_stripped.substring(0,1);
+				    					LocalReplicsRequestProcessing.m_Replica_B_Processed = m_UDPDataGram_from_stripped;
 				    					LocalReplicsRequestProcessing.CompareResults();
 				    				}
 				    				
