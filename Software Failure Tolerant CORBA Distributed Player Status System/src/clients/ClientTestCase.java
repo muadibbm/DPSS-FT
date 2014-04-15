@@ -8,6 +8,7 @@ class ClientTestCase
 		AdministratorClient admin = new AdministratorClient("Admin", args);
 		
 		player.createPlayerAccount("Mehrdad", "Dehdashti", 24, "user123", "123456", "132.10.10.10");
-		// TODO : Test Cases go HERE
+		//player.playerSignIn("user123", "123456", "132.10.10.10");
+		//player.playerSignOut("user123", "132.10.10.10");
 	}
 }
