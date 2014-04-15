@@ -268,45 +268,45 @@ class ReplicaAUDPThread extends Thread
 					setORBreference(messageArray[7]);
 					if(aInterfaceIDL.createPlayerAccount(messageArray[2], messageArray[3], Integer.parseInt(messageArray[4]),
 														 messageArray[5], messageArray[6], messageArray[7]))
-						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_END_PARSE;
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_PARSER + Parameters.UDP_END_PARSE;
 					else
-						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "0" + Parameters.UDP_END_PARSE;
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "0" + Parameters.UDP_PARSER + Parameters.UDP_END_PARSE;
 				}
 				else if(messageArray[1].equals(Parameters.METHOD_CODE.PLAYER_SIGN_IN.name()))
 				{
 					messageArray[4] = messageArray[4].trim();
 					setORBreference(messageArray[4]);
 					if(aInterfaceIDL.playerSignIn(messageArray[2], messageArray[3], messageArray[4]))
-						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_END_PARSE;
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_PARSER + Parameters.UDP_END_PARSE;
 					else
-						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "0" + Parameters.UDP_END_PARSE;
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "0" + Parameters.UDP_PARSER + Parameters.UDP_END_PARSE;
 				}
 				else if(messageArray[1].equals(Parameters.METHOD_CODE.PLAYER_SIGN_OUT.name()))
 				{
 					messageArray[3] = messageArray[3].trim();
 					setORBreference(messageArray[3]);
 					if(aInterfaceIDL.playerSignOut(messageArray[2], messageArray[3]))
-						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_END_PARSE;
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_PARSER + Parameters.UDP_END_PARSE;
 					else
-						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "0" + Parameters.UDP_END_PARSE;
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "0" + Parameters.UDP_PARSER + Parameters.UDP_END_PARSE;
 				}
 				else if(messageArray[1].equals(Parameters.METHOD_CODE.TRANSFER_ACCOUNT.name()))
 				{
 					messageArray[5] = messageArray[5].trim();
 					setORBreference(messageArray[4]);
 					if(aInterfaceIDL.transferAccount(messageArray[2], messageArray[3], messageArray[4], messageArray[5]))
-						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_END_PARSE;
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_PARSER + Parameters.UDP_END_PARSE;
 					else
-						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "0" + Parameters.UDP_END_PARSE;
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "0" + Parameters.UDP_PARSER + Parameters.UDP_END_PARSE;
 				}
 				else if(messageArray[1].equals(Parameters.METHOD_CODE.SUSPEND_ACCOUNT.name()))
 				{
 					messageArray[5] = messageArray[5].trim();
 					setORBreference(messageArray[4]);
 					if(aInterfaceIDL.suspendAccount(messageArray[2], messageArray[3], messageArray[4], messageArray[5]))
-						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_END_PARSE;
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_PARSER + Parameters.UDP_END_PARSE;
 					else
-						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "0" + Parameters.UDP_END_PARSE;
+						data = Parameters.RA_NAME + Parameters.UDP_PARSER + "0" + Parameters.UDP_PARSER + Parameters.UDP_END_PARSE;
 				}
 				else if(messageArray[1].equals(Parameters.METHOD_CODE.GET_PLAYER_STATUS.name()))
 				{
@@ -314,7 +314,7 @@ class ReplicaAUDPThread extends Thread
 					setORBreference(messageArray[4]);
 					data = Parameters.RA_NAME + Parameters.UDP_PARSER + 
 							aInterfaceIDL.getPlayerStatus(messageArray[2], messageArray[3], messageArray[4]) +
-							Parameters.UDP_END_PARSE;
+							Parameters.UDP_PARSER + Parameters.UDP_END_PARSE;
 				}
 				
 				buffer = data.getBytes();
