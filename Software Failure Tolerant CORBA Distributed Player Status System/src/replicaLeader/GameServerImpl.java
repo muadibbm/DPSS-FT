@@ -237,7 +237,7 @@ public class GameServerImpl extends GameServerInterfacePOA
     			}
     		}
         }
-		return "Total Players: "+Integer.toString(TotalPlayers) +" , Players Online: " + Integer.toString(PlayersOnline);
+		return Integer.toString(PlayersOnline) + "/"+Integer.toString(TotalPlayers - PlayersOnline);
 	}
 	
 //=========================================================================================================================================
@@ -391,7 +391,7 @@ public class GameServerImpl extends GameServerInterfacePOA
 				return "Error: Communication among other Servers Failed; Cannot get Player Status Data";
 			}
 			
-			l_finalData += "//" + l_Server_Data;//l_finalData.concat(l_Server_Data);
+			l_finalData += l_Server_Data + "/";//l_finalData.concat(l_Server_Data);
 			System.out.println("Server Data: " + l_Server_Data);
 			System.out.println("Final Data: " + l_finalData);
 		}
