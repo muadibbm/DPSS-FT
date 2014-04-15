@@ -30,6 +30,7 @@ class Parameters
 	protected static int UDP_BUFFER_SIZE = 10000;
 	
 	protected static String UDP_PARSER = "/";
+	protected static String UDP_END_PARSE = "$";
 	
 	protected static String LR_NAME = "LR";
 	protected static String RM_NAME = "RM";

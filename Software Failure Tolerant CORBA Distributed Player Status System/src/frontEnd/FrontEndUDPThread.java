@@ -51,11 +51,18 @@ class FrontEndUDPThread extends Thread
 			messageArray = (new String(request.getData())).split(Parameters.UDP_PARSER);
 			if(messageArray[0].equals(Parameters.LR_NAME))
 			{
-				// TODO : add method type check (trim())
-				switch(Integer.parseInt(messageArray[1].substring(0, 1)))
+				if(messageArray.length > 2) // get Player Status
 				{
-					case 0 : FrontEndORBThread.setConfimation(false); break;
-					case 1 : FrontEndORBThread.setConfimation(true); break;
+					messageArray[1] = messageArray[1].trim();
+					FrontEndORBThread.setResponse(messageArray[1]);
+				}
+				else
+					{
+					switch(Integer.parseInt(messageArray[1].substring(0, 1)))
+					{
+						case 0 : FrontEndORBThread.setConfimation(false); break;
+						case 1 : FrontEndORBThread.setConfimation(true); break;
+					}
 				}
 				FrontEndORBThread.setLeaderResponded(true);
 			}
