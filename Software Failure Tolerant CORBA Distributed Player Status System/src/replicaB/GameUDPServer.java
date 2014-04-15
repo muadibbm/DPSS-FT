@@ -59,15 +59,47 @@ public class GameUDPServer extends Thread{
 			{
 				DatagramPacket requestFromLeaderPacket = new DatagramPacket(buffer, buffer.length);
 				aMulticastSocket.receive(requestFromLeaderPacket);
-				String[] messageArray = (new String(requestFromLeaderPacket.getData())).split(Parameters.UDP_PARSER);
+				String l_result = new String(requestFromLeaderPacket.getData(), "UTF-8");
 				requestFromLeaderPacket.setLength(buffer.length);
-				System.out.println("requestFromLeaderPacket: " + messageArray[0] + messageArray[1] + messageArray[2]);
+				System.out.println("requestFromLeaderPacket: " +l_result);
+				
+				sendPacket(l_result, Parameters.UDP_PORT_REPLICA_B);
 			}
 		}
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	
+	public static boolean sendPacket(String p_Data, int p_portNumber)
+	{
+		DatagramSocket aSocket = null;
+		try 
+		{
+			aSocket = new DatagramSocket();    
+			byte [] m = p_Data.getBytes();
+			InetAddress aHost = InetAddress.getByName("localhost");
+			int serverPort = p_portNumber;		                                                 
+			DatagramPacket request = new DatagramPacket(m,  p_Data.length(), aHost, serverPort);
+			aSocket.send(request);			                        
+			return true;
+		}
+		catch (SocketException e)
+		{
+			System.out.println("Socket: " + e.getMessage());
+		}
+		catch (IOException e)
+		{
+			System.out.println("IO: " + e.getMessage());
+		}
+		finally 
+		{
+			if(aSocket != null) aSocket.close();
+		}
+		
+		return false;
 	}
 	
 	public GameUDPServer ( int portNumber)
