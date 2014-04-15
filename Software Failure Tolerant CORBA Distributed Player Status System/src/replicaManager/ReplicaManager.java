@@ -25,6 +25,7 @@ class ReplicaManager
 		startServerGroup(Parameters.UDP_PORT_REPLICA_A);
 		startServerGroup(Parameters.UDP_PORT_REPLICA_B);
 
+		System.out.println ("Replica Manager sent request to run all servers!");
 		startServerListener(Parameters.UDP_PORT_REPLICA_MANAGER);
 	}
 
