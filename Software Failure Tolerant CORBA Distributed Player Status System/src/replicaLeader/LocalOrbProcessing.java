@@ -61,7 +61,7 @@ public class LocalOrbProcessing
 				aGameServerRef = GameServerInterfaceHelper.narrow(o);			
 			}
 		
-			else if("92".equals(p_IPAddress.substring(0,2)))
+			else if("93".equals(p_IPAddress.substring(0,2)))
 			{
 				ORB orb = ORB.init(args, null);
 				
@@ -107,13 +107,7 @@ public class LocalOrbProcessing
 		{
 			
 			int l_numElements = l_ParamArray.length;
-			GameServerInterface l_LocalGameServerReference =  getServerReference(l_ParamArray[l_numElements - 1]);
 			
-			if(l_LocalGameServerReference == null)
-			{
-				System.out.println("LocalOrbProcessing.performRMI : Error - Cannot perform RMI, GameServerInterface = NULL/n");
-				return "0";
-			}
 			
 			METHOD_CODE l_functionValue = METHOD_CODE.valueOf(l_ParamArray[0]);
 			
@@ -124,6 +118,15 @@ public class LocalOrbProcessing
 				System.out.println("LocalOrbProcessing.performRMI : Creating Player Account Request/n");
 				if(l_numElements == 7)
 				{
+					
+					GameServerInterface l_LocalGameServerReference =  getServerReference(l_ParamArray[6]);
+					
+					if(l_LocalGameServerReference == null)
+					{
+						System.out.println("LocalOrbProcessing.performRMI : Error - Cannot perform RMI, GameServerInterface = NULL/n");
+						return "0";
+					}
+					
 					String l_MethodStatus =  l_LocalGameServerReference.createPlayerAccount(l_ParamArray[1], l_ParamArray[2], l_ParamArray[3], l_ParamArray[4], l_ParamArray[5], l_ParamArray[6]);
 					if(l_MethodStatus.equals("SignUpsuccessful"))
 					{
@@ -145,6 +148,15 @@ public class LocalOrbProcessing
 				System.out.println("LocalOrbProcessing.performRMI : Player Sign In Request/n");
 				if(l_numElements == 4)
 				{
+
+					GameServerInterface l_LocalGameServerReference =  getServerReference(l_ParamArray[3]);
+					
+					if(l_LocalGameServerReference == null)
+					{
+						System.out.println("LocalOrbProcessing.performRMI : Error - Cannot perform RMI, GameServerInterface = NULL/n");
+						return "0";
+					}
+					
 					String l_MethodStatus =  l_LocalGameServerReference.playerSignIn(l_ParamArray[1], l_ParamArray[2], l_ParamArray[3]);
 					if(l_MethodStatus.equals("Login successful"))
 					{
@@ -166,6 +178,15 @@ public class LocalOrbProcessing
 				System.out.println("LocalOrbProcessing.performRMI : Player Sign Out Request/n");
 				if(l_numElements == 3)
 				{
+
+					GameServerInterface l_LocalGameServerReference =  getServerReference(l_ParamArray[2]);
+					
+					if(l_LocalGameServerReference == null)
+					{
+						System.out.println("LocalOrbProcessing.performRMI : Error - Cannot perform RMI, GameServerInterface = NULL/n");
+						return "0";
+					}
+					
 					String l_MethodStatus =  l_LocalGameServerReference.playerSignOut(l_ParamArray[1], l_ParamArray[2]);
 					if(l_MethodStatus.equals("Successfully Signed Out."))
 					{
@@ -187,11 +208,21 @@ public class LocalOrbProcessing
 				System.out.println("LocalOrbProcessing.performRMI : Player Account Transfer Request/n");
 				if(l_numElements == 5)
 				{
+
+					GameServerInterface l_LocalGameServerReference =  getServerReference(l_ParamArray[3]);
+					
+					if(l_LocalGameServerReference == null)
+					{
+						System.out.println("LocalOrbProcessing.performRMI : Error - Cannot perform RMI, GameServerInterface = NULL/n");
+						return "0";
+					}
+					
 					String l_MethodStatus =  l_LocalGameServerReference.transferAccount(l_ParamArray[1], l_ParamArray[2], l_ParamArray[3], l_ParamArray[4]);
-					if(l_MethodStatus == "Account Transfer Complete")
+					if(l_MethodStatus.equals("Account Transfer Complete"))
 					{
 						return "1";
 					}
+					System.out.println("LocalOrbProcessing.performRMI : Player Account Transfer Request - " + l_ParamArray[1] + l_ParamArray[2] + l_ParamArray[3] + l_ParamArray[4]);
 					return "0";
 				}
 				else
@@ -208,10 +239,19 @@ public class LocalOrbProcessing
 				System.out.println("LocalOrbProcessing.performRMI : Get Player Status Request/n");
 				if(l_numElements == 4)
 				{
-					String l_MethodStatus =  l_LocalGameServerReference.getPlayerStatus(l_ParamArray[1], l_ParamArray[2], l_ParamArray[3]);
-					if(l_MethodStatus != "")
+
+					GameServerInterface l_LocalGameServerReference =  getServerReference(l_ParamArray[3]);
+					
+					if(l_LocalGameServerReference == null)
 					{
-						return "1";
+						System.out.println("LocalOrbProcessing.performRMI : Error - Cannot perform RMI, GameServerInterface = NULL/n");
+						return "0";
+					}
+					
+					String l_MethodStatus =  l_LocalGameServerReference.getPlayerStatus(l_ParamArray[1], l_ParamArray[2], l_ParamArray[3]);
+					if(!l_MethodStatus.equals(""))
+					{
+						return l_MethodStatus;
 					}
 					return "0";
 				}
@@ -229,8 +269,17 @@ public class LocalOrbProcessing
 				System.out.println("LocalOrbProcessing.performRMI : Get Suspend Account Request/n");
 				if(l_numElements == 5)
 				{
+
+					GameServerInterface l_LocalGameServerReference =  getServerReference(l_ParamArray[3]);
+					
+					if(l_LocalGameServerReference == null)
+					{
+						System.out.println("LocalOrbProcessing.performRMI : Error - Cannot perform RMI, GameServerInterface = NULL/n");
+						return "0";
+					}
+					
 					String l_MethodStatus =  l_LocalGameServerReference.suspendAccount(l_ParamArray[1], l_ParamArray[2], l_ParamArray[3], l_ParamArray[4]);
-					if(l_MethodStatus != "Account Suspension Confirmed.")
+					if(l_MethodStatus.equals("Account Suspension Confirmed."))
 					{
 						return "1";
 					}

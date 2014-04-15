@@ -163,14 +163,17 @@ class ReplicaAUDPThread extends Thread
 		if(pIPAddress.length() >= 3 && pIPAddress.substring(0,3).equals(Parameters.GeoLocationOfGameServerNA))
 		{
 			bufferedReader = new BufferedReader(new FileReader(Parameters.RA_NA_NAME + "_IOR.txt"));
+			System.out.println("invoking for NA");
 		}
 		else if(pIPAddress.length() >= 2 && pIPAddress.substring(0,2).equals(Parameters.GeoLocationOfGameServerEU))
 		{
 			bufferedReader = new BufferedReader(new FileReader(Parameters.RA_EU_NAME + "_IOR.txt"));
+			System.out.println("invoking for EU");
 		}
 		else if(pIPAddress.length() >= 3 && pIPAddress.substring(0,3).equals(Parameters.GeoLocationOfGameServerAS))
 		{
-			bufferedReader = new BufferedReader(new FileReader(Parameters.RA_AS_NAME + "_IOR.txt"));			
+			bufferedReader = new BufferedReader(new FileReader(Parameters.RA_AS_NAME + "_IOR.txt"));	
+			System.out.println("invoking for AS");
 		}
 		else
 		{
@@ -199,16 +202,17 @@ class ReplicaAUDPThread extends Thread
 			aNAGameServer = new GameServer(Parameters.RA_NA_NAME, new String [1], Parameters.UDP_PORT_REPLICA_A_NA);
 			aEUGameServer = new GameServer(Parameters.RA_EU_NAME, new String [1], Parameters.UDP_PORT_REPLICA_A_EU);
 			aASGameServer = new GameServer(Parameters.RA_AS_NAME, new String [1], Parameters.UDP_PORT_REPLICA_A_AS);
+			
 			// Start the Threads running each runnable Game Server
 			aNAThread = new Thread(aNAGameServer);
 			aEUThread = new Thread(aEUGameServer);
 			aASThread = new Thread(aASGameServer);
 			aNAThread.start();
-			aLog.info("NA Server Running");
+			aLog.info(aNAGameServer.getName() + " Server Running");
 			aEUThread.start();
-			aLog.info("EU Server Running");
+			aLog.info(aEUGameServer.getName() + " Server Running");
 			aASThread.start();
-			aLog.info("AS Server Running");
+			aLog.info(aASGameServer.getName() + " Server Running");
 		}
 		catch(Exception e)
 		{
@@ -316,7 +320,7 @@ class ReplicaAUDPThread extends Thread
 							aInterfaceIDL.getPlayerStatus(messageArray[2], messageArray[3], messageArray[4]) +
 							Parameters.UDP_PARSER + Parameters.UDP_END_PARSE;
 				}
-				
+				buffer = new byte [Parameters.UDP_BUFFER_SIZE];
 				buffer = data.getBytes();
 				replyToLeaderPacket = new DatagramPacket(buffer, data.length(),  InetAddress.getByName("localhost"), Parameters.UDP_PORT_REPLICA_LEAD);
 				aSendSocket.send(replyToLeaderPacket);

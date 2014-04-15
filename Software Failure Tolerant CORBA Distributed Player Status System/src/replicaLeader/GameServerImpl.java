@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,22 +15,29 @@ import java.util.Set;
 public class GameServerImpl extends GameServerInterfacePOA 
 {
 	
-	protected Hashtable<String, List<UserData>> UserData_HashTable = new Hashtable<String, List<UserData>>();
+	protected Hashtable<String, List<UserData>> UserData_HashTable; 
 	public UDPPeer udpPeer;
 	
-	private static Map<String, Integer> m_UDPLocation_PortNumber_Map = new HashMap<String, Integer>();
+	private static Map<String, Integer> m_UDPLocation_PortNumber_Map; 
 	
 	
 	public String m_Location;
 	
+	public static String m_finalData;
+	private String l_Server_Data_NA, l_Server_Data_EU, l_Server_Data_AS;
+	
 	GameServerImpl(String ServerLocation, int UDPPortNumber)
 	{
+		m_UDPLocation_PortNumber_Map = new HashMap<String, Integer>();
+		
 		m_Location = ServerLocation;
 		udpPeer = new UDPPeer(UDPPortNumber, this);
 		udpPeer.start();
-		GameServerImpl.m_UDPLocation_PortNumber_Map.put("NorthAmerica", Parameters.UDP_PORT_REPLICA_LEAD_NA);
-		GameServerImpl.m_UDPLocation_PortNumber_Map.put("Asia", Parameters.UDP_PORT_REPLICA_LEAD_AS);
-		GameServerImpl.m_UDPLocation_PortNumber_Map.put("Europe", Parameters.UDP_PORT_REPLICA_LEAD_EU);
+		GameServerImpl.m_UDPLocation_PortNumber_Map.put("NA", Parameters.UDP_PORT_REPLICA_LEAD_NA);
+		GameServerImpl.m_UDPLocation_PortNumber_Map.put("AS", Parameters.UDP_PORT_REPLICA_LEAD_AS);
+		GameServerImpl.m_UDPLocation_PortNumber_Map.put("EU", Parameters.UDP_PORT_REPLICA_LEAD_EU);
+		
+		UserData_HashTable = new Hashtable<String, List<UserData>>();
 	}
 	
 	
@@ -76,6 +84,9 @@ public class GameServerImpl extends GameServerInterfacePOA
 		// Put list in the hash table with a token of first char of user name
 		this.UserData_HashTable.put(hashTable_token,new_udl);
 		System.out.println(p_Username + " - Successfully signed up. Message sent to user\n");
+		
+		System.out.println("Hash Table: " + UserData_HashTable.toString());
+		
 		return "SignUpsuccessful";
 	}
 
@@ -195,17 +206,17 @@ public class GameServerImpl extends GameServerInterfacePOA
 	{
 		if("132".equals(p_IPAddress.substring(0,3)))
 		{
-			return "NorthAmerica";
+			return "NA";
 		}
 	
-		else if("92".equals(p_IPAddress.substring(0,2)))
+		else if("93".equals(p_IPAddress.substring(0,2)))
 		{
-			return "Europe";
+			return "EU";
 		}
 	
 		else if("182".equals(p_IPAddress.substring(0,3)))
 		{
-			return "Asia";
+			return "AS";
 		}
 		else
 		{
@@ -246,6 +257,9 @@ public class GameServerImpl extends GameServerInterfacePOA
 	public String transferAccount(String p_Username, String p_Password,
 			String p_oldIPAddress, String p_newIPAddress) 
 	{
+		
+		System.out.println("Hash Table: " + this.UserData_HashTable.toString());
+		
 		// TODO Auto-generated method stub
 		String hashTable_token = "";
 				
@@ -257,6 +271,7 @@ public class GameServerImpl extends GameServerInterfacePOA
 		System.out.println("Server trying to access "+p_Username+" Profile\n");
 		
 		List<UserData> ud_l = this.UserData_HashTable.get(hashTable_token);
+		
 		if (ud_l != null) 
 		{
 			for(UserData record : ud_l)
@@ -324,25 +339,26 @@ public class GameServerImpl extends GameServerInterfacePOA
 	{
 		String l_Location = "";
 		String p_Data = "";
-		String l_Server_Data = "", l_finalData = "";
+		
+		
 		
 		if(p_AdminUserName.equals("Admin") && p_AdminPassword.equals("Admin"))
 		{
 			l_Location = GetLocationfromAddress(p_AdminIPAddress);
 			
-			if(l_Location == "NorthAmerica")
+			if(l_Location == "NA")
 			{
-				p_Data = "P"+Integer.toString(m_UDPLocation_PortNumber_Map.get("NorthAmerica"));
+				p_Data = "P"+Integer.toString(m_UDPLocation_PortNumber_Map.get("NA"));
 			}
 		
-			else if(l_Location == "Europe")
+			else if(l_Location == "EU")
 			{
-				p_Data = "P"+Integer.toString(m_UDPLocation_PortNumber_Map.get("Europe"));
+				p_Data = "P"+Integer.toString(m_UDPLocation_PortNumber_Map.get("EU"));
 			}
 		
-			else if(l_Location == "Asia")
+			else if(l_Location == "AS")
 			{
-				p_Data = "P"+Integer.toString(m_UDPLocation_PortNumber_Map.get("Asia"));
+				p_Data = "P"+Integer.toString(m_UDPLocation_PortNumber_Map.get("AS"));
 			}
 			else
 			{
@@ -360,7 +376,7 @@ public class GameServerImpl extends GameServerInterfacePOA
 		{
 			if(p_Data.length() > 3)
 			{
-				if(l_Location != entry.getKey())
+				if(!l_Location.equals(entry.getKey()))
 				{
 					udpPeer.UDPSendRequestforData(p_Data, entry.getValue());
 					System.out.println(l_Location+ " Sending Request to " + entry.getKey());
@@ -369,20 +385,52 @@ public class GameServerImpl extends GameServerInterfacePOA
 					{
 						System.out.println(entry.getKey()+" : "+p_AdminUserName+" - Inside while Loop");
 					
-						if(UDPPeer.m_PacketData != null)
+						if(!UDPPeer.m_PacketData.equals(""))
 						{
-							System.out.println(entry.getKey()+" : "+p_AdminUserName+" - Data in UDP found");
-							System.out.println(entry.getKey()+" : "+p_AdminUserName+ " - Data Received is: " + UDPPeer.m_PacketData + "\n");
-							l_Server_Data = UDPPeer.m_PacketData;
-							UDPPeer.m_PacketData = null;
+							//System.out.println(entry.getKey()+" : "+p_AdminUserName+" - Data in UDP found");
+							//System.out.println(entry.getKey()+" : "+p_AdminUserName+ " - Data Received is: " + UDPPeer.m_PacketData + "\n");
+							if(entry.getKey().equals("NA"))
+							{
+								l_Server_Data_NA = UDPPeer.m_PacketData;
+								//System.out.println("Server Data NA: " + l_Server_Data_NA);
+							}
+							
+							else if(entry.getKey().equals("EU"))
+							{
+								l_Server_Data_EU = UDPPeer.m_PacketData;
+								//System.out.println("Server Data EU: " + l_Server_Data_EU);
+							}
+							
+							else if(entry.getKey().equals("AS"))
+							{
+								l_Server_Data_AS = UDPPeer.m_PacketData;
+								//System.out.println("Server Data AS: " + l_Server_Data_AS);							
+							}
+							
 							l_receiveData_Server = true;
-							System.out.println("Server Data: " + l_Server_Data);
+							UDPPeer.m_PacketData = "";
 						}
 					}		
 				}
 				else
 				{
-					l_Server_Data = l_Location + "(" + this.GetServerDetails() + ")";
+					if(entry.getKey().equals("NA"))
+					{
+						l_Server_Data_NA = l_Location + Parameters.UDP_PARSER + this.GetServerDetails();// + Parameters.UDP_PARSER;
+						//System.out.println("Server Data NA: " + l_Server_Data_NA);
+					}
+					
+					else if(entry.getKey().equals("EU"))
+					{
+						l_Server_Data_EU = l_Location + Parameters.UDP_PARSER + this.GetServerDetails();// + Parameters.UDP_PARSER;
+						//System.out.println("Server Data EU: " + l_Server_Data_EU);
+					}
+					
+					else if(entry.getKey().equals("AS"))
+					{
+						l_Server_Data_AS = l_Location + Parameters.UDP_PARSER + this.GetServerDetails();// + Parameters.UDP_PARSER;
+						//System.out.println("Server Data AS: " + l_Server_Data_AS);
+					}
 				}
 			}
 			
@@ -390,12 +438,16 @@ public class GameServerImpl extends GameServerInterfacePOA
 			{
 				return "Error: Communication among other Servers Failed; Cannot get Player Status Data";
 			}
-			
-			l_finalData += l_Server_Data + "/";//l_finalData.concat(l_Server_Data);
-			System.out.println("Server Data: " + l_Server_Data);
-			System.out.println("Final Data: " + l_finalData);
 		}
-		return l_finalData;
+		
+		System.out.println("l_Server_Data_NA: " + l_Server_Data_NA);
+		System.out.println("l_Server_Data_EU: " + l_Server_Data_EU);
+		System.out.println("l_Server_Data_AS: " + l_Server_Data_AS);
+		
+		m_finalData = "1" + "/" + l_Server_Data_NA +"/" +l_Server_Data_EU +"/"+ l_Server_Data_AS;
+		
+		System.out.println("Final Data: " + m_finalData);
+		return m_finalData;
 	}
 
 

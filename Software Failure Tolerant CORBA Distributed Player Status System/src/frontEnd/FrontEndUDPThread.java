@@ -48,6 +48,9 @@ class FrontEndUDPThread extends Thread
 		try {
 			request = new DatagramPacket(buffer, buffer.length);
 			aDatagramSocket.receive(request);
+			
+			System.out.println("Front End UDP Data Received: " + request.getData());
+			
 			messageArray = (new String(request.getData())).split(Parameters.UDP_PARSER);
 			//System.out.println(messageArray.length);
 			//System.out.println(messageArray[0]);
