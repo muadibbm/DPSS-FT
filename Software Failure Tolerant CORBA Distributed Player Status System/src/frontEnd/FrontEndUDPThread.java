@@ -49,21 +49,26 @@ class FrontEndUDPThread extends Thread
 			request = new DatagramPacket(buffer, buffer.length);
 			aDatagramSocket.receive(request);
 			messageArray = (new String(request.getData())).split(Parameters.UDP_PARSER);
+			//System.out.println(messageArray.length);
+			//System.out.println(messageArray[0]);
+			//System.out.println(messageArray[1]);
 			if(messageArray[0].equals(Parameters.LR_NAME))
 			{
-				/*if(messageArray.length > 2) // get Player Status
+				if(messageArray.length > 3) // get Player Status
 				{
-					messageArray[1] = messageArray[1].trim();
-					FrontEndORBThread.setResponse(messageArray[1]);
+					//messageArray[1] is confirmation
+					FrontEndORBThread.setResponse(messageArray[2] + " Online " + messageArray[3] + " Offline " + messageArray[4] + "\n" +
+							messageArray[5] + " Online " + messageArray[6] + " Offline " + messageArray[7] + "\n" +
+							messageArray[8] + " Online " + messageArray[9] + " Offline " + messageArray[10]);
 				}
 				else
-				{*/
+				{
 					switch(Integer.parseInt(messageArray[1].substring(0, 1)))
 					{
 						case 0 : FrontEndORBThread.setConfimation(false); break;
 						case 1 : FrontEndORBThread.setConfimation(true); break;
 					}
-				//}
+				}
 				FrontEndORBThread.setLeaderResponded(true);
 			}
 		} catch (IOException e) {
