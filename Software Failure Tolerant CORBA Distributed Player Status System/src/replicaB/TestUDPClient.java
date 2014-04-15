@@ -25,7 +25,8 @@ public class TestUDPClient {
 		//String message = "LD/SUSPEND_ACCOUNT/Admin/Admin/132.22/desy123";
 		//String message = "RM/NO";
 		
-		String message = "LD/GET_PLAYER_STATUS/Admin/Admin/182.22";
+		String message = "LR/TRANSFER_ACCOUNT/est/test/182.22/132.55";
+		//String message = "LD/GET_PLAYER_STATUS/Admin/Admin/182.22";
 		
 		try {
 			aSocket = new DatagramSocket();

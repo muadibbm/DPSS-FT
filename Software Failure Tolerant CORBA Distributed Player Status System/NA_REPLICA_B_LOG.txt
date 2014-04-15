@@ -1,14 +1,10 @@
-04/14/2014 11:17:08 PM : New player was added desy123 to server NA
-04/14/2014 11:17:24 PM : Local stat is requested : NA/0/1/online.
-04/14/2014 11:27:28 PM : New player was added desy123 to server NA
-04/14/2014 11:27:41 PM : Player desy123 is loged in to server NA
-04/14/2014 11:27:53 PM : Local stat is requested : NA/1/0/online.
-04/14/2014 11:35:36 PM : New player was added desy123 to server NA
-04/14/2014 11:35:43 PM : Player desy123 is loged in to server NA
-04/14/2014 11:35:49 PM : Local stat is requested : NA/1/0/online.
-04/14/2014 11:44:56 PM : Local stat is requested : NA/0/0/online.
-04/14/2014 11:46:13 PM : Local stat is requested : NA/0/0/online.
-04/14/2014 11:47:45 PM : Local stat is requested : NA/0/0/online.
-04/14/2014 11:50:11 PM : Local stat is requested : /NA/0/0/online.
-04/14/2014 11:52:14 PM : Local stat is requested : /NA/0/0/online.
-04/14/2014 11:53:23 PM : Local stat is requested : /NA/0/0/online.
+04/15/2014 1:58:08 PM : New player was added desy123 to server NA
+04/15/2014 1:58:19 PM : Player desy123 is loged in to server NA
+04/15/2014 1:58:31 PM : Local stat is requested : /NA/1/0/online.
+04/15/2014 1:58:57 PM : New player was added est to server NA
+04/15/2014 1:59:15 PM : Local stat is requested : /NA/1/1/online.
+04/15/2014 2:00:26 PM : Local stat is requested : /NA/1/1/online.
+04/15/2014 2:00:52 PM : Account est already exists on the server 132.
+04/15/2014 2:01:40 PM : Local stat is requested : /NA/1/1/online.
+04/15/2014 2:07:39 PM : Account est already exists on the server 132.
+04/15/2014 2:09:12 PM : Account est already exists on the server 132.

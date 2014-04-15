@@ -36,6 +36,8 @@ public class ServerReplica  extends Thread{
 	int IPaddress = 0;
 	int serverPort;
 	
+	public static boolean isRunning = true;
+	
 	String messageArray [] = new String [20];
 	
 	static java.util.Date date= new java.util.Date();
@@ -378,8 +380,6 @@ public class ServerReplica  extends Thread{
 			}
 		}
 		currentServerStat = "/" + this.acronym + "/" + onlineUsers + "/" + offlineUsers + "/online.";
-		//returnMessage = StatusUDP(extractIP(IPAddress));
-		//System.out.println("Return message from the current server: " + currentServerStat);
 		
 		return currentServerStat;
 	}
@@ -426,6 +426,7 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 		if(records.get(initial)==null) {
 			System.out.println("The account you try to access can not be found!");
 			log("The account " + Username + " was not found on server  " + acronym);
+			playerRecord = null;
 		}
 		//if there is already a list check if the record exists
 		else {
@@ -439,7 +440,7 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 									lList.get(i).getLastName() + Parameters.UDP_PARSER + 
 									String.valueOf(lList.get(i).getAge())  + Parameters.UDP_PARSER + 
 									lList.get(i).getUserName() + Parameters.UDP_PARSER + 
-									lList.get(i).getPassword();
+									lList.get(i).getPassword()  + Parameters.UDP_PARSER + NewIPAddress;
 					}
 			}
 		}
@@ -485,7 +486,14 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 	@Override
 	public void run()
 	{
+		while (isRunning) {
+	     
 		startUDPserver();
+		}
+	}
+	
+	public void killThread () {
+		isRunning = false;
 	}
 	
 	/**
@@ -592,19 +600,30 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 						aSocket.send(replay3);
 						
 					} else if (methodCall.contains(Parameters.METHOD_CODE.TRANSFER_ACCOUNT.name())){
+						if (!(dataRecieved.contains(Parameters.TRANSFER_DONE) || dataRecieved.contains(Parameters.TRANSFER_FAIL)))
+						{
+						
 						
 						//call transfer account
 						methodAcknowledgmentStr = transferAccount(messageArray[2], messageArray[3], messageArray[4], messageArray[5]);
+						if (!(methodAcknowledgmentStr.equals(null) || methodAcknowledgmentStr == null ))
+						{
+							
+							bufferStat = (Parameters.REQUEST_LOCAL_TRANSFER + Parameters.UDP_PARSER + methodAcknowledgmentStr).getBytes();
+							DatagramPacket replay6 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),getPortPerIP(messageArray[5]));
+							aSocket.send(replay6);
+							System.out.println("Init transfer " + new String(replay6.getData()));
+							log("Request for account transfer is initiated");
+						}
+						}
+						
 						
 					} else if (methodCall.contains(Parameters.METHOD_CODE.GET_PLAYER_STATUS.name())){
 						System.out.println("GET_PLAYER_STATUS is requested!");
 						//call get player status
 						methodAcknowledgmentStr = getPlayerStatus(messageArray[2], messageArray[3], messageArray[4]);
 					//send 2 UDP messages to the other 2 servers	
-						
-						
-						
-						
+							
 							
 						bufferStat = (Parameters.REQUEST_LOCAL_STAT).getBytes();						
 						DatagramPacket replay1 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),LOCAL_CONNECTION_1);
@@ -630,9 +649,43 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 						System.out.println ("The METHOD CODE  REQUEST_LOCAL_STAT is sent to "  +request.getPort() + "  the data sent follow:" + getPlayerStatus("Admin", "Admin",String.valueOf(IPaddress)));
 						log ("Local stat is requested : " + getPlayerStatus("Admin", "Admin",String.valueOf(IPaddress)));
 						}
-					}
+					} 
 					
+					if (dataRecieved.contains(Parameters.REQUEST_LOCAL_TRANSFER)){
+						System.out.println("REQUEST_LOCAL_TRANSFER is requested!");
+						//call get player status
+						methodAcknowledgment = createPlayerAccount(messageArray[2], messageArray[3], Integer.parseInt(messageArray[4]), messageArray[5], messageArray[6], String.valueOf(IPaddress) + ".");
+					//send 2 UDP messages to the other 2 servers	
+							
+						if (methodAcknowledgment == true) {
+							bufferStat = (Parameters.TRANSFER_DONE + Parameters.UDP_PARSER + messageArray[5] + Parameters.UDP_PARSER + "1" + Parameters.UDP_END_PARSE).getBytes();						
+							
+						} else  { bufferStat = (Parameters.TRANSFER_FAIL + Parameters.UDP_PARSER + "0" + Parameters.UDP_END_PARSE).getBytes();	}
+						
+						DatagramPacket replay3 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),request.getPort());
+						System.out.println("To send acc for the transfer " + new String( replay3.getData()));
+						aSocket.send(replay3);
+						
+					
+					}else 
+					if (dataRecieved.contains(Parameters.TRANSFER_DONE)) {
+						suspendAccount("Admin", "Admin", String.valueOf(IPaddress) + ".", messageArray[1]);
+						bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_END_PARSE).getBytes();						
+						DatagramPacket replay5 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
+						aSocket.send(replay5);
+						System.out.println("Transfer done, ACK sent " + new String(replay5.getData()));
+					} else 
+							
+					if (dataRecieved.contains(Parameters.TRANSFER_FAIL)){
+						 bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0" + Parameters.UDP_END_PARSE).getBytes();
+						 DatagramPacket replay5 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
+						aSocket.send(replay5);	
+						System.out.println("Transfer failed, NACK sent " + new String(replay5.getData()));
+						
+					}
+			
 				}	
+					
 				
 		 }
 			catch (Exception e) {e.printStackTrace();}
@@ -667,5 +720,22 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 		return accessIP;
 	}
 	
-	
+	public int getPortPerIP (String IPadress) {
+		int portNumber = 0;
+		int tempIP = 0;
+		
+		tempIP = extractIP(IPadress);
+		
+		if ( tempIP == Parameters.AS_IP_ADDRESS ){
+			portNumber = Parameters.UDP_PORT_REPLICA_B_AS;
+			
+		}else if ( tempIP == Parameters.EU_IP_ADDRESS ){
+			portNumber =Parameters.UDP_PORT_REPLICA_B_EU;
+		}
+		else if ( tempIP == Parameters.NA_IP_ADDRESS ){
+			portNumber = Parameters.UDP_PORT_REPLICA_B_NA;
+		}
+		
+		return portNumber;
+	}
 }

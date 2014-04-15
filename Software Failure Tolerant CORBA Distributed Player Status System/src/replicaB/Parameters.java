@@ -8,6 +8,12 @@ public class Parameters
 	
 	protected static String REQUEST_LOCAL_STAT = "REQUEST_LOCAL_STAT_FROM_SERVER_NA_SERVER_EU_SERVER_AS";
 	
+	protected static String REQUEST_LOCAL_TRANSFER = "REQUEST_LOCAL_TRANSFER";
+	
+	protected static String TRANSFER_DONE = "TRANSFER_DONE";
+	
+	protected static String TRANSFER_FAIL = "TRANSFER_FAIL";
+	
 	protected static int UDP_PORT_REPLICA_A = 2000;
 	
 	protected static int UDP_PORT_REPLICA_B = 3000;

@@ -320,9 +320,7 @@ public class GameUDPServer extends Thread{
 						
 						}
 					}
-					//else {System.out.println("The METHOD CODE is not valid:" + messageArray[1]);}
-				
-		
+					
 						//forward the message to the leader
 						if (dataRecieved.contains(Parameters.RB_NAME)) {
 							DatagramPacket replay = new DatagramPacket(request.getData(), request.getLength(),request.getAddress(),Parameters.UDP_PORT_REPLICA_B);
@@ -356,10 +354,37 @@ public class GameUDPServer extends Thread{
 	
 	
 	public static void stopServers () {
-		replicaNA.stop();
-		replicaEU.stop();
-		replicaAS.stop();
+		
+		try{
+		
+		replicaNA.killThread();
+		if (!replicaNA.equals(null)  && !(null == replicaNA)) 
+		{
+			replicaNA.records.clear();
+			replicaNA = null;
+			//replicaNA.getThreadGroup();
+		}
+		
+		
+		replicaEU.killThread();
+		if (!replicaEU.equals(null)  && !(null == replicaEU)) 
+		{
+			replicaEU.records.clear();
+			replicaEU = null;
+		}
+		
+		
+		replicaAS.killThread();
+		if (!replicaAS.equals(null)  && !(null == replicaAS)) 
+		{
+			replicaAS.records.clear();
+			replicaAS = null;
+			
+		}
+		
 		System.out.println("Reboot servers NA, EU and AS ...");
+		}
+		catch (Exception e) {e.printStackTrace();}
 	}
 	
 
