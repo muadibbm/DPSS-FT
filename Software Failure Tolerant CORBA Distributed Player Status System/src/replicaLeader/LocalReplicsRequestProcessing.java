@@ -17,10 +17,12 @@ public class LocalReplicsRequestProcessing
 		if(!m_LeaderResultProcessed.equals("") && !m_Replica_A_Processed.equals("") && !m_Replica_B_Processed.equals(""))
 		{
 	
+			m_LeaderResultProcessed = m_LeaderResultProcessed + "/" + "$";
 			String l_segments_Leader[] = m_LeaderResultProcessed.split(Parameters.UDP_PARSER);
 			String l_segments_A[] = m_Replica_A_Processed.split(Parameters.UDP_PARSER);
 			String l_segments_B[] = m_Replica_B_Processed.split(Parameters.UDP_PARSER);
 					
+			System.out.println("TEsting 1");
 			
 			// check if all results are same
 			if(l_segments_Leader[0].equals(l_segments_A[0]) || l_segments_Leader[0].equals(l_segments_B[0]))
@@ -68,15 +70,16 @@ public class LocalReplicsRequestProcessing
 				// sending packet to Leader
 				for(int i = 0; i < l_segments_Leader.length; i++)
 				{
-					result  = Parameters.UDP_PARSER + l_segments_Leader[i] + result;
+					result  = result + Parameters.UDP_PARSER + l_segments_Leader[i];
 				}
 							
 				m_LeaderResultProcessed = m_LeaderResultProcessed + result;
 				
+				System.out.println("LocalReplicsRequestProcessing.CompareResults: Send Packet - m_LeaderResultProcessed" + m_LeaderResultProcessed);
 				UDP_replicaLeader.sendPacket(m_LeaderResultProcessed, Parameters.UDP_PORT_FE);
 								
 				// sending packet to Replica Manager
-				if(l_rmdatagram.equals(""))
+				if(!l_rmdatagram.equals(""))
 				{
 					l_rmdatagram =  Parameters.LR_NAME + Parameters.UDP_PARSER + l_rmdatagram;
 					System.out.println("Data gram sent to replica manager l_rmdatagram - " + l_rmdatagram);

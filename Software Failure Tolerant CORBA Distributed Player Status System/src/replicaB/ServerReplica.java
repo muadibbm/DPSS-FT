@@ -524,7 +524,7 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 						
 						globalSystemSat = globalSystemSat.concat(dataRecieved);
 
-						bufferStat = (Parameters.RB_NAME + globalSystemSat + Parameters.UDP_END_PARSE).getBytes();						
+						bufferStat = (Parameters.RB_NAME + globalSystemSat + Parameters.UDP_PARSER + Parameters.UDP_END_PARSE).getBytes();						
 						
 						DatagramPacket replay3 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
 						aSocket.send(replay3);
@@ -546,9 +546,9 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 						methodAcknowledgment =  createPlayerAccount(messageArray[2], messageArray[3], Integer.parseInt(messageArray[4]), messageArray[5], messageArray[6], messageArray[7]);
 						
 						if (methodAcknowledgment == true) {
-							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_END_PARSE).getBytes();						
+							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_PARSER + Parameters.UDP_END_PARSE).getBytes();						
 							
-						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0"  + Parameters.UDP_END_PARSE).getBytes();	}
+						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0"  + Parameters.UDP_PARSER+ Parameters.UDP_END_PARSE).getBytes();	}
 						
 						DatagramPacket replay3 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
 						aSocket.send(replay3);
@@ -559,9 +559,9 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 						methodAcknowledgment =  PlayerSignIn(messageArray[2], messageArray[3], messageArray[4]);
 						
 						if (methodAcknowledgment == true) {
-							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1"  + Parameters.UDP_END_PARSE).getBytes();						
+							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1"  + Parameters.UDP_PARSER+ Parameters.UDP_END_PARSE).getBytes();						
 							
-						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0"  + Parameters.UDP_END_PARSE).getBytes();	}
+						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0"  + Parameters.UDP_PARSER+ Parameters.UDP_END_PARSE).getBytes();	}
 						
 						DatagramPacket replay3 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
 						aSocket.send(replay3);
@@ -571,9 +571,9 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 						//call player sign out
 						methodAcknowledgment =  PlayerSignOut(messageArray[2], messageArray[3]);
 						if (methodAcknowledgment == true) {
-							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_END_PARSE).getBytes();						
+							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_PARSER+ Parameters.UDP_END_PARSE).getBytes();						
 							
-						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0" + Parameters.UDP_END_PARSE).getBytes();	}
+						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0" + Parameters.UDP_PARSER+ Parameters.UDP_END_PARSE).getBytes();	}
 						
 						DatagramPacket replay3 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
 						aSocket.send(replay3);
@@ -584,9 +584,9 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 						//call suspend account
 						methodAcknowledgment = suspendAccount(messageArray[2], messageArray[3], messageArray[4], messageArray[5]);
 						if (methodAcknowledgment == true) {
-							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_END_PARSE).getBytes();						
+							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1" + Parameters.UDP_PARSER+ Parameters.UDP_END_PARSE).getBytes();						
 							
-						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0" + Parameters.UDP_END_PARSE).getBytes();	}
+						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + Parameters.UDP_PARSER+ "0" + Parameters.UDP_END_PARSE).getBytes();	}
 						
 						DatagramPacket replay3 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
 						aSocket.send(replay3);

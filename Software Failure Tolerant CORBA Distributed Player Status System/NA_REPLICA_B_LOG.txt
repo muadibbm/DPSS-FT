@@ -12,3 +12,8 @@
 04/14/2014 11:50:11 PM : Local stat is requested : /NA/0/0/online.
 04/14/2014 11:52:14 PM : Local stat is requested : /NA/0/0/online.
 04/14/2014 11:53:23 PM : Local stat is requested : /NA/0/0/online.
+04/15/2014 12:06:04 AM : New player was added user123 to server NA
+04/15/2014 12:15:10 AM : New player was added user123 to server NA
+04/15/2014 12:17:48 AM : New player was added user123 to server NA
+04/15/2014 12:19:08 AM : New player was added user123 to server NA
+04/15/2014 12:20:24 AM : New player was added user123 to server NA
