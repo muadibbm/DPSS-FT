@@ -11,6 +11,8 @@ import java.net.SocketException;
 
 import org.omg.Dynamic.Parameter;
 
+//import replicaA.Parameters;
+
 
 public class GameUDPServer extends Thread{
 	
@@ -37,25 +39,35 @@ public class GameUDPServer extends Thread{
 	  * @param portNumber - the port that the server will listen to
 	  */
 	
-	public void run() {
+	public void run() 
+	{
 		UDPMulticastListener();
 	}
 	
 	public void UDPMulticastListener () {
-		try {
-		byte[] buffer = new byte[Parameters.UDP_BUFFER_SIZE];
-		MulticastSocket aMulticastSocket;
+		try 
+		{
+			System.out.println("Multicat UDP Listener for Leader Messages is now Online ");
+			
+			byte[] buffer = new byte[Parameters.UDP_BUFFER_SIZE];
+			MulticastSocket aMulticastSocket;
 		
+			aMulticastSocket = new MulticastSocket(Parameters.UDP_PORT_REPLICA_LEAD_MULTICAST);
+			aMulticastSocket.joinGroup(InetAddress.getByName(Parameters.UDP_ADDR_REPLICA_COMMUNICATION_MULTICAST));
 		
-		aMulticastSocket = new MulticastSocket(Parameters.UDP_PORT_REPLICA_LEAD_MULTICAST);
-		aMulticastSocket.joinGroup(InetAddress.getByName(Parameters.UDP_ADDR_REPLICA_COMMUNICATION_MULTICAST));
-		
-		while (true) {
-		DatagramPacket requestFromLeaderPacket = new DatagramPacket(buffer, buffer.length);
-		aMulticastSocket.receive(requestFromLeaderPacket);
+			while (true) 
+			{
+				DatagramPacket requestFromLeaderPacket = new DatagramPacket(buffer, buffer.length);
+				aMulticastSocket.receive(requestFromLeaderPacket);
+				String[] messageArray = (new String(requestFromLeaderPacket.getData())).split(Parameters.UDP_PARSER);
+				requestFromLeaderPacket.setLength(buffer.length);
+				System.out.println("requestFromLeaderPacket: " + messageArray[0] + messageArray[1] + messageArray[2]);
+			}
 		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
 		}
-		catch (Exception e) {e.printStackTrace();}
 	}
 	
 	public GameUDPServer ( int portNumber)
@@ -68,10 +80,18 @@ public class GameUDPServer extends Thread{
 			
 	   }
 	
+	public GameUDPServer()
+	{
+		
+	}
 	
-	public static void main ( String  [] args){
+	public static void main ( String  [] args)
+	{
 		System.out.println("Main UDP server is up and running ...");
 		//multicastListener();
+	
+		GameUDPServer l_GameUDPServer = new GameUDPServer();
+		l_GameUDPServer.start();
 		
 	 try {
 			
