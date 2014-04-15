@@ -1,0 +1,21 @@
+04/14/2014 8:05:13 PM : New player was added est to server EU
+04/14/2014 8:32:25 PM : New player was added est to server EU
+04/14/2014 8:34:20 PM : Account est already exists on the server 93.22
+04/14/2014 8:35:23 PM : Player est is loged in to server EU
+04/14/2014 8:35:32 PM : Player est is already loged in to server EU
+04/14/2014 8:35:50 PM : Player test can not be found on 93.22.22
+04/14/2014 8:36:00 PM : Player est signed out from server EU
+04/14/2014 8:36:19 PM : Account  test is not registered on server 93.22
+04/14/2014 9:50:30 PM : New player was added est to server EU
+04/14/2014 11:16:49 PM : New player was added est to server EU
+04/14/2014 11:17:24 PM : Local stat is requested : EU/0/1/online.
+04/14/2014 11:27:15 PM : New player was added est to server EU
+04/14/2014 11:27:53 PM : Local stat is requested : EU/0/1/online.
+04/14/2014 11:35:23 PM : New player was added est to server EU
+04/14/2014 11:35:49 PM : Local stat is requested : EU/0/1/online.
+04/14/2014 11:44:56 PM : Local stat is requested : EU/0/0/online.
+04/14/2014 11:46:13 PM : Local stat is requested : EU/0/0/online.
+04/14/2014 11:47:45 PM : Local stat is requested : EU/0/0/online.
+04/14/2014 11:50:11 PM : Local stat is requested : /EU/0/0/online.
+04/14/2014 11:52:14 PM : Local stat is requested : /EU/0/0/online.
+04/14/2014 11:53:23 PM : Local stat is requested : /EU/0/0/online.
