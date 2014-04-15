@@ -47,8 +47,11 @@ class FrontEndUDPThread extends Thread
 	{
 		try {
 			request = new DatagramPacket(buffer, buffer.length);
+			System.out.println("here before");
 			aDatagramSocket.receive(request);
+			System.out.println("here");
 			messageArray = (new String(request.getData())).split(Parameters.UDP_PARSER);
+			System.out.println(messageArray);
 			if(messageArray[0].equals(Parameters.LR_NAME))
 			{
 				/*if(messageArray.length > 2) // get Player Status
