@@ -33,6 +33,7 @@ public class Parameters
 	}
 	
 	protected static String UDP_PARSER = "/";
+	protected static String UDP_END_PARSE = "$";
 	
 	protected static int UDP_BUFFER_SIZE = 1500;
 	

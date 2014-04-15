@@ -52,6 +52,7 @@ class UDPThread extends Thread
 				messageArray = (new String(request.getData())).split(Parameters.UDP_PARSER);
 				if(messageArray[0].equals(Parameters.METHOD_CODE.TRANSFER_ACCOUNT.name()))
 				{
+					messageArray[6] = messageArray[6].trim();
 					aServerNameRef.createPlayerAccount(messageArray[1], messageArray[2], Integer.parseInt(messageArray[3]),
 													   messageArray[4], messageArray[5], messageArray[6]);
 				}
