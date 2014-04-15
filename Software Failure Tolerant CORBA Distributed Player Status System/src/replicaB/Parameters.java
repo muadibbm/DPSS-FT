@@ -1,14 +1,19 @@
 package replicaB;
 
 public class Parameters 
+
 {
+
+	
+	protected static String REQUEST_LOCAL_STAT = "REQUEST_LOCAL_STAT_FROM_SERVER_NA_SERVER_EU_SERVER_AS";
+	
 	protected static int UDP_PORT_REPLICA_A = 2000;
 	
 	protected static int UDP_PORT_REPLICA_B = 3000;
 	
 	protected static int UDP_PORT_REPLICA_LEAD = 4000;
 	
-	protected static int UDP_PORT_REPLICA_LEAD_MULTICAST = 4446;
+	protected static int UDP_PORT_REPLICA_LEAD_MULTICAST = 4500;
 	
 	protected static String UDP_ADDR_REPLICA_COMMUNICATION_MULTICAST = "224.0.0.2";
 	
@@ -29,7 +34,7 @@ public class Parameters
 	
 	protected static String UDP_PARSER = "/";
 	
-	protected static int UDP_BUFFER_SIZE = 10000;
+	protected static int UDP_BUFFER_SIZE = 1500;
 	
 	protected static String FE_NAME = "FE";
 	protected static String RM_NAME = "RM"; 

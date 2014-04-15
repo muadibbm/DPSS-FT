@@ -21,21 +21,22 @@ public class ServerReplica  extends Thread{
 	/**
 	 * Define constants for the servers the users can access
 	 */
-	public static UserPlayer playerToTransfered;
+	public UserPlayer playerToTransfered;
 	
 	//ports used for the TRANSFER ACCOUNT method whit in the server group only
-	static final int NA_port = 6666;
-	static final int EU_port = 6667;
-	static final int AS_port = 6668;
+	static final int NA_port = Parameters.UDP_PORT_REPLICA_B_NA;
+	static final int EU_port = Parameters.UDP_PORT_REPLICA_B_EU;
+	static final int AS_port = Parameters.UDP_PORT_REPLICA_B_AS;
 	
-	
-	static DatagramSocket aSocket = null;
-	static boolean waitForConnection = true;
+	protected  boolean methodAcknowledgment = false;
+	protected  String methodAcknowledgmentStr = null;
+	DatagramSocket aSocket = null;
+	boolean waitForConnection = true;
 	String serverIPAddress;
 	int IPaddress = 0;
 	int serverPort;
 	
-	String messageArray [];
+	String messageArray [] = new String [20];
 	
 	static java.util.Date date= new java.util.Date();
 	/**
@@ -53,11 +54,15 @@ public class ServerReplica  extends Thread{
 	 */
 	String acronym;
 	int serverListeningPort = 0;
+	
 	String dataRecieved = null;
 	
-	static int totalRecords;
-	static Hashtable<Character, List <UserPlayer>> records = new Hashtable<>();
+	int totalRecords;
+	Hashtable<Character, List <UserPlayer>> records = new Hashtable<>();
 
+	int LOCAL_CONNECTION_1 = 0;
+	int LOCAL_CONNECTION_2 = 0;
+	
 	
 	/**
 	 * Method to create/edit a log file for the game server
@@ -69,16 +74,23 @@ public class ServerReplica  extends Thread{
 		if ( IP == Parameters.AS_IP_ADDRESS ){
 			acronym = "AS";
 			IPaddress = Parameters.AS_IP_ADDRESS;
-			serverListeningPort = Parameters.UDP_PORT_REPLICA_B_AS;
+			this.serverListeningPort = Parameters.UDP_PORT_REPLICA_B_AS;
+			LOCAL_CONNECTION_1 = Parameters.UDP_PORT_REPLICA_B_EU;
+			LOCAL_CONNECTION_2 = Parameters.UDP_PORT_REPLICA_B_NA;
+			
 		}else if ( IP == Parameters.EU_IP_ADDRESS ){
 			acronym = "EU";
-			serverListeningPort =Parameters.UDP_PORT_REPLICA_B_EU;
+			this.serverListeningPort =Parameters.UDP_PORT_REPLICA_B_EU;
 			IPaddress = Parameters.EU_IP_ADDRESS;
+			LOCAL_CONNECTION_1 = Parameters.UDP_PORT_REPLICA_B_AS;
+			LOCAL_CONNECTION_2 = Parameters.UDP_PORT_REPLICA_B_NA;
 		}
 		else if ( IP == Parameters.NA_IP_ADDRESS ){
 			acronym = "NA";
-			serverListeningPort = Parameters.UDP_PORT_REPLICA_B_NA;
+			this.serverListeningPort = Parameters.UDP_PORT_REPLICA_B_NA;
 			IPaddress = Parameters.NA_IP_ADDRESS;
+			LOCAL_CONNECTION_1 = Parameters.UDP_PORT_REPLICA_B_EU;
+			LOCAL_CONNECTION_2 = Parameters.UDP_PORT_REPLICA_B_AS;
 		}
 	}
 	
@@ -343,13 +355,9 @@ public class ServerReplica  extends Thread{
 	 */
 	public String getPlayerStatus(String AdminUsername, String AdminPassword,
 			String IPAddress) {
-		String returnMessage = null;
 		int onlineUsers = 0;
 		int offlineUsers = 0;
-		String serverAcro = null;
 		String currentServerStat = null;
-		
-		serverAcro = getServerAcronim(Integer.parseInt(IPAddress));
 		
 		String letter = "ABCDEFJHIJKLMNOPQRSTUVWXYZ";
 		
@@ -369,13 +377,11 @@ public class ServerReplica  extends Thread{
 					
 			}
 		}
-		currentServerStat = serverAcro + " has " + onlineUsers + " online and " + offlineUsers + " offline.";
-		returnMessage = StatusUDP(Integer.parseInt(IPAddress));
-		System.out.println("Return message from 2 UDP connections: " + returnMessage);
+		currentServerStat = this.acronym + " has " + onlineUsers + " online and " + offlineUsers + " offline.";
+		//returnMessage = StatusUDP(extractIP(IPAddress));
+		//System.out.println("Return message from the current server: " + currentServerStat);
 		
-		String tempMessage = currentServerStat + returnMessage;
-		log(tempMessage);
-		return tempMessage;
+		return currentServerStat;
 	}
 	
 	
@@ -393,21 +399,27 @@ public class ServerReplica  extends Thread{
 	 */
 	public String transferAccount(String Username, String Password,
 			String OldIPAddress, String NewIPAddress) {
-		
-		int transferIP = Integer.parseInt(NewIPAddress);
-		int transferPort = 5000;
-		boolean transferTest = false;
-		if (transferIP == Parameters.NA_IP_ADDRESS) 
-			transferPort = NA_port;
-		else if ( transferIP == Parameters.EU_IP_ADDRESS) 
-			transferPort = EU_port;
-		else if ( transferIP == Parameters.AS_IP_ADDRESS)
-			transferPort = AS_port;
-		else System.out.println("Can not get the port " + NewIPAddress);
-		
 
-		String transferStatus = "0.0";
-		char initial = Character.toUpperCase(Username.toCharArray()[0]);
+		int portRecievingTranfer = 0;
+		int tempIP = 0;
+		tempIP = extractIP(NewIPAddress);
+		String playerRecord = null;
+		String tempFirstName, tempLastName, tempUsername, tempPassword;
+		
+		switch (tempIP) {
+		case Parameters.NA_IP_ADDRESS :
+			portRecievingTranfer = Parameters.UDP_PORT_REPLICA_B_NA;
+			break;
+		case Parameters.EU_IP_ADDRESS :
+			portRecievingTranfer = Parameters.UDP_PORT_REPLICA_B_EU;
+			break;
+		case Parameters.AS_IP_ADDRESS :
+			portRecievingTranfer = Parameters.UDP_PORT_REPLICA_B_AS;
+			break;
+		}
+		
+		
+char initial = Character.toUpperCase(Username.toCharArray()[0]);
 	
 		
 		//check if there are records for the username's first letter 
@@ -422,184 +434,19 @@ public class ServerReplica  extends Thread{
 				//get the status of the transfer
 					if (lList.get(i).getUserName().equals(Username) && lList.get(i).getPassword().equals(Password)) {
 						System.out.println("Account " + Username + " requested transfer from  " + acronym);
-			
-//Create UDP connection with the server the account will be transfered to
-						transferStatus = "1." + lList.get(i).getFirstName() + "." + lList.get(i).getLastName() + "." + lList.get(i).getAge() + "." + lList.get(i).getUserName() + "." + lList.get(i).getPassword() + ".";
-						System.out.println(transferStatus);
-						
-						transferTest = transferAccountUDP(transferStatus,transferPort);
-						if (transferTest) {
-						log("Account " + Username + "  was transfered from  " + acronym);
-						System.out.println("Account " + Username + " was transfered from  " + acronym + transferTest);
-						} else {
-							log("Account " + Username + "  can not be transfered from  " + acronym);
-							System.out.println("Account " + Username + " can not be transfered from  " + acronym + transferTest);
-							transferStatus = "0.0";	
-						}
+						playerRecord = acronym + Parameters.UDP_PARSER +
+								lList.get(i).getFirstName() + Parameters.UDP_PARSER +
+									lList.get(i).getLastName() + Parameters.UDP_PARSER + 
+									String.valueOf(lList.get(i).getAge())  + Parameters.UDP_PARSER + 
+									lList.get(i).getUserName() + Parameters.UDP_PARSER + 
+									lList.get(i).getPassword();
 					}
-					//if the account is not found
-					else	
-					{
-						log("Account " + Username + " was not found on server  " + acronym);
-						System.out.println("Account " + Username + " was not found on server  " + acronym);
-						transferStatus = "0.0";	
-					}
-	
-				
-				//the data is sent and the account is added to the new server
-					if (transferTest) {
-						synchronized (lList) {
-						lList.remove(lList.get(i));
-						}
-						log("Account " + Username + " was transfered from server  " + acronym);
-
-						//if that is the only record remove the list from the hashtable
-						if (lList.isEmpty()){
-							synchronized (lList) {
-							records.remove(initial);
-							}
-						}
-						
-					}
-					
-					
-				
 			}
 		}
-		
-		return transferStatus;
+		return playerRecord;
 
 	}
-	
 
-	/**
-	 * Method that will connect from the current server to the other 2 and get the statuses for all users
-	 * @param accessIP - the current server that got the user request
-	 * @return string with the status info from all servers
-	 */
-	public static String StatusUDP (int accessIP) {
-		
-		//int serverPortInit = 0;
-		int serverPortConn1 = 0;
-		int serverPortConn2 = 0;
-		
-		if(accessIP == Parameters. NA_IP_ADDRESS) {
-			//serverPortInit = NA_port;
-			serverPortConn1 = EU_port;
-			serverPortConn2 = AS_port;
-		}else if (accessIP == Parameters.EU_IP_ADDRESS)
-		{
-			//serverPortInit = EU_port;
-			serverPortConn1 = NA_port;
-			serverPortConn2 = AS_port;
-		}else if (accessIP == Parameters.AS_IP_ADDRESS)
-		{
-			//serverPortInit = AS_port;
-			serverPortConn1 = NA_port;
-			serverPortConn2 = EU_port;
-		}
-		String returnStatus = "";
-		
-		//boolean transferSuccess = false;
-		int statusCode1 = 0;
-		int statusCode2 = 0;
-		String serverAcro = "";
-		String statusCodeFromReplay1, statusCodeFromReplay2;
-		String requestCode = "5.0";
-		
-		DatagramSocket aSocket1 = null;
-		DatagramSocket aSocket2 = null;
-		int indexCode1 = 0;
-		try {
-			String returnStatus1;
-			String returnStatus2;
-			
-			aSocket1 = new DatagramSocket();
-			byte [] m1 = requestCode.getBytes();
-			InetAddress aHost = InetAddress.getByName("localhost");
-			int serverPort1 = serverPortConn1;
-			DatagramPacket request = new DatagramPacket(m1,m1.length, aHost, serverPort1);
-			aSocket1.send(request);
-			
-			byte [] buffer1 = new byte [1400];
-			DatagramPacket replay1 = new DatagramPacket(buffer1, buffer1.length);
-			aSocket1.receive(replay1);
-			
-			if (serverPort1==Parameters.AS_IP_ADDRESS){
-				serverAcro = "AS";
-			}else if (serverPort1==Parameters.EU_IP_ADDRESS){
-				serverAcro = "EU";
-			}
-			else if (serverPort1==Parameters.NA_IP_ADDRESS){
-				serverAcro = "NA";
-			}
-			
-			//add the new account to the server
-			statusCodeFromReplay1 = new String(replay1.getData());
-			indexCode1 = statusCodeFromReplay1.indexOf(".");
-			statusCode1 = Integer.parseInt(statusCodeFromReplay1.substring(0, indexCode1));
-			returnStatus1 = (statusCodeFromReplay1.substring(indexCode1+1, statusCodeFromReplay1.length())).trim();
-			returnStatus = returnStatus.concat(returnStatus1);
-			
-			//UDP to the second server
-			int indexCode2 = 0;
-			aSocket2 = new DatagramSocket();
-			byte [] m2 = requestCode.getBytes();
-			InetAddress aHost1 = InetAddress.getByName("localhost");
-			int serverPort2 = serverPortConn2;
-			DatagramPacket request2 = new DatagramPacket(m2,m2.length, aHost1, serverPort2);
-			aSocket2.send(request2);
-			
-			byte [] buffer2 = new byte [1400];
-			DatagramPacket replay2 = new DatagramPacket(buffer2, buffer2.length);
-			aSocket2.receive(replay2);
-			//
-			
-			if (serverPort2==Parameters.AS_IP_ADDRESS){
-				serverAcro = "AS";
-			}else if (serverPort2==Parameters.EU_IP_ADDRESS){
-				serverAcro = "EU";
-			}
-			else if (serverPort2==Parameters.NA_IP_ADDRESS){
-				serverAcro = "NA";
-			}
-			
-			//add the new account to the server
-			statusCodeFromReplay2 = new String(replay2.getData());
-			indexCode2 = statusCodeFromReplay2.indexOf(Parameters.UDP_PARSER);
-			statusCode2 = Integer.parseInt(statusCodeFromReplay2.substring(0, indexCode2));
-			returnStatus2 = (statusCodeFromReplay2.substring(indexCode2+1, statusCodeFromReplay2.length())).trim();
-			returnStatus = returnStatus1 + returnStatus2;
-			System.out.println("Check status remote server 2: OK ");
-			
-			
-			//returnStatus = returnStatus.concat(returnStatus2);
-			System.out.println("UDP 1 request: " + returnStatus1);
-			System.out.println("UDP 2 request: " + returnStatus2);
-			System.out.println("UDP 1 and 2: " + returnStatus1 + returnStatus2);
-		}
-		catch (SocketException e){
-			System.out.println("Socket Exception: " + e.getMessage());
-		}
-		catch (IOException e) {
-			System.out.println("IO Exception: " + e.getMessage());
-		}
-		catch (Exception e) {
-			System.out.println("Exception: " + e.getMessage());
-		}
-
-		finally {
-			if (aSocket2 != null) {
-				aSocket2.close();
-			}
-			if (aSocket1 != null) {
-				aSocket1.close();
-			}
-
-	}	
-		return returnStatus;
-	}
-	
 
 	/**
 	 * Method to check if the user account is already registered on the server
@@ -607,7 +454,7 @@ public class ServerReplica  extends Thread{
 	 * @param userIP
 	 * @return false if the new record can be added
 	 */
-	public static boolean checkIfUserRegistered (String username, String userIP) {
+	public boolean checkIfUserRegistered (String username, String userIP) {
 
 		char initial = Character.toUpperCase(username.toCharArray()[0]);
 		boolean recordNotFound = true;
@@ -647,61 +494,128 @@ public class ServerReplica  extends Thread{
 	 * @param IP
 	 */
 	private void startUDPserver () {
-		
-		serverListeningPort = this.serverListeningPort;
-		IPaddress = this.IPaddress;
-		int parserPosition = 0;
-		int parserPositionNextOccurence = 0;
-		String requestServerInitials = null;
-		String requestMethodCode = null;
-		String tempDataUDPMessage = null;
-		
-		String tempFirstName, tempLastName, tempUsername, tempPassword, tempIP;
-		int tempAge = 0;
+		String globalSystemSat = null;
 		
 		 try {
 				
 				aSocket = new DatagramSocket(serverListeningPort);
 				byte [] buffer = new byte [Parameters.UDP_BUFFER_SIZE];
+				byte [] bufferACK = new byte [Parameters.UDP_BUFFER_SIZE];
+				byte [] bufferStat = new byte [Parameters.UDP_BUFFER_SIZE];
+				
+				bufferACK = "1/1".getBytes();
 				System.out.println ("Replica " + IPaddress + " is up and running!");
+				String methodCall = null;
 				//always listen for new messages on the specified port
-				while (waitForConnection) {							
-					
+				while (true) {							
 					DatagramPacket request = new DatagramPacket(buffer, buffer.length);
 					aSocket.receive(request);
-
-					//get the data from the request and check
-					dataRecieved = new String(request.getData());
-					//System.out.println("Message to server : " + IPaddress + " : " + dataRecieved);
-					//put all data in an array : [0] - server sent the request, [1] - method code
-					messageArray = dataRecieved.split(Parameters.UDP_PARSER);
+					dataRecieved = (new String(request.getData()).trim());
+					System.out.println("Data recieved at GEO server " + dataRecieved);
 					
-					
-
-					
-					//get who is initiating the request : RM, Leader, Replica1 or Replica2
-					UDPMethodCall(dataRecieved);
-					
-					
-					//if the message is coming from Leader or Replica Manager
-					if ( messageArray[0].equals(Parameters.LR_NAME)) {
-					
-					
-					
-					} else if ( messageArray[0].equals(Parameters.RM_NAME)) {
+					if (dataRecieved.contains("online")) {
+						methodAcknowledgmentStr.concat((dataRecieved));
 						
-						
-						
+						globalSystemSat = globalSystemSat.concat(dataRecieved);
+						log (globalSystemSat);
+						System.out.println(globalSystemSat);
 					}
 					
+					if (!dataRecieved.contains(Parameters.REQUEST_LOCAL_STAT)) {
+					messageArray = dataRecieved.split(Parameters.UDP_PARSER);
+					//Extract the method forwarded from the main UDP server					
+					methodCall = messageArray[1];
+					} else  {
+						methodCall = Parameters.REQUEST_LOCAL_STAT;
+					}
 					
-					//parserPosition = dataRecieved.indexOf(Parameters.UDP_PARSER);
-					System.out.println(dataRecieved.toString());
+					if (methodCall.contains(Parameters.METHOD_CODE.CREATE_ACCOUNT.name())) {
+						System.out.println("Inside method on the local server CREATE_ACCOUNT");
+						//call create account
+						methodAcknowledgment =  createPlayerAccount(messageArray[2], messageArray[3], Integer.parseInt(messageArray[4]), messageArray[5], messageArray[6], messageArray[7]);
+						
+						if (methodAcknowledgment == true) {
+							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1").getBytes();						
+							
+						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0").getBytes();	}
+						
+						DatagramPacket replay3 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
+						aSocket.send(replay3);
+					}
+					else if (methodCall.contains(Parameters.METHOD_CODE.PLAYER_SIGN_IN.name())){
+						System.out.println("Inside method on the local server SIGN IN");
+						//call player sign in
+						methodAcknowledgment =  PlayerSignIn(messageArray[2], messageArray[3], messageArray[4]);
+						
+						if (methodAcknowledgment == true) {
+							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1").getBytes();						
+							
+						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0").getBytes();	}
+						
+						DatagramPacket replay3 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
+						aSocket.send(replay3);
+					} 
+					else if (methodCall.contains(Parameters.METHOD_CODE.PLAYER_SIGN_OUT.name())){
+						
+						//call player sign out
+						methodAcknowledgment =  PlayerSignOut(messageArray[2], messageArray[3]);
+						if (methodAcknowledgment == true) {
+							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1").getBytes();						
+							
+						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0").getBytes();	}
+						
+						DatagramPacket replay3 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
+						aSocket.send(replay3);
+						
+					} 
+					else if (methodCall.contains(Parameters.METHOD_CODE.SUSPEND_ACCOUNT.name())){
+						
+						//call suspend account
+						methodAcknowledgment = suspendAccount(messageArray[2], messageArray[3], messageArray[4], messageArray[5]);
+						if (methodAcknowledgment == true) {
+							bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "1").getBytes();						
+							
+						} else  { bufferStat = (Parameters.RB_NAME + Parameters.UDP_PARSER + "0").getBytes();	}
+						
+						DatagramPacket replay3 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
+						aSocket.send(replay3);
+						
+					} else if (methodCall.contains(Parameters.METHOD_CODE.TRANSFER_ACCOUNT.name())){
+						
+						//call transfer account
+						methodAcknowledgmentStr = transferAccount(messageArray[2], messageArray[3], messageArray[4], messageArray[5]);
+						
+					} else if (methodCall.contains(Parameters.METHOD_CODE.GET_PLAYER_STATUS.name())){
+						System.out.println("GET_PLAYER_STATUS is requested!");
+						//call get player status
+						methodAcknowledgmentStr = getPlayerStatus(messageArray[2], messageArray[3], messageArray[4]);
+					//send 2 UDP messages to the other 2 servers	
+						globalSystemSat = methodAcknowledgmentStr;
+						
+							
+						bufferStat = (Parameters.REQUEST_LOCAL_STAT).getBytes();						
+						DatagramPacket replay1 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),LOCAL_CONNECTION_1);
+						aSocket.send(replay1);
+						DatagramPacket replay2 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),LOCAL_CONNECTION_2);
+						aSocket.send(replay2);
+						
+						log (methodAcknowledgmentStr);
+						System.out.println (methodAcknowledgmentStr);
+						
+						
+						
+						
+					} else if (dataRecieved.contains(Parameters.REQUEST_LOCAL_STAT)) {
+						if(!dataRecieved.contains("/")){
+						//	buffer = null;
+						bufferStat = getPlayerStatus("Admin", "Admin",String.valueOf(IPaddress)).getBytes();						
+						DatagramPacket replay3 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),request.getPort());
+						aSocket.send(replay3);
+						System.out.println ("The METHOD CODE  REQUEST_LOCAL_STAT is sent to "  +request.getPort() + "  the data sent follow:" + getPlayerStatus("Admin", "Admin",String.valueOf(IPaddress)));
+						log ("Local stat is requested : " + getPlayerStatus("Admin", "Admin",String.valueOf(IPaddress)));
+						}
+					}
 					
-					
-					
-
-
 				}	
 				
 		 }
@@ -723,51 +637,10 @@ public class ServerReplica  extends Thread{
 		return acro;
 	}
 	
-	public void UDPMethodCall (String UDPrequest) {
-		
-		String methodCall = null;
-		
-		messageArray = UDPrequest.split(Parameters.UDP_PARSER);
-		//Extract the method forwarded from the main UDP server
-		methodCall = messageArray[1];
-		
-		if (methodCall.contains(Parameters.METHOD_CODE.CREATE_ACCOUNT.toString())) {
-			
-			//call create account
-			createPlayerAccount(messageArray[2], messageArray[3], Integer.parseInt(messageArray[4]), messageArray[5], messageArray[6], messageArray[7]);
-		
-		} else if (methodCall.contains(Parameters.METHOD_CODE.PLAYER_SIGN_IN.toString())){
-			
-			//call player sign in
-			PlayerSignIn(messageArray[2], messageArray[3], messageArray[4]);
-			
-		} else if (methodCall.contains(Parameters.METHOD_CODE.PLAYER_SIGN_OUT.toString())){
-			
-			//call player sign out
-			PlayerSignOut(messageArray[2], messageArray[3]);
-			
-		} else if (methodCall.contains(Parameters.METHOD_CODE.SUSPEND_ACCOUNT.toString())){
-			
-			//call suspend account
-			suspendAccount(messageArray[2], messageArray[3], messageArray[4], messageArray[5]);
-			
-		} else if (methodCall.contains(Parameters.METHOD_CODE.TRANSFER_ACCOUNT.toString())){
-			
-			//call transfer account
-			transferAccount(messageArray[2], messageArray[3], messageArray[4], messageArray[5]);
-			
-		} else if (methodCall.contains(Parameters.METHOD_CODE.GET_PLAYER_STATUS.toString())){
-			
-			//call get player status
-			getPlayerStatus(messageArray[2], messageArray[3], messageArray[4]);
-			
-		}
-
-		
-	}
+	
 	
 
-	public static int extractIP ( String inputIP ){
+	public int extractIP ( String inputIP ){
 		int accessIP=0;
 		try
 		{
@@ -777,5 +650,6 @@ public class ServerReplica  extends Thread{
 		catch ( Exception e ) {e.printStackTrace();}
 		return accessIP;
 	}
-
+	
+	
 }

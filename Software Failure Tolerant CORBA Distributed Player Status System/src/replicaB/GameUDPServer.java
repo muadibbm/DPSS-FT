@@ -6,7 +6,11 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.net.SocketException;
+
+import org.omg.Dynamic.Parameter;
+
 
 public class GameUDPServer extends Thread{
 	
@@ -27,15 +31,40 @@ public class GameUDPServer extends Thread{
 	static ServerReplica replicaAS = null;
 	
 	
-	static String [] messageArray;
+	static String [] messageArray = new String [10];
 	/**
 	  * Constructor for the Game Servers
 	  * @param portNumber - the port that the server will listen to
 	  */
+	
+	public void run() {
+		UDPMulticastListener();
+	}
+	
+	public void UDPMulticastListener () {
+		try {
+		byte[] buffer = new byte[Parameters.UDP_BUFFER_SIZE];
+		MulticastSocket aMulticastSocket;
+		
+		
+		aMulticastSocket = new MulticastSocket(Parameters.UDP_PORT_REPLICA_LEAD_MULTICAST);
+		aMulticastSocket.joinGroup(InetAddress.getByName(Parameters.UDP_ADDR_REPLICA_COMMUNICATION_MULTICAST));
+		
+		while (true) {
+		DatagramPacket requestFromLeaderPacket = new DatagramPacket(buffer, buffer.length);
+		aMulticastSocket.receive(requestFromLeaderPacket);
+		}
+		}
+		catch (Exception e) {e.printStackTrace();}
+	}
+	
 	public GameUDPServer ( int portNumber)
 	   {
 
 		   this.serverPort = portNumber;
+		   for ( int i = 0 ; i<= messageArray.length;i++) {
+			   messageArray[i] = null;
+		   }
 			
 	   }
 	
@@ -51,6 +80,14 @@ public class GameUDPServer extends Thread{
 			
 			//always listen for new messages on the specified port
 			while (waitForConnection) {							
+				
+				for ( int i = 0 ; i< messageArray.length;i++) {
+					   messageArray[i] = null;
+				  }
+				dataRecieved = null;
+				//requestMethodCode = null;
+				//requestServerInitials = null;
+				
 				
 				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
 				aSocket.receive(request);
@@ -68,21 +105,30 @@ public class GameUDPServer extends Thread{
 				requestMethodCode = messageArray[1];
 				
 				System.out.println("-----------------------------------------------------------");
-				System.out.println("Method call for: " + requestMethodCode + " for server : " + requestServerInitials);
+				System.out.println("Method call for: " + requestMethodCode + " from server : " + requestServerInitials);
 				System.out.println("-----------------------------------------------------------");
+				int tempIP;
 				
+				if ((dataRecieved.trim()).contains(Parameters.RB_NAME)) {
+					DatagramPacket replayToLeader = new DatagramPacket(request.getData(), request.getLength(),request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
+					aSocket.send(replayToLeader);
+					System.out.println ("On Main server sent ACK to leader: " +request.getData().toString());
+				}
+				
+				if (!requestMethodCode.contains("1")) {
 				if (requestMethodCode.contains(Parameters.METHOD_CODE.RESTART_REPLICA.toString())) {
 					//stop the 3 servers
-					stopServers();
+					if (! (replicaNA == null || replicaNA.equals(null))) {
+						stopServers();
+						//run the 3 UDP servers
+						startServers();
+					} else {
 					//run the 3 UDP servers
 					startServers();
+					}
 				}
-				else {
+				if (requestMethodCode.equalsIgnoreCase(Parameters.METHOD_CODE.CREATE_ACCOUNT.name())) {
 					
-					int tempIP;
-					//
-					
-					if (requestMethodCode.contains(Parameters.METHOD_CODE.CREATE_ACCOUNT.toString())) {
 					//System.out.println("There is a method call for CREATE ACCOUNT");
 					tempIP = extractIP(messageArray[7]);
 					
@@ -90,143 +136,133 @@ public class GameUDPServer extends Thread{
 					switch (tempIP) {
 					
 						case Parameters.NA_IP_ADDRESS : 
-							forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_NA, dataRecieved);
+							aSocket.send(forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_NA, dataRecieved));
 							break;
 						
 						case Parameters.EU_IP_ADDRESS : 
-							forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_EU,dataRecieved);
+							aSocket.send(forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_EU,dataRecieved));
 							break;
 						
 						case Parameters.AS_IP_ADDRESS : 
-							forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_AS, dataRecieved);
+							aSocket.send(forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_AS, dataRecieved));
 							break;
 							
 						default : System.out.println("The IP is not registered in our system");
 						break;
 					
 					}
-					
 					//the requested method is PLAYER SIGN IN
-					if (requestMethodCode.contains(Parameters.METHOD_CODE.PLAYER_SIGN_IN.toString())) {
+					} 
+				
+				if (requestMethodCode.contains(Parameters.METHOD_CODE.PLAYER_SIGN_IN.name())) {
 						tempIP = extractIP(messageArray[4]);
-						
 						//check the IP if the method is PLAYER SIGN IN
 						switch (tempIP) {
 						
 							case Parameters.NA_IP_ADDRESS : 
-								forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_NA, dataRecieved);
+								aSocket.send(forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_NA, dataRecieved));
 								break;
 							
 							case Parameters.EU_IP_ADDRESS : 
-								forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_EU, dataRecieved);
+								aSocket.send(forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_EU, dataRecieved));
 								break;
 							
 							case Parameters.AS_IP_ADDRESS : 
-								forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_AS, dataRecieved);
+								aSocket.send(forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_AS, dataRecieved));
 								break;
 								
 							default : System.out.println("The IP is not registered in our system");
 							break;
-						
+					
 						}
-					}
-					
-					
-					//the requested method is PLAYER SIGN OUT
-					if (requestMethodCode.contains(Parameters.METHOD_CODE.PLAYER_SIGN_OUT.toString())) {
+						//the requested method is PLAYER SIGN OUT
+					} 
+				
+						if (requestMethodCode.contains(Parameters.METHOD_CODE.PLAYER_SIGN_OUT.name())) {
 						tempIP = extractIP(messageArray[3]);
 						
 						//check the IP if the method is PLAYER SIGN OUT
 						switch (tempIP) {
 						
 							case Parameters.NA_IP_ADDRESS : 
-								forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_NA, dataRecieved);
+								aSocket.send(forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_NA, dataRecieved));
 								break;
 							
 							case Parameters.EU_IP_ADDRESS : 
-								forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_EU, dataRecieved);
+								aSocket.send(forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_EU, dataRecieved));
 								break;
 							
 							case Parameters.AS_IP_ADDRESS : 
-								forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_AS,dataRecieved);
+								aSocket.send(forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_AS,dataRecieved));
 								break;
 							
 							default : System.out.println("The IP is not registered in our system");
 							break;
 						
 						}
-					}
-					
-					
-//the requested method is SUSPEND ACCOUNT
-					if (requestMethodCode.contains(Parameters.METHOD_CODE.SUSPEND_ACCOUNT.toString())) {
+						//the requested method is SUSPEND ACCOUNT
+					}else if (requestMethodCode.contains(Parameters.METHOD_CODE.SUSPEND_ACCOUNT.name())) {
 						tempIP = extractIP(messageArray[4]);
 						
 						//check the IP if the method is SUSPEND ACCOUNT
 						switch (tempIP) {
 						
 							case Parameters.NA_IP_ADDRESS : 
-								forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_NA, dataRecieved);
+								aSocket.send(forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_NA, dataRecieved));
 								break;
 							
 							case Parameters.EU_IP_ADDRESS : 
-								forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_EU, dataRecieved);
+								aSocket.send(forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_EU, dataRecieved));
 								break;
 							
 							case Parameters.AS_IP_ADDRESS : 
-								forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_AS, dataRecieved);
+								aSocket.send(forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_AS, dataRecieved));
 								break;
 							
 							default : System.out.println("The IP is not registered in our system");
 							break;
 						
 						}
-					}
-
-					
-					//the requested method is TRANSFER ACCOUNT
-					if (requestMethodCode.contains(Parameters.METHOD_CODE.TRANSFER_ACCOUNT.toString())) {
+						//the requested method is TRANSFER ACCOUNT
+					} else if (requestMethodCode.contains(Parameters.METHOD_CODE.TRANSFER_ACCOUNT.name())) {
 						tempIP = extractIP(messageArray[4]);
 						
 						//check the IP if the method is TRANSFER ACCOUNT
 						switch (tempIP) {
 						
 							case Parameters.NA_IP_ADDRESS : 
-								forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_NA, dataRecieved);
+								aSocket.send(forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_NA, dataRecieved));
 								break;
 							
 							case Parameters.EU_IP_ADDRESS : 
-								forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_EU,dataRecieved);
+								aSocket.send(forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_EU,dataRecieved));
 								break;
 							
 							case Parameters.AS_IP_ADDRESS : 
-								forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_AS,dataRecieved);
+								aSocket.send(forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_AS,dataRecieved));
 								break;
 						
 							default : System.out.println("The IP is not registered in our system");
 							break;
 						}
 					}
-					
-					
-					
 					//the requested method is GET PLAYER STATUS
-					if (requestMethodCode.contains(Parameters.METHOD_CODE.GET_PLAYER_STATUS.toString())) {
+					else if (requestMethodCode.contains(Parameters.METHOD_CODE.GET_PLAYER_STATUS.name())) {
 						tempIP = extractIP(messageArray[4]);
 						
 						//check the IP if the method is  GET PLAYER STATUS
 						switch (tempIP) {
 						
 							case Parameters.NA_IP_ADDRESS : 
-								forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_NA,dataRecieved);
+								aSocket.send(forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_NA,dataRecieved));
 								break;
 							
 							case Parameters.EU_IP_ADDRESS : 
-								forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_EU, dataRecieved);
+								aSocket.send(forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_EU, dataRecieved));
 								break;
 							
 							case Parameters.AS_IP_ADDRESS : 
-								forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_AS,dataRecieved);
+								aSocket.send(forwardUDPMessage(Parameters.UDP_PORT_REPLICA_B_AS,dataRecieved));
 								break;
 								
 							default : System.out.println("The IP is not registered in our system");
@@ -234,11 +270,21 @@ public class GameUDPServer extends Thread{
 						
 						}
 					}
-				}
-
-			}	
+					//else {System.out.println("The METHOD CODE is not valid:" + messageArray[1]);}
+				
+		
+						//forward the message to the leader
+						if (dataRecieved.contains(Parameters.RB_NAME)) {
+							DatagramPacket replay = new DatagramPacket(request.getData(), request.getLength(),request.getAddress(),Parameters.UDP_PORT_REPLICA_B);
+							//DatagramPacket replay = new DatagramPacket(request.getData(), request.getLength(),request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
+							System.out.println("LR will be getting the followinf confirmation: " + replay.getData().toString());
+							aSocket.send(replay);
+						}
+						 
+				
 		}
 			
+	 }
 	 }
 		catch (Exception e) {e.printStackTrace();}
 
@@ -268,39 +314,22 @@ public class GameUDPServer extends Thread{
 	
 
 	
-	public static void forwardUDPMessage (int portNumber, String messageToForward) {
-	
+	public static DatagramPacket forwardUDPMessage (int portNumber, String messageToForward ) {
+		DatagramPacket request = null;
 		//Forward by UDP from the main udp game server to the specific geolocation server
-		DatagramSocket aSocket = null;
 		try {
-			aSocket = new DatagramSocket();
+			//aSocket = new DatagramSocket();
 			byte [] m = messageToForward.getBytes();
 			InetAddress aHost = InetAddress.getByName("localhost");
 			int serverPort = portNumber;
-			DatagramPacket request = new DatagramPacket(m,messageToForward.length(), aHost, serverPort);
-			aSocket.send(request);
-			
-			
-		//wait for the replay from the geolocation server	
-			byte [] buffer = new byte [Parameters.UDP_BUFFER_SIZE];
-			DatagramPacket replay = new DatagramPacket(buffer, buffer.length);
-			
-		//should be true or false and String in case of status is requested	
-			aSocket.receive(replay);
-			System.out.println("Replay: " + new String(replay.getData()));
+			request = new DatagramPacket(m,messageToForward.length(), aHost, serverPort);
+
 		}
-		catch (SocketException e){
+		catch (Exception e){
 			System.out.println("Socket " + e.getMessage());
 		}
-		catch (IOException e) {
-			System.out.println("IO: " + e.getMessage());
-		}
 
-		finally {
-			if (aSocket != null) {
-				aSocket.close();
-			}
-			}
+		return request;
 	
 	}
 	
@@ -337,5 +366,7 @@ public class GameUDPServer extends Thread{
 		    }
 		  
 	}
+	
+	
 	
 }
