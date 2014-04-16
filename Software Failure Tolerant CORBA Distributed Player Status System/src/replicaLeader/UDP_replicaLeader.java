@@ -67,7 +67,7 @@ class UDP_replicaLeader extends Thread
   				    				
   				    				// Process request locally create LocalORBPRocessing Obj
   				    				LocalOrbProcessing l_LocalOrbProcessing = new LocalOrbProcessing();
-  				    				
+  				    				LocalReplicsRequestProcessing.m_HasBeenProcessed = false;
   				    				if(m_UDPDataGram_from_stripped != "")
   				    				{
   				    				
@@ -76,17 +76,9 @@ class UDP_replicaLeader extends Thread
   				    					System.out.println("UDP_replicaLeader.set_UDP_Server_Online : l_multiCastDGram_replica - "+ l_multiCastDGram_replica);
   	  				    				
   				    					// send data to the orb
-  				    					String l_invocationResponse = l_LocalOrbProcessing.performRMI(m_UDPDataGram_from_stripped);
+  				    					LocalReplicsRequestProcessing.m_LeaderResultProcessed = l_LocalOrbProcessing.performRMI(m_UDPDataGram_from_stripped);
   				    					
-  				    					//Set value in LocalReplicsRequestProcessing
-  				    					LocalReplicsRequestProcessing.m_LeaderResultProcessed = l_invocationResponse;
-  				    					System.out.println("UDP_replicaLeader.set_UDP_Server_Online : l_invocationResponse - "+ l_invocationResponse);
-  				    					
-  				    					
-  				    					// Create Datagram to send response to FE
-  				    					l_invocationResponse = Parameters.LR_NAME + Parameters.UDP_PARSER + l_invocationResponse;
-  				    					
-  	  				    				// Send Multi-cast data to Replica A and Replica B
+  				    					// Send Multi-cast data to Replica A and Replica B
   	  				    				sendMulticastPacket_Replicas(l_multiCastDGram_replica);
   				    					
   				    				}
@@ -238,7 +230,7 @@ class UDP_replicaLeader extends Thread
 		if(l_segments != null)
 		{
 			m_UDPDataGram_from_stripped = p_input.substring(3, p_input.length());
-			System.out.println("UDP_replicaLeader.parseSenderName: m_UDPDataGram_from_stripped - " + m_UDPDataGram_from_stripped);
+			//System.out.println("UDP_replicaLeader.parseSenderName: m_UDPDataGram_from_stripped - " + m_UDPDataGram_from_stripped);
 			return l_segments[0];
 		}
 		System.out.println("UDP_replicaLeader.parseSenderName: failed to parse udp packet data");
