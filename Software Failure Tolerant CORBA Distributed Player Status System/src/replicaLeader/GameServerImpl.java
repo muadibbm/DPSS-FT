@@ -444,7 +444,7 @@ public class GameServerImpl extends GameServerInterfacePOA
 		System.out.println("l_Server_Data_EU: " + l_Server_Data_EU);
 		System.out.println("l_Server_Data_AS: " + l_Server_Data_AS);
 		
-		m_finalData = "1" + "/" + l_Server_Data_NA +"/" +l_Server_Data_EU +"/"+ l_Server_Data_AS;
+		m_finalData = "1" + "/" + l_Server_Data_NA +"/" + l_Server_Data_EU +"/"+ l_Server_Data_AS;
 		
 		System.out.println("Final Data: " + m_finalData);
 		return m_finalData;
