@@ -36,6 +36,11 @@ class UDPThread extends Thread
 		}
 	}
 	
+	protected void closeSocket()
+	{
+		aDatagramSocket.close();
+	}
+	
 	protected boolean hasCrashed()
 	{
 		return bCrashed;

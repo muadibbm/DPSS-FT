@@ -68,6 +68,7 @@ class GameServer extends interfaceIDLPOA implements Runnable
 	protected void freeServerResources()
 	{
 		aDatabase.clear();
+		aUDPThread.closeSocket();
 	}
 	
 	protected String getName()

@@ -131,7 +131,6 @@ public class FrontEnd extends interfaceIDLPOA implements Runnable
 	/* Sends pArguments through UDP using the replica leader port */
 	private void sendRequestToReplicaLeader(List <Object> pArguments)
 	{
-		System.out.println("1");
 		Parameters.METHOD_CODE methodCode = (Parameters.METHOD_CODE)pArguments.get(0);
 		if(methodCode == Parameters.METHOD_CODE.CREATE_ACCOUNT)
 		{
