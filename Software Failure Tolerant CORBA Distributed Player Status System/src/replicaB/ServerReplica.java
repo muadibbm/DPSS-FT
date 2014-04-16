@@ -532,7 +532,7 @@ char initial = Character.toUpperCase(Username.toCharArray()[0]);
 						
 						globalSystemSat = globalSystemSat.concat(dataRecieved);
 						globalSystemSat = globalSystemSat.replace("//", "/");
-						bufferStat = ("1" + Parameters.UDP_PARSER + Parameters.RB_NAME + globalSystemSat  + Parameters.UDP_END_PARSE).getBytes();						
+						bufferStat = ("RB/1" + Parameters.UDP_PARSER + Parameters.RB_NAME + globalSystemSat  + Parameters.UDP_END_PARSE).getBytes();						
 						
 						DatagramPacket replay3 = new DatagramPacket(bufferStat, bufferStat.length,request.getAddress(),Parameters.UDP_PORT_REPLICA_LEAD);
 						aSocket.send(replay3);
