@@ -119,7 +119,7 @@ public class GameUDPServer extends Thread{
 	
 	public static void main ( String  [] args)
 	{
-		System.out.println("Main UDP server is up and running ...");
+		System.out.println("Main Replica B UDP server is up and running ...");
 		//multicastListener();
 	
 		GameUDPServer l_GameUDPServer = new GameUDPServer();
