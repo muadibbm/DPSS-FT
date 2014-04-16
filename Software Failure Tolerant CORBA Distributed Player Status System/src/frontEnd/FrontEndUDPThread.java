@@ -52,13 +52,16 @@ class FrontEndUDPThread extends Thread
 			System.out.println("Front End UDP Data Received: " + request.getData());
 			
 			messageArray = (new String(request.getData())).split(Parameters.UDP_PARSER);
-			//System.out.println(messageArray.length);
-			//System.out.println(messageArray[0]);
-			//System.out.println(messageArray[1]);
+			System.out.println(messageArray.length);
 			if(messageArray[0].equals(Parameters.LR_NAME))
 			{
+				System.out.println(messageArray[1]);
 				if(messageArray.length > 3) // get Player Status
 				{
+					System.out.println(messageArray[1]);
+					System.out.println(messageArray[2]);
+					System.out.println(messageArray[3]);
+					System.out.println(messageArray[4]);
 					//messageArray[1] is confirmation
 					FrontEndORBThread.setResponse(messageArray[2] + " Online " + messageArray[3] + " Offline " + messageArray[4] + "\n" +
 							messageArray[5] + " Online " + messageArray[6] + " Offline " + messageArray[7] + "\n" +
