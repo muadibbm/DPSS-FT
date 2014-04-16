@@ -163,17 +163,14 @@ class ReplicaAUDPThread extends Thread
 		if(pIPAddress.length() >= 3 && pIPAddress.substring(0,3).equals(Parameters.GeoLocationOfGameServerNA))
 		{
 			bufferedReader = new BufferedReader(new FileReader(Parameters.RA_NA_NAME + "_IOR.txt"));
-			System.out.println("invoking for NA");
 		}
 		else if(pIPAddress.length() >= 2 && pIPAddress.substring(0,2).equals(Parameters.GeoLocationOfGameServerEU))
 		{
 			bufferedReader = new BufferedReader(new FileReader(Parameters.RA_EU_NAME + "_IOR.txt"));
-			System.out.println("invoking for EU");
 		}
 		else if(pIPAddress.length() >= 3 && pIPAddress.substring(0,3).equals(Parameters.GeoLocationOfGameServerAS))
 		{
-			bufferedReader = new BufferedReader(new FileReader(Parameters.RA_AS_NAME + "_IOR.txt"));	
-			System.out.println("invoking for AS");
+			bufferedReader = new BufferedReader(new FileReader(Parameters.RA_AS_NAME + "_IOR.txt"));
 		}
 		else
 		{
@@ -324,6 +321,7 @@ class ReplicaAUDPThread extends Thread
 				buffer = data.getBytes();
 				replyToLeaderPacket = new DatagramPacket(buffer, data.length(),  InetAddress.getByName("localhost"), Parameters.UDP_PORT_REPLICA_LEAD);
 				aSendSocket.send(replyToLeaderPacket);
+				aLog.info("Sending back results to replica leader : \n" + data);
 			}
 		}
 		catch (IOException e)
