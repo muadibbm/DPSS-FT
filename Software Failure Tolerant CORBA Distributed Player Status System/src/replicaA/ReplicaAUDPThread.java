@@ -259,10 +259,10 @@ class ReplicaAUDPThread extends Thread
 			aMulticastSocket.receive(requestFromLeaderPacket);
 			messageArray = (new String(requestFromLeaderPacket.getData())).split(Parameters.UDP_PARSER);
 			requestFromLeaderPacket.setLength(buffer.length);
-			
 			if(messageArray[0].equals(Parameters.LR_NAME))
 			{
 				messageArray[1] = messageArray[1].trim();
+				aLog.info("Recieived request from replica leader : " + messageArray[1]);
 				if(messageArray[1].equals(Parameters.METHOD_CODE.CREATE_ACCOUNT.name()))
 				{
 					messageArray[7] = messageArray[7].trim();
@@ -321,7 +321,8 @@ class ReplicaAUDPThread extends Thread
 				buffer = data.getBytes();
 				replyToLeaderPacket = new DatagramPacket(buffer, data.length(),  InetAddress.getByName("localhost"), Parameters.UDP_PORT_REPLICA_LEAD);
 				aSendSocket.send(replyToLeaderPacket);
-				aLog.info("Sending back results to replica leader : \n" + data);
+				aLog.info("Sent back results to replica leader : " + data.toString());
+				data = "";
 			}
 		}
 		catch (IOException e)
