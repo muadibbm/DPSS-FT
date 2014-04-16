@@ -40,11 +40,7 @@ class AdministratorClient extends Thread
 	/** Client invocation of FE operation getPlayerStatus using CORBA  */
 	protected void getPlayerStatus(String pAdminUsername, String pAdminPassword, String pIPAddress)
 	{
-		aInterfaceIDL.getPlayerStatus(pAdminUsername, pAdminPassword, pIPAddress);
-		/*if TODO
-			aLog.info("GetPlayerStatus Successfull");
-		else
-			aLog.info("GetPlayerStatus Failed");*/
+		aLog.info(aInterfaceIDL.getPlayerStatus(pAdminUsername, pAdminPassword, pIPAddress));
 	}
 	
 	/** Client invocation of FE operation suspendAccount using CORBA  */
